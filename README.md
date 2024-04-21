@@ -1,8 +1,8 @@
 # LEARN HOW TO CODE
-[] PYTHON
-[] JAVA SCRIPT
-[] GO
-[] HTML
+- [ ] PYTHON
+- [ ] JAVA SCRIPT
+- [ ] GO
+- [ ] HTML
 
 
 ## PYTHON
