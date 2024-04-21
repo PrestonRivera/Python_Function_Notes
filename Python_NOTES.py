@@ -177,4 +177,59 @@ def test():
 
 
 # Lists can include Strings, numbers(Intergers, Floats), Boolean and can be included in same lists. 
-    
+# Each item in the list has an index that refers to its spot
+# Example 
+
+names = ["Bob", "James", "Katy"]
+
+# Index 0: Bob
+# Index 1: James
+# Index 2: Katy
+
+
+# Accesing items in the list
+
+def get_leather_scraps():
+    inventory = [
+        "Healing Potion",
+        "Leather Scraps",
+        "Iron Helmet",
+        "Bread",
+        "Shortsword",
+    ]
+
+    item_index = 1
+
+    return inventory[item_index]
+
+# To change items in the list you can do so by giving an index.
+# Example
+
+def smelt_ore():
+    inventory = ["Healing Potion", "Iron Ore", "Bread", "Shortsword"]
+    print(f"Inventory: {inventory}") # Will print inventory 
+    inventory[1] = "Iron Bar" # Applies changes to inventory by calliing index
+    return inventory
+
+
+# Adding items to my list using .append() method
+
+cards = []
+cards.append("nvidia")
+cards.append("amd")
+# the cards list is now ['nvidia', 'amd']
+
+def generate_user_list(num_of_users):
+    player_ids = []
+
+    for i in range(0, num_of_users):
+        player_ids.append(i)
+
+    return player_ids
+
+# Removing items from the list are done using .pop()
+
+vegetables = ["broccoli", "cabbage", "kale", "tomato"];
+last_vegetable = vegetables.pop()
+# vegetables = ['broccoli', 'cabbage', 'kale']
+# last_vegetable = 'tomato'
