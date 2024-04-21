@@ -175,4 +175,6 @@ def test():
     print(f"Inventory contains: {inventory}")
     print("=====================================")
 
+
+# Lists can include Strings, numbers(Intergers, Floats), Boolean and can be included in same lists. 
     
