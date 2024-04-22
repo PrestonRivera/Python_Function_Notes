@@ -186,6 +186,12 @@ names = ["Bob", "James", "Katy"]
 # Index 1: James
 # Index 2: Katy
 
+# The length of a List can be calculated using the len() function.
+
+fruits = ["apple", "banana", "pear"]
+length = len(fruits)
+# Prints: 3
+
 
 # Accesing items in the list
 
@@ -233,3 +239,9 @@ vegetables = ["broccoli", "cabbage", "kale", "tomato"];
 last_vegetable = vegetables.pop()
 # vegetables = ['broccoli', 'cabbage', 'kale']
 # last_vegetable = 'tomato'
+
+# Complete function so that it returns the length of the inventory list minus 1.
+
+def get_last_index(inventory):
+    length = len(inventory)
+    return length - 1
