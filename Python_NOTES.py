@@ -245,3 +245,169 @@ last_vegetable = vegetables.pop()
 def get_last_index(inventory):
     length = len(inventory)
     return length - 1
+
+
+# Remember that we can iterate over all the elements in a list using a loop. For example, the following code will print each item in the sports list.
+
+for i in range(0, len(sports)):
+    print(sports[i])
+
+# Our players need a way to see how many copies of a specific item they have within their inventory!
+# Let's finish the get_item_counts function. Within the loop, check if the items are a Potion, Bread, or Shortsword, then add up how many there are of each by incrementing the potion_count, bread_count and shortsword_count variables respectively.
+
+def get_item_counts(items):
+    potion_count = 0
+    bread_count = 0
+    shortsword_count = 0
+
+    for i in range(0, len(items)):
+        if items[i] == "Potion":
+            potion_count += 1
+        elif items[i] == "Bread":
+            bread_count += 1
+        elif items[i] == "Shortsword":
+            shortsword_count += 1
+
+
+    return potion_count, bread_count, shortsword_count
+
+
+# In my opinion, Python has the most elegant syntax for iterating directly over the items in a list without worrying about index numbers. If you don't need the index number you can use the following syntax:
+# NO INDEX SYNTAX
+# Use when you dont need the index(position in numbers) you just need the value.
+
+trees = ['oak', 'pine', 'maple']
+for tree in trees:
+    print(tree)
+# Prints:
+# oak
+# pine
+# maple
+
+
+# Example of "no index" "no range" syntax
+
+
+def contains_leather_scraps(items):
+    found = False
+
+    # don't touch above this line
+
+    for items in items:
+        if items == "Leather Scraps":
+            return True   
+
+    # don't touch below this line
+
+    return found
+
+
+# Float functions finding the max value
+
+def find_max(nums):
+    max_so_far = float("-inf")
+    for i in range(0, len(nums)):
+        if nums[i] > max_so_far:
+            max_so_far = nums[i]
+    return max_so_far
+
+# Using the modulo % operator and the .append() method. 
+
+def get_odd_numbers(num):
+    odd_numbers = []
+    for i in range(0, num):
+        if i % 2 != 0:
+            odd_numbers.append(i)
+    return odd_numbers
+
+
+# Slicing lists syntax example: my_list[ start : stop : step ]
+
+scores = [50, 70, 30, 20, 90, 10, 50]
+# Display list
+print(scores[1:5:2])
+# Prints [70, 20]
+# The above reads as "give me a slice of the scores list from index 1, up to but not including 5, skipping every 2nd value. All of the sections are optional.
+
+# You can also omit various sections ("start", "stop", or "step"). For example, numbers[:3] means "get all items from the start up to (but not including) index 3". numbers[3:] means "get all items from index 3 to the end".
+
+numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+numbers[:3] # Gives [0, 1, 2]
+numbers[3:] # Gives [3, 4, 5, 6, 7, 8, 9]
+
+# Negative indices count from the end of the list. For example, numbers[-1] gives the last item in the list, numbers[-2] gives the second last item, and so on.
+
+numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+numbers[-3:] # Gives [7, 8, 9]
+
+# Complete the given get_champion_slices function. It takes a list of champions and should return three new lists based on the given champions:
+# First, return a slice of the champions list that starts with the third champion and goes to the end of the list.
+# Next, return a slice of the champions list that starts at the beginning of the list and ends with the third champion from the end (inclusive).
+# Last, return a slice of the champions list that only includes the champions in even numbered indexes.
+
+def get_champion_slices(champions):
+    return champions[2:], champions[:-2], champions[::2]
+
+Input:
+# ['Thrundar', 'Morgate', 'Gandolfo', 'Thraine', 'Norwad', 'Gilforn']
+
+Expecting:
+# (['Gandolfo', 'Thraine', 'Norwad', 'Gilforn'], ['Thrundar', 'Morgate', 'Gandolfo', 'Thraine'], ['Thrundar', 'Gandolfo', 'Norwad'])
+
+
+# Concatenating two lists (smushing them together) is easy in Python, just use the + operator.
+
+def concatenate_favorites(favorite_weapons, favorite_armor, favorite_items):
+    fav_list = favorite_weapons + favorite_armor + favorite_items
+    return fav_list
+
+# Checking whether a value exists in a list is also really easy in Python, just use the in keyword.
+
+def is_top_weapon(weapon):
+    top_weapons = [
+        "sword of justice",
+        "sword of slashing",
+        "stabby daggy",
+        "great axe",
+        "silver bow",
+        "spellbook",
+        "spiked knuckles",
+    ]
+
+
+    if weapon in top_weapons:
+        return True
+    else:
+        return False
+    
+
+# Python has a built-in keyword del that deletes items from objects. In the case of a list, you can delete specific indexes or entire slices.
+
+
+    nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# delete the fourth item
+del nums[3]
+print(nums)
+# Output: [1, 2, 3, 5, 6, 7, 8, 9]
+
+# delete the second item up to (but not including) the fourth item
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+del nums[1:3]
+print(nums)
+# Output: [1, 4, 5, 6, 7, 8, 9]
+
+# delete all elements
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+del nums[:]
+print(nums)
+# Output: []
+
+# Delete the last two strongholds from the list
+# Return the new trimmed-down list
+
+def trim_strongholds(strongholds):
+    del strongholds[0] # Delete the first stronghold from the list
+    del strongholds[-2] # Delete the last two strongholds from the list * Delete Furthest from end first to on delete the original end list items *
+    del strongholds[-1] # Delete the last two strongholds from the list
+    return(strongholds)
