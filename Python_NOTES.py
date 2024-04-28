@@ -411,3 +411,45 @@ def trim_strongholds(strongholds):
     del strongholds[-2] # Delete the last two strongholds from the list * Delete Furthest from end first to on delete the original end list items *
     del strongholds[-1] # Delete the last two strongholds from the list
     return(strongholds)
+
+
+# Tuples are collections of data that are ordered and unchangeable. You can think of a tuple as a List with a fixed size. Tuples are created with round brackets:
+
+my_tuple = ("this is a tuple", 45, True)
+print(my_tuple[0])
+# this is a tuple
+print(my_tuple[1])
+# 45
+print(my_tuple[2])
+# True
+
+# Tuples are often used to store very small groups (like 2 or 3 items) of data. For example, you might use a tuple to store a dog's name and age.
+
+dog = ("Fido", 4)
+
+# There is a special case for creating single-item tuples. You must include a comma so Python knows it's a tuple and not regular parentheses.
+
+dog = ("Fido",)
+
+# Because Tuples hold their data, multiple tuples can be stored within a list. Similar to storing other data in lists, each tuple within the list is separated by a comma.
+# When accessing tuples the first index relates to which tuple you want to access, the second relates to the values within that tuple.
+
+my_tuples = [("this is the first tuple in the list", 45, True),("this is the second tuple in the list", 21, False)]
+print(my_tuples[0][0]) # this is the first tuple in the list
+print(my_tuples[0][1]) # 45
+print(my_tuples[1][0]) # this is the second tuple in the list
+print(my_tuples[1][2]) # False
+
+
+# Let's add another function to our inventory system. Write a function that returns the first element from a list. If the list is empty then return the string ERROR instead.
+
+def get_first_item(items):
+    if len(items) == 0:
+        return "ERROR"
+    return items[0]
+
+ 
+ # Reverse Lists using slicing
+
+ def reverse_array(items):
+    return items[-1::-1]
