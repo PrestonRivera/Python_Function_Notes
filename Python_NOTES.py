@@ -366,10 +366,10 @@ numbers[-3:] # Gives [7, 8, 9]
 def get_champion_slices(champions):
     return champions[2:], champions[:-2], champions[::2]
 
-Input:
+# Input:
 # ['Thrundar', 'Morgate', 'Gandolfo', 'Thraine', 'Norwad', 'Gilforn']
 
-Expecting:
+# Expecting:
 # (['Gandolfo', 'Thraine', 'Norwad', 'Gilforn'], ['Thrundar', 'Morgate', 'Gandolfo', 'Thraine'], ['Thrundar', 'Gandolfo', 'Norwad'])
 
 
@@ -469,7 +469,7 @@ def get_first_item(items):
  
  # Reverse Lists using slicing
 
- def reverse_array(items):
+def reverse_array(items):
     return items[-1::-1]
 
 
