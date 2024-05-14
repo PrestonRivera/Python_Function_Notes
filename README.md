@@ -1,5 +1,5 @@
 # LEARN HOW TO CODE
-- [ ] PYTHON
+- [-] PYTHON
 - [ ] JAVA SCRIPT
 - [ ] GO
 - [ ] HTML

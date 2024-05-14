@@ -1,7 +1,4 @@
 #Practice Notes
-
-
-
 def area_of_circle(radius):
     pi = 3.14
     area = pi * radius * radius
@@ -12,13 +9,12 @@ def area_of_circle(radius):
 sword_length = 1.0
 spear_length = 2.0
 
-    # don't touch above this line
-
+# don't touch above this line
 sword_area = area_of_circle(sword_length)
 spear_area = area_of_circle(spear_length)
 
-    # don't touch below this line
 
+# don't touch below this line
 print("Sword length:", sword_length, "meters.")
 print("Sword attack area:", sword_area, "square meters")
 
@@ -27,24 +23,22 @@ print("Spear attack area:", spear_area, "square meters")
 
 
 
-    # "In place" operators function some examples -=, +=, **, *= 
-
+# "In place" operators function some examples -=, +=, **, *= 
 def get_hurt(current_health, damage):
     current_health -= damage
     return current_health
 
 
-    #Built in "int" function converts binary string to an integer.
-    #Binary base is 2 
-
+#Built in "int" function converts binary string to an integer.
+#Binary base is 2 
 def body_parts(num_heads, num_arms, num_fingers):
     num_heads = int(num_heads, 2)
     num_arms = int(num_arms, 2)
     num_fingers = int(num_fingers, 2)
     return num_heads, num_arms, num_fingers
 
-    #Comparison Operators 
-    # " " are not needed just added for readability 
+#Comparison Operators 
+ # " " are not needed just added for readability 
 "<"
 ">"
 "<="
@@ -52,8 +46,7 @@ def body_parts(num_heads, num_arms, num_fingers):
 "=="
 "!="
 
-    #If statements
-
+#If statements
 def print_status(player_health):
     if player_health <= 0:
         print("dead")
@@ -62,8 +55,7 @@ def print_status(player_health):
     if player_health >= 0:
         print("status check complete")
 
-    # IF ELSE STATEMENT EXAMPLE
-
+# IF ELSE STATEMENT EXAMPLE
 def player_status(health):
     if health <= 0:
         return "dead"
@@ -72,16 +64,14 @@ def player_status(health):
     else:
         return "healthy"
     
-    # EXAMPLE 2 
-
+# EXAMPLE 2 
 def check_high_score(current_player_name, high_scoring_player_name):
     if current_player_name == high_scoring_player_name:
         return "You are the highest scoring player!"
     else:
          return "You are not the highest scoring player!"
 
-    # EXAMPLE 3
-
+# EXAMPLE 3
 def check_high_score(player_name, high_scoring_player_name, low_scoring_player_name):
     if player_name == high_scoring_player_name:
         return "high"
@@ -91,8 +81,7 @@ def check_high_score(player_name, high_scoring_player_name, low_scoring_player_n
         return "neither"
         
 
-    # Boolean Logic (Logical operators "and" "or" with "if" "elif" "else")
-
+# Boolean Logic (Logical operators "and" "or" with "if" "elif" "else")
 def does_attack_hit(attack_roll, armor_class):
     if attack_roll != 1 and attack_roll >= armor_class or attack_roll == 20:
         return True
@@ -112,8 +101,6 @@ def combat_evaluation(player_power, enemy_defense):
 
 #Complete the has_enough_gas function. Do some Pythonic math with the miles_one_way and miles_per_gallon variables to determine how many gallons are needed for Tyler to get to work AND make it back home after he gets off work. 
 #Assign the result to a gallons_needed variable. Return True if there are at least enough gallons in the tank based on the gallons_needed variable, and False otherwise.
-
-
 def has_enough_gas(gallons_in_car, miles_one_way, miles_per_gallon):
     gallons_needed = True
     if miles_one_way * 2 / miles_per_gallon <= gallons_in_car:
@@ -122,20 +109,26 @@ def has_enough_gas(gallons_in_car, miles_one_way, miles_per_gallon):
         return False
     
 # "FOR LOOP" Prints numbers 0-99
-
 def print_numbers():
     for i in range(0, 100):
         print (i)
 
 
-# Prints counting down from 20-1 (start -end)
+# Finding the sum of numbers in a for loop starting with 1. 
+# Write a function called number_sum(n) that adds up all the numbers from 1 to n. For example:
+# number_sum(5) -> 1+2+3+4+5 -> 15
+def number_sum(n):
+    total = 0
+    for i in range(n + 1):
+        total += i
+    return total
 
+# Prints counting down from 20-1 (start -end)
 def count_down(start, end):
     for i in range(start, end, -1):
         print(i)
 
 # sum of numbers 0+1+2+3+4+5
-
 def sum_of_numbers(start, end):
     total = 0
     for i in range(start, end):
@@ -148,15 +141,25 @@ def sum_of_odd_numbers(end):
         total += i
     return total
 
-# Calculates Square of the numbers in the for loop
 
+# Find the factorial of a number. factorial is 4! = 4 * 3 * 2 * 1 = 24
+
+def factorial(num):
+
+    f = 1 
+ 
+    for i in range(1, num + 1):
+        f *= i
+    return f
+        
+
+# Calculates Square of the numbers in the for loop
 def calculate_squares(start, end):
     for i in range(start, end):
         print(f"{i} squared = {i ** 2}")
 
 
 # Modulo "%" is used to find the remainder. DEF is finding prime numbers
-
 def is_prime(number):
     if number < 2:
         return False
@@ -310,6 +313,15 @@ def find_max(nums):
         if nums[i] > max_so_far:
             max_so_far = nums[i]
     return max_so_far
+
+# Float function finding the lowest number in list.
+def find_min(nums):
+    min = float("inf")
+
+    for i in range(len(nums)):
+        if nums[i] <= min:
+            min = nums[i]
+    return min
 
 # Using the modulo % operator and the .append() method. 
 
@@ -685,6 +697,16 @@ def count_enemies(enemy_names):
     return enemy_name_dict
 
 
+# Complete the area_sum() function. It accepts a list of rectangles, where each rectangle is a dictionary that has the following structure:
+
+def area_sum(rectangles):
+    sum = 0
+    for rectangle in rectangles:
+        sum += rectangle["height"] * rectangle["width"]
+    return sum
+
+
+
 # iterating over a dictionary in python
 
 def get_most_common_enemy(enemies_dict): # CHAT
@@ -848,4 +870,311 @@ fruits = {'apple', 'banana', 'grape'}
 fruits.remove('apple')
 print(fruits)
 # Prints: {'banana', 'grape'}
+
+
+# Complete the count_vowels function. It should take a string and return a count of the number of vowels within the given string, and a set of its unique vowels.
+
+
+def count_vowels(text):
+    l_case_vowels = ["a", "e", "i", "o", "u"]
+    u_case_vowels = ["A", "E", "I", "O", "U"]
+
+    unique_vowels = set()
+    vowel_count = 0
+    
+    for word in text:
+        for letter in word:
+            if letter in l_case_vowels or letter in u_case_vowels:
+                vowel_count += 1
+                unique_vowels.add(letter)
+    return vowel_count, unique_vowels
+
+
+
+# Converting lists into sets and back into lists. 
+
+# You can convert a List to a Set using the set() function.
+# You can convert a Set to a List using the list() function.
+# You can subtract the elements in one Set from another Set using the - operator.
+
+def find_missing_ids(first_ids, second_ids): # currently lists
+    
+    first_ids_set = set(first_ids)
+    second_ids_set = set(second_ids)
+    new_ids = first_ids_set - second_ids_set 
+    final_list = list(new_ids)
+
+    return final_list
+
+# Even if your code has the right syntax, however, it may still cause an error when an attempt is made to execute it.
+# Errors detected during execution are called "exceptions" and can be handled gracefully by your code. 
+# You can even raise your own exceptions when bad things happen in your code.
+
+# Python uses a try-except pattern for handling errors.
+
+try:
+  10 / 0
+except Exception as e:
+  print(e)
+
+# prints "division by zero"
+
+'''
+The try block is executed until an exception is raised or it completes, whichever happens first. In this case, a "divide by zero" error is raised because division by zero is impossible. 
+The except block is only executed if an exception is raised in the try block. It then exposes the exception as data (e in our case) so that the program can handle the exception gracefully without crashing.
+'''
+
+try:
+        print(get_player_record(1))
+        print(get_player_record(2))
+        print(get_player_record(3))
+        print(get_player_record(4))
+except Exception as e:
+        print(e)
+
+        
+    
+
+
+# Don't edit below this line
+
+
+def get_player_record(player_id):
+    if player_id == 1:
+        return {"name": "Slayer", "level": 128}
+    if player_id == 2:
+        return {"name": "Dorgoth", "level": 300}
+    if player_id == 3:
+        return {"name": "Saruman", "level": 4000}
+    raise Exception("player id not found")
+
+
+
+# Syntax for rasing an exception:
+
+# raise Exception("something bad happened")
+
+# Example in function 
+
+def get_player_record(player_id):
+    if player_id == 1:
+        return {"name": "Slayer", "level": 128}
+    if player_id == 2:
+        return {"name": "Dorgoth", "level": 300}
+    if player_id == 3:
+        return {"name": "Saruman", "level": 4000}
+    raise Exception("player id not found")
+
+
+# For now, what is important to understand is that there are different types of exceptions and that we can differentiate between them in our code.
+
+try:
+    10/0
+except ZeroDivisionError:
+    print("0 division")
+except Exception as e:
+    print(e)
+
+try:
+    nums = [0, 1]
+    print(nums[2])
+except IndexError:
+    print("index error")
+except Exception as e:
+    print(e)
+
+# 0 division
+# index error
+
+
+# That's looking much better! You've addressed the previous issue by ensuring that get_player_record(player_id)'s result is returned if it succeeds, and you're correctly handling exceptions. 
+# Your use of return in each block means your function will return either the player record, "index is too high" if there's an IndexError, or the exception itself for any other kind of exception.
+# This matches the task's requirements closely. Well done on making those adjustments!
+
+def handle_get_player_record(player_id):
+    try:
+        return get_player_record(player_id)
+    
+    except IndexError:
+        return ("index is too high")
+    except Exception as e:
+        return (e)
+    
+
+
+# This program will crash with an uncaught exception 
+
+try:
+    raise Exception('zero division')
+except ZeroDivisionError as e:
+    print("zero")
+
+# This will print "other"
+
+ try:
+    raise Exception('zero division')
+except ZeroDivisionError as e:
+    print("zero")
+except Exception as e:
+    print("other")
+
+# If the customer doesn't have enough money raise an exception with the text "not enough money". Don't handle the exception. 
+# Otherwise, return the amount of money the customer has leftover after completing the purchase.
+
+def purchase(price, money_available):
+    if money_available >= price:
+        change = money_available - price
+    elif money_available < price:
+        raise Exception("not enough money")
+    return change
+
+
+# Completing the function above to process an entire list of purchase orders.
+
+
+
+def make_purchases(purchase_orders):
+    leftovers = []
+    for purchase_order in purchase_orders:
+        try:
+            price = purchase_order["price"]  # Defining the varicbale to the key "price"
+            money_available = purchase_order["money_available"]  # Defining the variable to the value "money available"
+            leftover = purchase(price, money_available)  # Using the purchase function to process the order. 
+            leftovers.append(leftover)  # Adding the leftover money to my empty list 
+        except Exception as e:  
+            print(f"Purchase exception: {e}")
+    return leftovers
+            
+
+# Don't edit below this line
+
+
+def main():
+    print("Making purchases...")
+    leftovers = make_purchases(
+        [
+            {"price": 10.00, "money_available": 125.00},
+            {"price": 5.00, "money_available": 2.00},
+            {"price": 20.01, "money_available": 5.20},
+            {"price": 1.04, "money_available": 254.00},
+            {"price": 40.20, "money_available": 6.00},
+            {"price": 16.00, "money_available": 235.01},
+            {"price": 10.70, "money_available": 10.70},
+            {"price": 12.00, "money_available": 2.30},
+        ]
+    )
+    print("Purchases complete!")
+    print("Leftover amounts for successful purchases:")
+    for leftover in leftovers:
+        print(f" * {leftover:.2f}")
+
+
+def purchase(price, money_available):
+    if money_available < price:
+        raise Exception(f"{money_available:.2f} is not enough for {price:.2f}")
+    return money_available - price
+
+
+main()
+
+# You can check the type of a variable using type() function. if type(variable) == int:
+# Complete the remove_nonints() function that takes a list and returns a new list with all the non-integer types removed.
+
+def remove_nonints(nums):
+    
+    removed_non_integers = []
+
+    for ints in nums:
+        if type(ints) == int:
+            removed_non_integers.append(ints)
+    return removed_non_integers
+
+
+# FIZZBUZZ function. Complete the fizzbuzz function that loops over all the numbers from start to end (excluding the end value) and prints them. 
+# If the number is a multiple of 3, instead of printing the number, print "fizz". If the number is a multiple of 5, instead print "buzz". 
+# If it is a multiple of 3 and 5 then instead print "fizzbuzz".
+
+def fizzbuzz(start, end):
+    for i in range(start, end):
+        if i % 15 == 0: 
+            print("fizzbuzz")
+        elif i % 5 == 0:
+            print("buzz")
+        elif i % 3 == 0:
+            print("fizz")
+        else:
+            print(i)
+
+# DONT TOUCH BELOW == TEST CASES
+
+def main():
+    test(1, 100)
+    test(5, 30)
+    test(1, 15)
+
+
+def test(start, end):
+    print("Starting test")
+    fizzbuzz(start, end)
+    print("======================")
+
+
+main()
+
+
+# List division. Write a function called divide_list() that takes a list and a number as input. The function returns a new list that contains all the elements of the original list except they have been divided by the second input.
+# Example divide_list([6, 8, 10], 2)
+# returns values[3.0, 4.0, 5.0]
+
+def divide_list(nums, divisor):
+    new_list = []
+    value = 0
+    
+    for num in nums:
+        value = num / divisor
+        new_list.append(value)
+    return new_list
+
+
+# Tim Peters "The Zen of Python"
+'''
+Beautiful is better than ugly.
+
+Explicit is better than implicit.
+
+Simple is better than complex.
+
+Complex is better than complicated.
+
+Flat is better than nested.
+
+Sparse is better than dense.
+
+Readability counts.
+
+Special cases aren't special enough to break the rules.
+
+Although practicality beats purity.
+
+Errors should never pass silently.
+
+Unless explicitly silenced.
+
+In the face of ambiguity, refuse the temptation to guess.
+
+There should be one-- and preferably only one --obvious way to do it.
+
+Although that way may not be obvious at first unless you're Dutch.
+
+Now is better than never.
+
+Although never is often better than right now.
+
+If the implementation is hard to explain, it's a bad idea.
+
+If the implementation is easy to explain, it may be a good idea.
+
+Namespaces are one honking great idea -- let's do more of those!
+'''
+
 
