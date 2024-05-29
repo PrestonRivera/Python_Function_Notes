@@ -64,6 +64,9 @@ cdb5fd4 B: add missing title and fix typo
 git merge remote/branch <--syntax--> = git merge origin/main = command used to merge the branches from the remote repo main branch to the local repo main branch. fast-forward merge since th elocal repo main branch is empty. Run this from the local repo 
 
 
+git push origin <localbranch>:<remotebranch> = command used to  push a local branch to a remote with a different name:
+
+git push origin :<remotebranch> = You can also delete a remote branch by pushing an empty branch to it:
 ADDING A REMOTE:
 
 webflyx-local: This is your local repository where you are making changes and working on your code.
