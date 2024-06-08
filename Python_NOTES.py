@@ -1178,3 +1178,1285 @@ Namespaces are one honking great idea -- let's do more of those!
 '''
 
 
+LESSON 2:
+
+soldier_one_dps = soldier_one["damage"] * soldier_one["attacks_per_second"]
+soldier_two_dps = soldier_two["damage"] * soldier_two["attacks_per_second"]
+
+# Create a new function called get_soldier_dps that takes a soldier and returns its DPS using the same logic as the lines above. Then, replace the two lines above with calls to get_soldier_dps.
+
+def get_soldier_dps(soldier):
+    DPS = soldier["damage"] * soldier["attacks_per_second"]
+    return DPS
+
+
+
+def fight_soldiers(soldier_one, soldier_two):
+    soldier_one_dps = get_soldier_dps(soldier_one)
+    soldier_two_dps = get_soldier_dps(soldier_two)
+
+    if soldier_one_dps > soldier_two_dps:
+        return "soldier 1 wins"
+    if soldier_two_dps > soldier_one_dps:
+        return "soldier 2 wins"
+    return "both soldiers die"
+
+
+
+# CLASSES:
+
+# """A class is a special type of value in an object-oriented programming language like Python. It's similar to a dictionary in that it usually stores other types inside itself.
+# Just like a string, integer or float, a class is a type, but instead of being a built-in type, your classes are custom types that you define.
+# An object is just an instance of a class type. For example:
+
+# Defines a new class called "Soldier"
+class Soldier:
+    health = 5
+    armor = 3
+    damage = 2
+
+
+health = 50
+# health is an instance of an integer type
+aragorn = Soldier()
+# aragorn is an instance of the Soldier type (class)
+
+
+class Archer:
+    health = 40
+    arrows = 10
+
+# Create several instances of the Archer class
+legolas = Archer()
+bard = Archer()
+
+# Print class properties
+print(legolas.health) # 40
+print(bard.arrows) # 10
+
+
+## EXAMPLE 2 with a METHOD
+
+class Soldier:
+    health = 5
+
+    def take_damage(self, damage):
+        self.health -= damage
+
+soldier_one = Soldier()
+soldier_one.take_damage(2)
+print(soldier_one.health)
+# prints "3"
+
+class Soldier:
+    health = 5
+
+    def take_damage(self, damage):
+        self.health -= damage
+
+soldier_one = Soldier()
+soldier_one.take_damage(2)
+print(soldier_one.health)
+# prints "3" 
+
+
+
+# Add a fortify() method to your wall class. It should double the current armor property.
+
+class Wall:
+    armor = 10
+    height = 5
+
+    def fortify(self):
+        self.armor *= 2
+
+
+# Add a .get_cost() method to your wall class. What do you think it should return? The cost of a wall is the product of its height and armor:
+# DEV SOLUT
+class Wall:
+    armor = 10
+    height = 5
+
+    def get_cost(self):
+        return self.armor * self.height
+
+
+    # don't touch below this line
+
+
+    def fortify(self):
+        self.armor *= 2
+
+# MY SOLUTE
+
+class Wall:
+    armor = 10
+    height = 5
+
+    def get_cost(self):
+        cost = self.armor * self.height
+        return cost
+
+    # don't touch below this line
+
+    def fortify(self):
+        self.armor *= 2
+
+
+class Soldier:
+    name = "Legolas"
+    armor = 2
+    num_weapons = 2
+
+# It's more practical to use a constructor. In Python, if you name a method __init__, that's the constructor and it is called when a new object is created.
+# So, with a constructor, the code would look like this: __init__ aka : 
+
+class Soldier:
+    def __init__(self):
+        self.name = "Legolas"
+        self.armor = 2
+        self.num_weapons = 2
+
+# Now we can make the starting armor and number of weapons configurable with some parameters!
+
+class Soldier:
+    def __init__(self, name, armor, num_weapons):
+        self.name = name
+        self.armor = armor
+        self.num_weapons = num_weapons
+
+soldier = Soldier("Legolas", 5, 10)
+print(soldier.name)
+# prints "Legolas"
+print(soldier.armor)
+# prints "5"
+print(soldier.num_weapons)
+# prints "10"
+
+'''A constructor is a special method in a class that gets called automatically when a new object (or instance) of the class is created.
+
+Its main job is to initialize the object's attributes and set up any necessary initial states.
+In Python, this constructor method is always named __init__. Heres what it does:
+
+Initializes Attributes: It sets the initial values for the object's attributes.
+Gets Called Automatically: When you create a new instance of a class, Python automatically calls the __init__ method without you having to explicitly call it.'''
+
+class WizardBear:
+    def __init__(self, name, spells, power_level):
+        self.name = name
+        self.spells = spells
+        self.power_level = power_level
+
+    def cast_spell(self):
+        return f"{self.name} casts {self.spells} with power level {self.power_level}!"
+    
+'''Here’s what happens:
+
+Define the Class: WizardBear is a class with a constructor method __init__.
+The __init__ Method: It takes name, spells, and power_level as arguments and sets these as attributes of the instance.
+Create an Instance: When you create a WizardBear like this:
+merlin = WizardBear("Merlin", "fireball", 99)
+Python automatically calls:
+merlin.__init__("Merlin", "fireball", 99)
+so self.name becomes "Merlin", self.spells becomes "fireball", and self.power_level becomes 99.'''
+
+
+# MULTIPLE OBJECTS
+
+'''An object is an "instance" of a class. Let's look at what that means.
+
+In object-oriented programming, an instance is a concrete occurrence of any object... "Instance" is synonymous with "object" as they are each a particular value... "Instance" emphasizes the distinct identity of the object. The creation of an instance is called instantiation.
+
+So for our wall class, I can create three different "instances" of the class. Or, in other words, I can create three separate objects.'''
+
+wall_maria = Wall(1, 2, 3)
+wall_rose = Wall(4, 5, 6)
+wall_sina = Wall(9, 8, 7)
+
+# In the example above, the variables are instances of the Wall type.
+
+class Soldier:
+    def __init__(self, name, armor, num_weapons):
+        self.name = name
+        self.armor = armor
+        self.num_weapons = num_weapons
+
+    def get_speed(self):
+        speed = 10
+        speed -= self.armor
+        speed -= self.num_weapons
+        return speed
+
+soldier_one = Soldier("Legolas", 5, 1)
+print(soldier_one.name)
+# "Legolas"
+print(soldier_one.get_speed())
+# 4
+
+
+
+
+
+def main():
+    Brawler_Aragorn = Brawler(4, 4, "Aragorn")
+    Brawler_Gimli = Brawler(2, 7, "Gimli")
+    Brawler_Legolas = Brawler(7, 7, "Legolas")
+    Brawler_Frodo = Brawler(3, 2, "Frodo")
+    fight(Brawler_Aragorn, Brawler_Gimli)
+    fight(Brawler_Legolas, Brawler_Frodo)
+    
+
+
+# don't touch below this line
+
+
+class Brawler:
+    def __init__(self, speed, strength, name):
+        self.speed = speed
+        self.strength = strength
+        self.power = speed * strength
+        self.name = name
+
+
+def fight(f1, f2):
+    if f1.power > f2.power:
+        print(f"{f1.name} wins with {f1.power} power over {f2.name}'s {f2.power}")
+    elif f1.power < f2.power:
+        print(f"{f2.name} wins with {f2.power} power over {f1.name}'s {f1.power}")
+    else:
+        print(f"It's a tie with both contestants at {f1.power} power")
+
+
+main()
+
+
+
+'''Complete the get_shot method. It doesn't take any parameters.
+
+If the current archer has health left, remove one health from the current archer. Then, if the archer's health is 0, raise the exception: {} is dead where {} is the archer's name.
+
+SHOOT METHOD
+Finish the shoot method. It takes an Archer instance as the target input.
+
+If the shooter has no arrows left, raise the exception {} can't shoot where {} is the shooter's name.
+Otherwise, remove an arrow from the shooter and print {1} shoots {2} where {1} is the shooter's name and {2} is the name of the targeted archer. Next, call the target's get_shot() method.'''
+
+class Archer:
+    def __init__(self, name, health, num_arrows):
+        self.name = name
+        self.health = health
+        self.num_arrows = num_arrows
+
+    def get_shot(self):
+        if self.health > 0:
+            self.health -= 1
+        if self.health == 0:
+             raise Exception(f"{self.name} is dead")
+            
+
+    def shoot(self, target):
+        if self.num_arrows == 0:
+            raise Exception(f"{self.name} can't shoot")
+        elif self.num_arrows > 0:
+            print(f"{self.name} shoots {target.name}")
+            self.num_arrows -= 1
+            target.get_shot()
+
+
+ # don't touch below this line
+
+    def get_status(self):
+        return self.name, self.health, self.num_arrows
+
+    def print_status(self):
+        print(f"{self.name} has {self.health} health and {self.num_arrows} arrows")
+
+
+
+
+
+# INSTANCE VARIABLES
+# Instance variables vary from object to object and are declared in the constructor.
+
+class Wall:
+    def __init__(self):
+        self.height = 10
+
+south_wall = Wall()
+south_wall.height = 20 # only updates this instance of a wall
+print(south_wall.height)
+# prints "20"
+
+north_wall = Wall()
+print(north_wall.height)
+# prints "10"
+
+
+# CLASS VARIABLES
+# Class variables remain the same between instances of the same class and are declared at the top level of a class definition.
+
+class Wall:
+    height = 10
+
+south_wall = Wall()
+print(south_wall.height)
+# prints "10"
+
+Wall.height = 20 # updates all instances of a Wall
+
+print(south_wall.height)
+# prints "20"
+# In other languages these types of variables are often called static variables.
+
+# Generally speaking, stay away from class variables. Just like global variables, class variables are usually a bad idea because they make it hard to keep track of which parts of your program are making updates. 
+# However, it is important to understand how they work because you may see them out in the wild.
+
+
+
+
+class Book:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
+
+
+class Library:
+    def __init__(self, name):
+        self.name = name
+        self.books = []
+
+    def add_book(self, book):
+        self.books.append(book)
+
+    def remove_book(self, book):
+        for lib_book in self.books:
+            if book.title == lib_book.title and book.author == lib_book.author: # Comparing the title nd author to current books in self.book lsit
+                self.books.remove(lib_book)
+
+    def search_books(self, search_string):
+        matching_books = [] # create an empty list for matching books
+
+        for lib_book in self.books: # loop through each book in the library
+            # Checking if the search string is in the title or author, case insensitive
+            if (
+                search_string.lower() in lib_book.title.lower()
+                or search_string.lower() in lib_book.author.lower()
+            ):
+                matching_books.append(lib_book) # Adding the matching book to the list
+        return matching_books # return the list of matching books. 
+    
+
+
+
+
+class Employee:
+    company_name = "Age of Dragons, Inc."
+    total_employees = 0 # Class variable
+
+    def __init__(self, first_name, last_name, id, position, salary):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.id = id
+        self.position = position
+        self.salary = salary
+        Employee.total_employees += 1
+
+    def get_name(self):
+        return self.first_name + " " + self.last_name
+    
+# ENCAPSULATION: 
+
+'''Encapsulation is the practice of hiding complexity inside a "black box" so that it's easier to focus on the problem at hand.
+
+encapsulation
+
+The most basic example of encapsulation is a function. The caller of a function doesn't need to worry too much about what happens inside, they just need to understand the inputs and outputs.'''
+
+# Encapsulation is about organization, not security.
+
+# Encapsulation is like folders in an unlocked filing cabinet. They don't stop someone from peeking inside, but they do keep everything tidy and easy to find.
+
+# By default, all properties and methods in a class are public. That means that you can access them with the . operator:
+
+wall.height = 10
+print(wall.height)
+# 10
+
+
+# Private data members are how we encapsulate logic and data within a class. To make a property or method private, you just need to prefix it with two underscores.
+
+class Wall:
+    def __init__(self, armor, magic_resistance):
+        self.__armor = armor
+        self.__magic_resistance = magic_resistance
+
+    def get_defense(self):
+        return self.__armor + self.__magic_resistance
+
+front_wall = Wall(10, 20)
+
+# This results in an error
+print(front_wall.__armor)
+
+# This works
+print(front_wall.get_defense())
+# 30
+
+
+
+class Wizard:
+    def __init__(self, name, stamina, intelligence):
+        self.name = name # Public
+        self.__stamina = stamina # private
+        self.__intelligence = intelligence # Private
+        self.health = self.__stamina * 100  # health: 100x the value of "stamina". Public accessing private properties
+        self.mana = self.__intelligence * 10 # mana: 10x the value of "intelligence". Public accessing private properties
+
+
+# Add the following methods to the Wizard class.
+
+'''
+GET_FIREBALLED()
+This method operates on the instance of the class. It takes no inputs and returns no values explicitly, but it should remove 500 health from the wizard.
+
+DRINK_MANA_POTION()
+This method operates on the instance of the class. It takes no inputs and returns no values explicitly, but it should add 100 mana to the wizard's reserves.'''
+
+
+fireball_damage = 500
+potion_mana = 100
+
+
+class Wizard:
+    def __init__(self, name, stamina, intelligence):
+        self.name = name
+        self.__stamina = stamina
+        self.__intelligence = intelligence
+        self.mana = self.__intelligence * 10
+        self.health = self.__stamina * 100
+
+    def get_fireballed(self):
+        self.health -= fireball_damage
+
+    def drink_mana_potion(self):
+        self.mana += potion_mana
+
+
+'''
+Python is a dynamic language, and that makes it difficult for the interpreter to enforce some of the safeguards that languages like Go do.
+That's why encapsulation in Python is achieved mostly by convention rather than by force.
+Prefixing methods and properties with a double underscore is a strong suggestion to the users of your class that they shouldn't be touching that stuff.
+If a developer wants to break convention, there are ways to get around the double underscore rule.'''
+
+
+class Wall:
+    def __init__(self, height):
+        # the double underscore make this a private property
+        # but it's not strictly enforced, there are hacks to get around it
+        self.__height = height
+
+    def get_height(self):
+        return self.__height
+    
+
+'''
+Complete the cast_fireball and __is_alive methods.
+
+CAST_FIREBALL
+If there isn't enough mana to cast a fireball (see fireball_cost at the top of the file), raise an Exception with the message ____ cannot cast fireball, where ____ is the wizard's name.
+
+If the wizard has enough mana, reduce their mana by the fireball_cost and call get_fireballed on the target wizard.
+
+__IS_ALIVE
+This method should return True if the wizard's health is greater than 0, and False otherwise.'''
+
+
+
+fireball_damage = 500
+potion_mana = 100
+fireball_cost = 50
+
+
+class Wizard:
+    def __init__(self, name, stamina, intelligence):
+        self.name = name
+        self.__stamina = stamina
+        self.__intelligence = intelligence
+        self.mana = self.__intelligence * 10
+        self.health = self.__stamina * 100
+
+    def cast_fireball(self, target):
+        if self.mana < fireball_cost:
+            raise Exception(f"{self.name} cannot cast fireball")
+        if self.mana >= fireball_cost:
+            self.mana -= fireball_cost
+            target.get_fireballed()
+            
+
+    def __is_alive(self):
+        if self.health > 0:
+            return True
+        else:
+            return False
+
+    def get_fireballed(self):
+        self.health -= fireball_damage
+
+    def drink_mana_potion(self):
+        self.mana += potion_mana
+
+
+# don't touch below this line
+
+
+def main():
+    merlin = Wizard("Merlin", 15, 10)
+    morgana = Wizard("Morgana", 17, 5)
+    print_wizard_stats(merlin)
+    print_wizard_stats(morgana)
+
+    while merlin._Wizard__is_alive() and morgana._Wizard__is_alive():
+        test_cast(merlin, morgana)
+        test_cast(morgana, merlin)
+
+    print(" -- Done! --")
+
+
+def test_cast(caster, target):
+    print(f"  >  {caster.name} casts fireball at {target.name}")
+    try:
+        caster.cast_fireball(target)
+    except Exception as e:
+        print(f"    >  !!!{e}!!!")
+        test_drink_potion(caster)
+    print_wizard_stats(caster)
+    print_wizard_stats(target)
+
+
+def test_drink_potion(caster):
+    print(f"  >  {caster.name} drinks mana potion")
+    caster.drink_mana_potion()
+
+
+def print_wizard_stats(wizard):
+    print(f"{wizard.name}: health={wizard.health}, mana={wizard.mana}")
+
+
+main()
+
+
+
+'''Great! Your deposit and withdraw methods are now simplified, getting rid of unnecessary else blocks.
+
+Let's summarize what I have achieved:
+
+Constructor (__init__ method): Initializes private variables for the account number and balance.
+Public Getters (get_account_number and get_balance): Return the account number and balance respectively.
+Deposit Method (deposit): Adds the given amount to the balance after verifying it's positive, otherwise raises an error.
+Withdraw Method (withdraw): Deducts the given amount from the balance after verifying it's positive and that there are sufficient funds, otherwise raises an error.
+'''
+
+
+
+class BankAccount:
+    def __init__(self, account_number, initial_balance):
+        self.__account_number = account_number
+        self.__balance = initial_balance
+
+    def get_account_number(self):
+        return self.__account_number
+
+    def get_balance(self):
+        return self.__balance
+
+    def deposit(self, amount):
+        if amount <= 0:
+            raise ValueError(f"Cannot deposit zero or negative funds")
+        self.__balance += amount
+        
+        
+    def withdraw(self, amount):
+        if amount <= 0:
+            raise ValueError(f"Cannot withdraw zero or negative funds")
+        if self.__balance < amount:
+            raise ValueError(f"Insufficient funds")
+        self.__balance -= amount
+
+
+'''
+Here are a few reasons why we use ValueError:
+
+Clarity: ValueError indicates exactly what type of error occurred—an issue with the value provided. This is clearer than a generic exception.
+
+Granularity: In a larger codebase, catching specific exceptions allows you to handle different error conditions in distinct ways. 
+This is particularly true if you'd like to distinguish between different types of errors that might occur.
+
+Standard Practice: Using built-in exceptions such as ValueError follows Python's standard practices, making your code more consistent and understandable to others.
+
+EXAMPLE FOR DIFFERENCE:
+Let's say you have a function like this:
+
+def do_something(value):
+    if value < 0:
+        raise ValueError("Negative values not allowed")
+    if not isinstance(value, int):
+        raise TypeError("Value must be an integer")
+    # perform some operation
+
+If you use generic Exception instead:
+
+def do_something(value):
+    if value < 0:
+        raise Exception("Negative values not allowed")
+    if not isinstance(value, int):
+        raise Exception("Value must be an integer")
+    # perform some operation
+
+When you try to handle exceptions:
+
+try:
+    do_something(value)
+except ValueError as e:
+    print(e)
+except TypeError as e:
+    print(e)
+except Exception as e:
+    print(e)
+
+In the first example, you can specifically catch ValueError or TypeError and handle them accordingly, but in the second example, every error is caught by Exception, removing the granularity.
+'''
+
+
+
+
+class Student:
+    def __init__(self, name):
+        self.name = name
+        self.__courses = {}
+
+    def calculate_letter_grade(self, score):
+        if score >= 90:
+            return "A"
+        if score >= 80 and score <= 89:
+            return "B"
+        if score >= 70 and score <= 79:
+            return "C"
+        if score >= 60 and score <= 69:
+            return "D"
+        if score < 60:
+            return "F"
+
+    def add_course(self, course_name, score):
+        letter_grade = self.calculate_letter_grade(score)
+        self.__courses[course_name] = letter_grade
+        
+
+    def get_courses(self):
+        return self.__courses
+    
+
+'''
+INSTANCE VARIABLE VS REGULAR (LOCAL) VARIABLE:
+Instance Variable:
+
+An instance variable is tied to an instance (an object) of a class. This means each instance of the class can have its own copy of the instance variable.
+In Python, instance variables are defined using self. followed by the variable name (e.g., self.name).
+These variables are accessible throughout the instance and can hold data particular to that object.
+Regular (Local) Variable:
+
+A regular or local variable is defined within a method or function and only accessible within that method or function.
+It is temporary and only exists during the execution of that method. It doesn't use self.
+For example:'''
+
+class Example:
+    def __init__(self, name):
+        self.instance_variable = name  # Instance variable
+
+    def change_name(self, new_name):
+        local_variable = new_name  # Local variable
+        self.instance_variable = local_variable  # Using the local variable to update an instance variable
+
+# Create an instance of the class
+ex = Example("Alice")
+print(ex.instance_variable)  # Output: Alice
+ex.change_name("Bob")
+print(ex.instance_variable)  # Output: Bob
+
+'''INSTANCE METHOD VS REGULAR FUNCTION:
+An instance method is a function that is defined in a class and is meant to operate on instances of that class. It always takes at least one parameter, usually self, which refers to the instance calling the method.
+
+USAGE OF SELF.CALCULATE_LETTER_GRADE(SCORE):
+In your add_course method, calculate_letter_grade is defined as a method of the Student class. This means it is an instance method and must be called with self to indicate it is being called on the current instance of the class.
+
+Here's an example to illustrate:'''
+
+class Example:
+    def greeting(self):
+        return "Hello, " + self.name  # Instance method using an instance variable
+
+    def set_name(self, name):
+        self.name = name  # Setting an instance variable
+
+# Create an instance
+ex = Example()
+ex.set_name("Alice")  # Using instance method to set name
+print(ex.greeting())  # Using instance method to get a greeting - Output: Hello, Alice
+
+
+
+'''
+INSTANCE METHODS
+An instance method is a function defined in a class that operates on an instance of that class. To call an instance method, you need to access it through an instance of the class. Here are the common patterns:
+
+Calling an Instance Method on Another Object:
+
+If you have an instance of a class (like your target in the get_fireballed example), you call the method directly on that instance.
+target.get_fireballed()
+Copy icon
+This means get_fireballed is a method defined in the class of the target object.
+
+Calling an Instance Method within Another Method:
+
+When calling a method from within another method of the same class, you use self to refer to the current instance.
+letter_grade = self.calculate_letter_grade(score)
+Copy icon
+Here, self.calculate_letter_grade(score) means you are calling the calculate_letter_grade method on the current instance (self) of the Student class.
+
+EXAMPLE TO ILLUSTRATE BOTH CASES:'''
+
+class Target:
+    def get_fireballed(self):
+        return "Ouch! I've been fireballed!"
+
+
+class Student:
+    def __init__(self, name):
+        self.name = name
+        self.__courses = {}
+
+    def calculate_letter_grade(self, score):
+        if score >= 90:
+            return "A"
+        elif score >= 80:
+            return "B"
+        elif score >= 70:
+            return "C"
+        elif score >= 60:
+            return "D"
+        else:
+            return "F"
+
+    def add_course(self, course_name, score):
+        # Calling a method within the same class using self
+        letter_grade = self.calculate_letter_grade(score)
+        self.__courses[course_name] = letter_grade
+
+    def get_courses(self):
+        return self.__courses
+
+
+# Creating an instance of Target
+target = Target()
+# Calling an instance method on the target instance
+print(target.get_fireballed())  # Output: Ouch! I've been fireballed!
+
+# Creating an instance of Student
+student = Student("Zatanna")
+# Adding a course and calling an instance method within another method
+student.add_course("Maths", 85)
+print(student.get_courses())    # Output: {'Maths': 'B
+
+
+'''
+ABSTRACTION
+Abstraction helps us handle complexity by hiding unnecessary details. Sounds like encapsulation, right? They're so similar that it's almost not worth worrying about the difference...almost.
+
+ABSTRACTION VS ENCAPSULATION
+Abstraction is about creating a simple interface for complex behavior. It focuses on what's exposed.
+Encapsulation is about hiding internal state. It focuses on tucking implementation details away so no one depends on them.
+Abstraction is more about reducing complexity, encapsulation is more about maintaining the integrity of system internals.
+'''
+
+
+class Human:
+    def __init__(self, pos_x, pos_y, speed):
+        self.__pos_x = pos_x
+        self.__pos_y = pos_y
+        self.__speed = speed
+
+    def move_right(self):
+        self.__pos_x += self.__speed
+
+    def move_left(self):
+        self.__pos_x -= self.__speed
+
+    def move_up(self):
+        self.__pos_y += self.__speed
+
+    def move_down(self):
+        self.__pos_y -= self.__speed
+        
+
+    def get_position(self):
+        return self.__pos_x, self.__pos_y
+    
+
+    '''
+    move_right: Adds the human's speed to its x position.
+move_left: Subtracts the human's speed from its x position.
+move_up: Adds the human's speed to its y position.
+move_down: Subtracts the human's speed from its y position.
+get_position: Returns the current position as a tuple of x and y.
+Now, let's make sure everything looks correct.
+
+In move_right, self.__pos_x is increased by self.__speed.
+In move_left, self.__pos_x is decreased by self.__speed.
+In move_up, self.__pos_y is increased by self.__speed.
+In move_down, self.__pos_y is decreased by self.__speed.
+In get_position, a tuple of self.__pos_x and self.__pos_y is returned.
+Would you like to test this now and see what results you get? If there's anything else you'd like to verify or discuss, let me know!'''
+
+
+'''
+The __raise_if_cannot_sprint and __use_sprint_stamina are private methods that are only intended to be used within the class. In your case, you'll use them to build the other four sprinting methods.
+
+__RAISE_IF_CANNOT_SPRINT
+This method should raise the exception: not enough stamina to sprint if the human is out of stamina.
+
+__USE_SPRINT_STAMINA
+Remove one stamina from the human.
+
+THE REMAINING METHODS
+Raise an error if there isn't enough stamina to sprint (use __raise_if_cannot_sprint()).
+Use the stamina needed to sprint (use __use_sprint_stamina())
+Move twice in the direction of the sprint.
+'''
+
+
+class Human:
+    def sprint_right(self):
+        self.__raise_if_cannot_sprint()
+        self.__use_sprint_stamina()
+        self.move_right()
+        self.move_right()
+
+    def sprint_left(self):
+        self.__raise_if_cannot_sprint()
+        self.__use_sprint_stamina()
+        self.move_left()
+        self.move_left()
+
+    def sprint_up(self):
+        self.__raise_if_cannot_sprint()
+        self.__use_sprint_stamina()
+        self.move_up()
+        self.move_up()
+
+    def sprint_down(self):
+        self.__raise_if_cannot_sprint()
+        self.__use_sprint_stamina()
+        self.move_down()
+        self.move_down()
+
+    def __raise_if_cannot_sprint(self):
+        if self.__stamina == 0:
+            raise Exception(f"not enough stamina to sprint")
+
+    def __use_sprint_stamina(self):
+        if self.__stamina > 0:
+            self.__stamina -= 1
+
+    # don't touch below this line
+
+    def move_right(self):
+        self.__pos_x += self.__speed
+
+    def move_left(self):
+        self.__pos_x -= self.__speed
+
+    def move_up(self):
+        self.__pos_y += self.__speed
+
+    def move_down(self):
+        self.__pos_y -= self.__speed
+
+    def get_position(self):
+        return self.__pos_x, self.__pos_y
+
+    def __init__(self, pos_x, pos_y, speed, stamina):
+        self.__pos_x = pos_x
+        self.__pos_y = pos_y
+        self.__speed = speed
+        self.__stamina = stamina
+
+
+
+'''
+Complete the Calculator class.
+
+CONSTRUCTOR
+Create a private instance variable called result initialized to 0.
+
+MATH
+The following methods should perform their respective mathematic computations. The "left-hand side" of each operation should be the current value of the result variable. The "right-hand side" of each operation will be the value passed in.
+
+add(self, a)
+subtract(self, a)
+multiply(self, a)
+divide(self, a): If the user attempts to divide by 0, raise a ValueError with "Cannot divide by zero" as the argument
+modulo(self, a): If the user attempts to divide by 0, raise a ValueError with "Cannot divide by zero" as the argument
+power(self, a):
+square_root(self)
+HELPER METHODS
+clear(self): reset the result variable to 0
+get_result(self): return the current value stored in the calculator's private result variable.
+'''
+
+
+class Calculator:
+    def __init__(self):
+        self.__result = 0
+
+    def add(self, a):
+        self.__result += a
+        return self.__result
+
+    def subtract(self, a):
+        self.__result -= a
+        return self.__result
+
+    def multiply(self, a):
+        self.__result *= a
+        return self.__result
+
+    def divide(self, a):
+        if a == 0:
+            raise ValueError("Cannot divide by zero")
+        self.__result /= a
+        return self.__result
+
+    def modulo(self, a):
+        if a == 0:
+            raise ValueError("Cannot divide by zero")
+        self.__result %= a
+        return self.__result
+
+    def power(self, a):
+        self.__result **= a
+        return self.__result
+
+    def square_root(self):
+        self.__result **= 0.5
+        return self.__result
+
+    def clear(self):
+        self.__result = 0
+        return self.__result
+
+    def get_result(self):
+        return self.__result
+    
+
+
+
+
+import random
+
+
+class DeckOfCards:
+    SUITS = ["Hearts", "Diamonds", "Clubs", "Spades"]
+    RANKS = [
+        "Ace",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "Jack",
+        "Queen",
+        "King",
+    ]
+    
+    def __init__(self):  
+        self.__cards = [] # Create an empty list
+        self.create_deck() # Fill the empty list by calling this method in my constructor. 
+        
+
+    def create_deck(self):
+        for suit in self.SUITS: # for suit in self.SUITS: loops through each suit.
+            for rank in self.RANKS: # for rank in self.RANKS: loops through each rank within the current suit.
+                self.__cards.append((rank, suit)) # self.__cards.append((rank, suit)) creates a tuple for each card and adds it to the deck.
+                
+
+    def shuffle_deck(self):
+        random.shuffle(self.__cards) # Shuffles the deck
+
+    def deal_card(self):
+        if len(self.__cards) > 0: # checks to see if there are cards to deal in the deck
+            return self.__cards.pop() # Deals from the deck
+        else:
+            return None # If no cards returns None
+
+    # don't touch below this line
+
+    def __str__(self):
+        return f"The deck has {len(self.__cards)} cards"
+    
+
+
+'''
+INHERITANCE
+We've made it to the holy grail of object-oriented programming: inheritance. Non-OOP languages like Go and Rust allow for encapsulation and abstraction features as nearly every language does. Inheritance, on the other hand, tends to be unique to class-based languages like Python, Java, and Ruby.
+
+WHAT IS INHERITANCE?
+Inheritance allows one class, the "child" class, to inherit the properties and methods of another class, the "parent" class.
+
+This powerful language feature helps us avoid writing a lot of the same code twice. It allows us to DRY (don't repeat yourself) up our code.
+
+SYNTAX
+Here Cow is a "child" class that inherits from the "parent" class Animal:
+'''
+#class Animal:
+    # parent "Animal" class
+
+#class Cow(Animal):
+    # child class "Cow" inherits "Animal"
+
+# The Cow class can reuse the Animal class's constructor with the super() method:
+
+class Animal:
+    def __init__(self, num_legs):
+        self.num_legs = num_legs
+
+class Cow(Animal):
+    def __init__(self):
+        # call the parent constructor to
+        # give the cow some legs
+        super().__init__(4)
+
+'''In Age of Dragons, all the archers are humans, but not all humans are necessarily archers. All humans have a name, but only archers have a __num_arrows property.
+
+Complete the Archer class. It should inherit the Human class. In its constructor it should call its parent's constructor, then also set its unique __num_arrows property.'''
+
+class Human:
+    def __init__(self, name):
+        self.__name = name
+
+    def get_name(self):
+        return self.__name
+
+
+## don't touch above this line
+
+
+class Archer(Human):
+    def __init__(self, name, num_arrows):
+        self.name = name
+        self.__num_arrows = num_arrows
+        super().__init__(name)
+
+    def get_num_arrows(self):
+        return self.__num_arrows
+
+
+
+'''
+Encapsulation is a core principle in object-oriented programming. By keeping data private, we can control how it's accessed and modified. Here’s why it’s often important to make certain attributes private:
+
+Control Access: By controlling access to important attributes, you can ensure they are only modified in specific ways. For example, you might have a method to validate the data before setting an attribute.
+
+Prevent Inadvertent Changes: If attributes are public, they might be changed from outside the class, potentially leading to unexpected behavior or bugs. For instance, someone might set num_arrows to a negative number if it's not encapsulated properly.
+
+Maintain Invariants: Invariants are conditions that should always hold true for your object. By encapsulating attributes, you can enforce these conditions. For example, you might want to ensure num_arrows is always a non-negative number.
+
+Flexibility to Change: Encapsulation allows you to change the internal implementation without affecting external code that uses your class. If num_arrows is private, you can modify how it's calculated or stored without breaking code that relies on your class.
+
+Let's say we have the following private attribute:'''
+
+class Archer:
+    def __init__(self, name, num_arrows):
+        self.__num_arrows = num_arrows
+
+# Now, if you want to change the way num_arrows is set or validated, you can do so safely within the class without worrying that some external code will break:
+
+class Archer:
+    def __init__(self, name, num_arrows):
+        self.__num_arrows = 0
+        self.set_num_arrows(num_arrows)
+    
+    def set_num_arrows(self, num_arrows):
+        if num_arrows < 0:
+            raise ValueError("Number of arrows cannot be negative")
+        self.__num_arrows = num_arrows
+
+
+
+
+'''WHEN SHOULD I USE INHERITANCE?
+Inheritance is a powerful tool, but it is a really bad idea to try to overuse it. Inheritance should only be used when all instances of a child class are also instances of the parent class.
+
+When a child class inherits from a parent, it inherits everything. If you only want to share some functionality, inheritance is probably not the best answer. Better to simply share some functions, or maybe make a new parent class that both classes can inherit from.
+
+All cats are animals but not all animals are cats:'''
+
+
+class Animals:
+    # Animals class
+
+    class Plants:
+    # Plants class
+
+        class Cats(Animals):
+            # Cats (child class) inherits methods from the Animals (Parent class). 
+            class Animals(Plants):
+                '''# Wouldnt make sense cause they dont have anything in common.'''
+
+
+
+''''Animals' and 'plants' might inherit from a new class called Organisms'''
+
+
+'''INHERITANCE HIERARCHY
+There is no limit to how deeply we can nest an inheritance tree. For example, a Cat can inherit from an Animal that inherits from LivingThing. That said, be careful! New programmers often get carried away.
+
+You should never think to yourself:
+
+"Well most wizards are elves... so I'll just have wizard inherit from elf"
+
+A good child class is a strict subset of its parent class.'''
+
+
+
+
+
+class Human:
+    def __init__(self, name):
+        self.__name = name
+
+    def get_name(self):
+        return self.__name
+
+
+## don't touch above this line
+
+
+class Archer(Human):
+    def __init__(self, name, num_arrows):
+        super().__init__(name) # Calls the parent constructor
+        self.__num_arrows = num_arrows
+
+    def get_num_arrows(self):
+        return self.__num_arrows 
+
+    def use_arrows(self, num):
+        if self.__num_arrows < num: 
+            raise Exception("not enough arrows")
+        self.__num_arrows -= num
+
+
+class Crossbowman(Archer):
+    def __init__(self, name, num_arrows):
+        super().__init__(name, num_arrows) # Call to parent constructor
+
+    def triple_shot(self, target):
+        self.use_arrows(3) # use 3 arrows
+        target_name = target.get_name() # Gets target name
+        return f"{target_name} was shot by 3 crossbow bolts" # Returns formatted message
+    
+
+
+
+
+# Example of inheritance in code:
+
+class RealEstate:
+    def __init__(self, location):
+        self.__location = location
+
+
+class Residential(RealEstate):
+    def __init__(self, location, bedrooms):
+        super().__init__(location)
+        self.__bedrooms = bedrooms
+
+
+class House(Residential):
+    def __init__(self, location, bedrooms, yard_size):
+        super().__init__(location, bedrooms)
+        self.__yard_size = yard_size
+
+
+'''
+INHERITANCE
+Inheritance can be thought of as a way for one class (child class) to get properties and behaviors (methods) from another class (parent class).
+This lets us reuse code, making our programs more organized and easier to manage.'''
+EXAMPLE BREAKDOWN
+Let's recap the given example with RealEstate, Residential, and House.
+
+# RealEstate:
+
+class RealEstate:
+    def __init__(self, location):
+        self.__location = location
+'''This is our parent class.
+It has one property: location.'''
+
+# Residential:
+
+class Residential(RealEstate):
+    def __init__(self, location, bedrooms):
+        super().__init__(location)
+        self.__bedrooms = bedrooms
+
+'''This is a child class that inherits from RealEstate.
+It has a new property: bedrooms.
+It uses super().__init__(location) to call the constructor of the parent class (RealEstate) to initialize the location property.'''
+
+# House:
+
+class House(Residential):
+    def __init__(self, location, bedrooms, yard_size):
+        super().__init__(location, bedrooms)
+        self.__yard_size = yard_size
+
+'''This is another child class, but it inherits from Residential.
+It has a new property: yard_size.
+It uses super().__init__(location, bedrooms) to call the constructor of the parent class (Residential) to initialize the location and bedrooms properties.'''
+
+
+# A parent class can have multiple children.
+
+
+class Hero:
+    def __init__(self, name, health):
+        self.__name = name
+        self.__health = health
+
+    def get_name(self):
+        return self.__name
+
+    def get_health(self):
+        return self.__health
+
+    def take_damage(self, damage):
+        self.__health -= damage
+
+
+class Archer(Hero):
+    def __init__(self, name, health, num_arrows):
+        super().__init__(name, health)
+        self.__num_arrows = num_arrows
+
+    def shoot(self, target):
+        if self.__num_arrows <= 0: 
+            raise Exception(f"not enough arrows")
+        self.__num_arrows -= 1
+        target.take_damage(10) 
+
+
+
+
