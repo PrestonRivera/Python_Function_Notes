@@ -2457,6 +2457,170 @@ class Archer(Hero):
         self.__num_arrows -= 1
         target.take_damage(10) 
 
+class Hero:
+    def __init__(self, name, health):
+        self.__name = name
+        self.__health = health
 
+    def get_name(self):
+        return self.__name
+
+    def get_health(self):
+        return self.__health
+
+    def take_damage(self, damage):
+        self.__health -= damage
+
+
+class Archer(Hero):
+    def __init__(self, name, health, num_arrows):
+        super().__init__(name, health)
+        self.__num_arrows = num_arrows
+
+    def shoot(self, target):
+        if self.__num_arrows <= 0:
+            raise Exception("not enough arrows")
+        self.__num_arrows -= 1
+        target.take_damage(10)
+
+
+class Wizard(Hero):
+    def __init__(self, name, health, mana):
+        super().__init__(name,health)
+        self.__mana = mana
+
+    def cast(self, target):
+        if self.__mana < 25:
+            raise Exception(f"not enough mana")
+        self.__mana -= 25
+        target.take_damage(25)
+
+
+
+
+'''You'll often find that it's more likely that an inheritance tree is wide than deep. In other words, instead of a deep tree like:
+
+wide vs deep inheritance
+
+WHY ARE INHERITANCE TREES OFTEN WIDE INSTEAD OF DEEP?
+As we talked about earlier, in good software a child class is a strict subset of its parent class. In a deep tree, that means the children need to be perfect members of all the parent class "types". 
+That simply doesn't happen very often in the real world. It's much more likely that you'll have a base class that simply has many sibling classes that are slightly different variations of the base.'''
+
+
+
+class Unit:
+    def __init__(self, name, pos_x, pos_y):
+        self.name = name
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+
+    def in_area(self, x_1, y_1, x_2, y_2):
+        if (self.pos_x >= x_1 
+            and self.pos_x <= x_2 
+            and self.pos_y >= y_1 
+            and self.pos_y <= y_2
+            ):
+            return True
+        else:
+            return False
+       
+
+class Dragon(Unit):
+    def __init__(self, name, pos_x, pos_y, fire_range):
+        super().__init__(name, pos_x, pos_y)
+        self.__fire_range = fire_range
+
+    def breathe_fire(self, x, y, units):
+        hit_units = []
+        for unit in units:
+            if unit.in_area(
+                x - self.__fire_range, y - self.__fire_range,
+                x + self.__fire_range, y + self.__fire_range
+            ):
+                hit_units.append(unit)
+        return hit_units
+    
+# Create a list hit_units to collect the units hit by the fire breath.
+# Loop through each unit in units.
+# Check if the unit is in the fire area by using in_area method.
+# Append it to hit_units if it is inside the fire area.
+# Finally, return the list hit_units.
+
+
+# To get a new copy of a list, use the copy() method. If you don't, your new variable will just be a reference to the original list.
+nums = [4, 3, 2, 1]
+nums_copy = nums.copy()
+# nums_copy is [4, 3, 2, 1]
+
+# DELETE FROM A LIST
+nums = [4, 3, 2, 1]
+del nums[1]
+# nums is [4, 2, 1]
+
+
+
+def main():
+    dragons = [
+        Dragon("Green Dragon", 0, 0, 1),
+        Dragon("Red Dragon", 2, 2, 2),
+        Dragon("Blue Dragon", 4, 3, 3),
+        Dragon("Black Dragon", 5, -1, 4),
+    ]
+
+    # don't touch above this line
+    dragons_copy = dragons.copy() 
+    for dragon in dragons_copy:
+        describe(dragon)
+    for i in range(len(dragons)):
+        dragon = dragons[i]
+        other_dragons = dragons.copy()
+        del other_dragons[i]
+        dragon.breathe_fire(x=3, y=3, units=other_dragons)
+    
+    
+
+
+# don't touch below this line
+
+
+def describe(dragon):
+    print(f"{dragon.name} is at {dragon.pos_x}/{dragon.pos_y}")
+
+
+class Unit:
+    def __init__(self, name, pos_x, pos_y):
+        self.name = name
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+
+    def in_area(self, x_1, y_1, x_2, y_2):
+        return (
+            self.pos_x >= x_1
+            and self.pos_x <= x_2
+            and self.pos_y >= y_1
+            and self.pos_y <= y_2
+        )
+
+
+class Dragon(Unit):
+    def __init__(self, name, pos_x, pos_y, fire_range):
+        super().__init__(name, pos_x, pos_y)
+        self.__fire_range = fire_range
+
+    def breathe_fire(self, x, y, units):
+        print(f"{self.name} breathes fire at {x}/{y} with range {self.__fire_range}")
+        print("====================================")
+        for unit in units:
+            in_area = unit.in_area(
+                x - self.__fire_range,
+                y - self.__fire_range,
+                x + self.__fire_range,
+                y + self.__fire_range,
+            )
+            if in_area:
+                print(f"{unit.name} is hit by the fire")
+
+
+main()
 
 
