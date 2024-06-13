@@ -2686,3 +2686,143 @@ class Catapult(Siege):
 
     def get_cargo_volume(self):
         return self.cargo_volume
+
+
+
+'''While inheritance is the most unique trait of object-oriented languages, polymorphism is probably the most powerful. Polymorphism is the ability of a variable, function or object to take on multiple forms.
+
+"poly"="many"
+"morph"="form".
+For example, classes in the same hierarchical tree may have methods with the same name but different behaviors.
+
+SHAPES
+Let's look at a simple example.'''
+
+class Creature():
+    def move(self):
+        print("the creature moves")
+
+class Dragon(Creature):
+    def move(self):
+        print("the dragon flies")
+
+class Kraken(Creature):
+    def move(self):
+        print("the kraken swims")
+
+for creature in [Creature(), Dragon(), Kraken()]:
+    creature.move()
+# prints:
+# the creature moves
+# the dragon flies
+# the kraken swims
+
+
+class Rectangle:
+    def __init__(self, x1, y1, x2, y2):
+        self.__x1 = x1
+        self.__y1 = y1
+        self.__x2 = x2
+        self.__y2 = y2
+        
+    def get_left_x(self):
+        if self.__x1 < self.__x2:
+            return self.__x1
+        else:
+            return self.__x2
+            
+    def get_right_x(self):
+        if self.__x2 > self.__x1:
+            return self.__x2
+        else:
+            return self.__x1
+
+    def get_top_y(self):
+        if self.__y2 > self.__y1:
+            return self.__y2
+        else:
+            return self.__y1
+        
+
+    def get_bottom_y(self):
+        if self.__y1 < self.__y2:
+            return self.__y1
+        else:
+            return self.__y2
+
+    # don't touch below this line
+
+    def __repr__(self):
+        return f"Rectangle({self.__x1}, {self.__y1}, {self.__x2}, {self.__y2})"
+    
+
+
+'''
+Get the edges of both rectangles: Use the helper methods to find the left, right, top, and bottom edges of both self and rect.
+
+Check the conditions:
+
+A's left side (self_left) is on or to the left of B's right side (rect_right)
+A's right side (self_right) is on or to the right of B's left side (rect_left)
+A's top side (self_top) is on or above B's bottom side (rect_bottom)
+A's bottom side (self_bottom) is on or below B's top side (rect_top)
+'''
+
+class Rectangle:
+    def overlaps(self, rect):
+        self_left = self.get_left_x()
+        self_right = self.get_right_x()
+        self_top = self.get_top_y()
+        self_bottom = self.get_bottom_y()
+
+        rect_left = rect.get_left_x()
+        rect_right = rect.get_right_x()
+        rect_top = rect.get_top_y()
+        rect_bottom = rect.get_bottom_y()
+        
+        overlap = (
+            self_left <= rect_right and
+            self_right >= rect_left and
+            self_top >= rect_bottom and
+            self_bottom <= rect_top
+        )
+
+        return overlap
+
+        
+    
+         
+
+    # don't touch below this line
+
+    def __init__(self, x1, y1, x2, y2):
+        self.__x1 = x1
+        self.__y1 = y1
+        self.__x2 = x2
+        self.__y2 = y2
+
+    def get_left_x(self):
+        if self.__x1 < self.__x2:
+            return self.__x1
+        return self.__x2
+
+    def get_right_x(self):
+        if self.__x1 > self.__x2:
+            return self.__x1
+        return self.__x2
+
+    def get_top_y(self):
+        if self.__y1 > self.__y2:
+            return self.__y1
+        return self.__y2
+
+    def get_bottom_y(self):
+        if self.__y1 < self.__y2:
+            return self.__y1
+        return self.__y2
+
+    def __repr__(self):
+        return f"Rectangle({self.__x1}, {self.__y1}, {self.__x2}, {self.__y2})"
+    
+
+
