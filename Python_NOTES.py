@@ -2825,4 +2825,810 @@ class Rectangle:
         return f"Rectangle({self.__x1}, {self.__y1}, {self.__x2}, {self.__y2})"
     
 
+class Unit:
+    def __init__(self, name, pos_x, pos_y):
+        self.name = name
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+
+    def in_area(self, x1, y1, x2, y2):
+        return(
+            self.pos_x >= x1
+            and self.pos_x <= x2
+            and self.pos_y >= y1
+            and self.pos_y <= y2
+        )
+
+
+class Dragon(Unit):
+    def __init__(self, name, pos_x, pos_y, height, width, fire_range):
+        super().__init__(name, pos_x, pos_y)
+        self.fire_range = fire_range
+        self.height = height
+        self.width = width
+        half_width = self.width / 2
+        half_height = self.height / 2
+        left_x = self.pos_x - half_width
+        right_x = self.pos_x + half_width
+        bottom_y = self.pos_y - half_height
+        top_y = self.pos_y + half_height
+        self.__hit_box = Rectangle(left_x, bottom_y, right_x, top_y)
+
+    def in_area(self, x1, y1, x2, y2):
+        area_rectangle = Rectangle(x1, y1, x2, y2)
+        return self.__hit_box.overlaps(area_rectangle)
+
+
+# Don't touch below this line
+
+
+class Rectangle:
+    def overlaps(self, rect):
+        return (
+            self.get_left_x() <= rect.get_right_x()
+            and self.get_right_x() >= rect.get_left_x()
+            and self.get_top_y() >= rect.get_bottom_y()
+            and self.get_bottom_y() <= rect.get_top_y()
+        )
+
+    def __init__(self, x1, y1, x2, y2):
+        self.__x1 = x1
+        self.__y1 = y1
+        self.__x2 = x2
+        self.__y2 = y2
+
+    def get_left_x(self):
+        if self.__x1 < self.__x2:
+            return self.__x1
+        return self.__x2
+
+    def get_right_x(self):
+        if self.__x1 > self.__x2:
+            return self.__x1
+        return self.__x2
+
+    def get_top_y(self):
+        if self.__y1 > self.__y2:
+            return self.__y1
+        return self.__y2
+
+    def get_bottom_y(self):
+        if self.__y1 < self.__y2:
+            return self.__y1
+        return self.__y2
+    
+
+
+'''
+Take a look at the Greek roots of the word "polymorphism".
+
+"poly" means "many".
+"morph" means "to change" or "form".
+Polymorphism in programming is the ability to present the same interface (function or method signatures) for many different underlying forms (data types).
+
+A classic example is a Shape class that Rectangle, Circle, and Triangle can inherit from. With polymorphism, each of these classes will have different underlying data. 
+The circle needs its center point coordinates and radius. The rectangle needs two coordinates for the top left and bottom right corners. The triangle needs coordinates for the corners.
+
+By making each class responsible for its data and its code, you can achieve polymorphism. In the shapes example, each class would have its own draw_shape() method. 
+This allows the code that uses the different shapes to be simple and easy, and more importantly, it can treat shapes as the same even though they are different. 
+It hides the complexities of the difference behind a clean abstraction.
+'''
+
+
+shapes = [Circle(5, 5, 10), Rectangle(1, 3, 5, 6)]
+for shape in shapes:
+    print(shape.draw_shape())
+
+
+'''
+This is in contrast to the functional way of doing things where you would have had separate functions that have different function signatures, 
+like draw_rectangle(x1, y1, x2, y2) and draw_circle(x, y, radius).
+'''
+
+'''
+A function signature (or method signature) includes the name, inputs, and outputs of a function or method. For example, hit_by_fire in the Human and Archer classes have identical signatures.
+'''
+
+class Human:
+    def hit_by_fire(self):
+        self.health -= 5
+        return self.health
+
+class Archer:
+    def hit_by_fire(self):
+        self.health -= 10
+        return self.health
+    
+'''
+Both methods have the same name, take 0 inputs, and return integers. If any of those things were different, they would have different function signatures.
+'''
+
+# Example of different signatures
+
+class Human:
+    def hit_by_fire(self):
+        self.health -= 5
+        return self.health
+
+class Archer:
+    def hit_by_fire(self, dmg):
+        self.health -= dmg
+        return self.health
+    
+
+'''
+The Archer class's hit_by_fire method takes an input, dmg, which is used to calculate the new health. This is a different signature than the Human class's hit_by_fire method, which takes no inputs. 
+Calling two methods with the same signature should look the same to the caller.
+'''
+
+
+# same inputs (none)
+# same name
+# same outputs (a single integer)
+health = sam.hit_by_fire()
+health = archer.hit_by_fire()
+
+
+'''
+WHEN OVERRIDING METHODS, USE THE SAME FUNCTION SIGNATURE
+If you change the function signature of a parent class when overriding a method, it could be a disaster. 
+The whole point of overriding a method is so that the caller of your code doesn't have to worry about what different things are going on inside the methods of different object types.
+'''
+
+'''
+The main benifit of Polymorphism is to hide the differences between subtypes from users of your code.
+'''
+
+# Operator overloading
+
+'''Another kind of built-in polymorphism in Python is the ability to override how an operator works. For example, the + operator works for built-in types like integers and strings.'''
+
+print(3 + 4)
+# prints "7"
+
+print("three " + "four")
+# prints "three four"
+
+
+class Sword:
+    def __init__(self, sword_type):
+        self.sword_type = sword_type
+
+    def __add__(self, other):
+        if self.sword_type == other.sword_type == "bronze":
+            return Sword("iron")
+        elif self.sword_type == other.sword_type == "iron":
+            return Sword("steel")
+        else:
+            raise Exception("can not craft")
+        
+
+'''As we discussed in the last assignment, operator overloading is the practice of defining custom behavior for standard Python operators. 
+Here's a list of how the operators translate into method names.'''
+
+# Operation	             Operator	        Method
+# Addition	                +	             add
+# Subtraction	            -	             sub
+# Multiplication            *	             mul
+# Power	                    **	             pow
+# Division	                /	             truediv
+# Floor Division	        //	             floordiv
+# Remainder (modulo)	    %	             mod
+# Bitwise Left Shift	    <<	             lshift
+# Bitwise Right Shift	    >>	             rshift
+# Bitwise AND	            &	             and
+# Bitwise OR	            |	             or
+# Bitwise XOR	            ^	             xor
+# Bitwise NOT	            ~	             invert
+
+
+# OVERLOADING BUILT-IN METHODS
+'''Last but not least, let's take a look at some of the built-in methods we can overload in Python. 
+While there isn't a default behavior for the arithmetic operators like we just saw, there is a default behavior for printing a class.'''
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+
+p1 = Point(4, 5)
+print(p1)
+# prints "<Point object at 0xa0acf8>"
+
+
+'''That's not super useful! Let's teach instances of our Point object to print themselves. The __str__ method (short for "string") lets us do just that. 
+It takes no inputs but returns a string that will be printed to the console when someone passes an instance of the class to Python's print() function.
+'''
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __str__(self):
+        return f"({self.x},{self.y})"
+
+p1 = Point(4, 5)
+print(p1)
+# prints "(4,5)"
+
+class Dragon:
+    def __init__(self, name, color):
+        self.name = name
+        self.color = color
+
+    def __str__(self):
+        return(f"I am {self.name}, the {self.color} dragon")
+    
+
+# RANKING THE CARDS
+# Exactly! By converting the ranks and suits to numerical values based on their positions in the RANKS and SUITS lists, we can easily compare them.
+
+import random
+
+SUITS = ["Clubs", "Diamonds", "Hearts", "Spades"]
+
+RANKS = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
+
+
+class Card:
+    def __init__(self, rank, suit):
+        self.rank = rank
+        self.suit = suit
+        self.rank_index = RANKS.index(rank)
+        self.suit_index = SUITS.index(suit)
+
+    # The equality operator needs to return True if both the rank and suit of two cards are the same:
+    def __eq__(self, other):
+        return self.rank == other.rank and self.suit == other.suit
+
+    # The less-than operator needs to compare ranks first. If they are the same, it needs to compare suits:
+    def __lt__(self, other):
+        if self.rank_index == other.rank_index:
+            return self.suit_index < other.suit_index
+        return self.rank_index < other.rank_index
+
+    # The greater-than operator follows the same logic, but checks if one card is greater than the other:
+    def __gt__(self, other):
+        if self.rank_index == other.rank_index:
+            return self.suit_index > other.suit_index
+        return self.rank_index > other.rank_index
+
+    # don't touch below this line
+
+    def __str__(self):
+        return f"{self.rank} of {self.suit}"
+
+
+
+import random
+
+
+class CardGame:
+    def __init__(self):
+        self.deck = DeckOfCards()
+        self.deck.shuffle_deck()
+        
+    def play(self):
+        print("Nothing to play...")
+
+
+class War(CardGame):
+    def __init__(self):
+        super().__init__()
+        self.player1_hand = []
+        self.player2_hand = []
+        
+        
+    def play(self):
+        self.player1_hand = self.__deal_hand()
+        self.player2_hand = self.__deal_hand()
+        self.__battle()
+
+    def __deal_hand(self):
+        hand = []
+        for _ in range(5):
+            hand.append(self.deck.deal_card())
+        return hand
+
+    # don't touch below this line
+
+    def __battle(self):
+        player1_pile = []
+        player2_pile = []
+        player1_score = 0
+        player2_score = 0
+        ties = 0
+        while len(self.player1_hand) > 0 or len(self.player2_hand) > 0:
+            if len(self.player1_hand) == 0:
+                random.shuffle(player1_pile)
+                self.player1_hand = player1_pile.copy()
+                player1_pile.clear()
+            if len(self.player2_hand) == 0:
+                random.shuffle(player2_pile)
+                self.player2_hand = player2_pile.copy()
+                player2_pile.clear()
+            card1 = self.player1_hand.pop()
+            card2 = self.player2_hand.pop()
+            print(f"{card1} vs {card2}")
+            if card1 > card2:
+                player1_pile.append(card1)
+                player1_pile.append(card2)
+                player1_score += 1
+                print(f"Player 1 wins with {card1}")
+            elif card2 > card1:
+                player2_pile.append(card1)
+                player2_pile.append(card2)
+                player2_score += 1
+                print(f"Player 2 wins with {card2}")
+            else:
+                ties += 1
+                print("Tie! Both players draw a card and play again")
+        print("------------------------------------------")
+        print("Game over!")
+        print("------------------------------------------")
+        print(f"Player 1: {player1_score}")
+        print(f"Player 2: {player2_score}")
+        print(f"Ties: {ties}")
+        print("==========================================")
+
+
+SUITS = ["Clubs", "Diamonds", "Hearts", "Spades"]
+
+RANKS = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
+
+
+def index_of(lst, item):
+    for i in range(len(lst)):
+        if lst[i] == item:
+            return i
+    return None
+
+
+class Card:
+    def __init__(self, rank, suit):
+        self.rank = rank
+        self.suit = suit
+
+    def __cmp(self, other):
+        self_suit_i = index_of(SUITS, self.suit)
+        other_suit_i = index_of(SUITS, other.suit)
+        self_rank_i = index_of(RANKS, self.rank)
+        other_rank_i = index_of(RANKS, other.rank)
+        if self_rank_i > other_rank_i:
+            return "gt"
+        if self_rank_i < other_rank_i:
+            return "lt"
+        if self_suit_i > other_suit_i:
+            return "gt"
+        if self_suit_i < other_suit_i:
+            return "lt"
+        return "eq"
+
+    def __eq__(self, other):
+        return self.__cmp(other) == "eq"
+
+    def __gt__(self, other):
+        return self.__cmp(other) == "gt"
+
+    def __lt__(self, other):
+        return self.__cmp(other) == "lt"
+
+    def __str__(self):
+        return f"{self.rank} of {self.suit}"
+
+
+class DeckOfCards:
+    def __init__(self):
+        self.__cards = []
+        self.create_deck()
+
+    def create_deck(self):
+        for suit in SUITS:
+            for rank in RANKS:
+                self.__cards.append(Card(rank, suit))
+
+    def shuffle_deck(self):
+        random.shuffle(self.__cards)
+
+    def deal_card(self):
+        if len(self.__cards) == 0:
+            return None
+        return self.__cards.pop(0)
+
+
+def test(seed):
+    random.seed(seed)
+    war = War()
+    war.play()
+
+
+def main():
+    test(1)
+    test(2)
+
+
+main()
+
+'''
+WHAT IS FUNCTIONAL PROGRAMMING?
+Functional programming is a style (or "paradigm" if you're pretentious) of programming where we compose functions instead of mutating state (updating the value of variables).
+
+Functional programming is more about declaring what you want to happen, rather than how you want it to happen.
+Imperative (or procedural) programming declares both the what and the how.
+'''
+
+
+# Example of imperative code:
+
+car = create_car()
+car.add_gas(10)
+car.clean_windows()
+
+
+# Example of functional code:
+
+# return clean_windows(add_gas(create_car()))
+
+
+'''The important distinction is that in the functional example, we never change the value of the car variable, 
+we just compose functions that return new values, with the outermost function, clean_windows in this case, returning the final result.
+'''
+
+'''
+DOC2DOC
+In this course, we're working on "Doc2Doc", a command line tool for converting documents from one format to another. If you're familiar with Pandoc, the idea is similar.
+'''
+
+def stylize_title(document):
+    return (add_border(center_title(document)))
+
+
+# Don't touch below this line
+
+
+def center_title(document):
+    width = 40
+    title = document.split("\n")[0]
+    centered_title = title.center(width)
+    return document.replace(title, centered_title)
+
+
+def add_border(document):
+    title = document.split("\n")[0]
+    border = "*" * len(title)
+    return document.replace(title, title + "\n" + border)
+
+
+'''
+FUNCTIONAL VS OOP
+Functional programming and object-oriented programming are styles for writing code. One isn't inherently superior to the other, 
+but to be a well-rounded developer you should understand both well and use ideas from each when appropriate.
+
+You'll encounter developers who love functional programming and others who love object-oriented programming. However, contrary to popular opinion,
+ FP and OOP are not always at odds with one another. They aren't opposites. Of the four pillars of OOP, inheritance is the only one that doesn't fit with functional programming.
+
+Inheritance isn't seen in functional code due to the mutable classes that come along with it. Encapsulation, polymorphism and abstraction are still used all the time in functional programming.
+
+When working in a language that supports ideas from both FP and OOP (like Python, JavaScript, or Go) 
+the best developers are the ones who can use the best ideas from both paradigms effectively and appropriately.
+'''
+
+
+
+
+def add_prefix(document, documents):
+    prefix = f"{len(documents)}. "
+    new_doc = prefix + document
+    new_tuple = documents + (new_doc,)
+    return new_tuple
+
+
+# Existing documents tuple
+documents = ("0. This is the first document", "1. This is the second document")
+
+# New document to add
+new_document = "This is the third document"
+
+# Add the new document with the prefix
+updated_documents = add_prefix(new_document, documents)
+
+print(updated_documents)
+
+
+
+'''
+Immutable data is easier to think about and work with. When 10 different functions have access to the same variable, and you're debugging a problem with that variable, 
+you have to consider the possibility that any of those functions could have changed the value.
+
+When a variable is immutable, you can be sure that it hasn't changed since it was created. It's a helluva lot easier to work with.
+
+Generally speaking, immutability means fewer bugs and more maintainable code.
+
+TUPLES VS LISTS
+Tuples and lists are both ordered collections of values, but tuples are immutable and lists are mutable.
+
+You can append to a list, but you can not append to a tuple. You can create a new copy of a tuple using values from an existing tuple, but you can't change the existing tuple.
+'''
+
+
+# LISTS ARE MUTABLE
+ages = [16, 21, 30]
+# 'ages' is being changed in place
+ages.append(80)
+# [16, 21, 30, 80]
+
+# TUPLES ARE IMMUTABLE
+ages = (16, 21, 30)
+more_ages = (80,) # note the comma! It's required for a single-element tuple
+# 'all_ages' is a brand new tuple
+all_ages = ages + more_ages
+# (16, 21, 30, 80)
+
+
+
+# IMPERATIVE STYLING
+'''Unlike functional programming (and CSS), a lot of code is imperative. We write out the exact step-by-step implementation details.
+ This Python script draws a red button on a screen using the Tkinter library:
+'''
+
+from tkinter import * # first, import the library
+master = Tk() # create a window
+master.geometry("200x100") # set the window size
+button = Button(master, text="Submit", fg="red").pack() # create a button
+master.mainloop() # start the event loop
+
+
+
+# DECLARATIVE STYLING
+# The following CSS changes all button elements to have red text:
+
+button {
+    color: red;
+}
+
+# It does not execute line-by-line like an imperative language. Instead, it simply declares the desired style, and it's up to a web browser to figure out how to apply and display it.
+
+
+avg = Σx/N
+
+# To put this calculation in plain English:
+
+# Σ is just the Greek letter Sigma, and it represents "the sum of a collection".
+# x is the collection of numbers we're averaging.
+# N is the number of elements in the collection.
+# avg is equal to the sum of all the numbers in collection "x" divided by the number of elements in collection "x".
+
+# So, the equation really just says that avg is the average of all the numbers in collection "x". 
+
+
+# This math equation is a declarative way of writing "calculate the average of a list of numbers". Here's some imperative Python code that does the same thing
+
+def get_average(nums):
+    total = 0
+    for num in nums:
+        total += num
+    return total / len(nums)
+
+
+# However, with functional programming, we would write code that's a bit more declarative:
+
+# Here we're not keeping track of state (the total variable in the first example is "stateful"). We're simply composing functions together to get the result we want.
+
+def get_average(nums):
+    return sum(nums) / len(nums)
+
+
+def get_median_font_size(font_sizes):
+    sorted_list = sorted(font_sizes)
+    list_length = len(sorted_list)
+    
+    if list_length == 0:
+        return None
+    median_index = (list_length - 1) // 2
+
+    if list_length % 2 == 0:
+        return min(sorted_list[median_index], sorted_list[median_index] + 1)
+    else:
+        return sorted_list[median_index]
+
+'''
+EXPLANATION:
+
+- Line with sorted(font_sizes): This sorts the list and stores it in sorted_list.
+- Line with len(sorted_list): This gets the length of the sorted list.
+- Line with if list_length == 0:: This checks if the list is empty and returns None if so.
+- Line with median_index = (list_length - 1) // 2:: This finds the index of the middle element.
+- Line with if list_length % 2 == 0:: This checks if the list length is even.
+- If true, it compares the two middle elements and returns the smaller one.
+- Line with else:: This handles the case where the list length is odd and returns the single middle element.
+'''
+
+
+'''
+- .replace(old, new) can be used to replace all instances of a character in a string.
+- .upper() capitalizes an entire string, .capitalize() capitalizes the first letter.
+- .strip() removes whitespace from the beginning and end of a string, .lstrip() and .rstrip() remove whitespace from the left and right respectively.
+'''
+
+# original/bugged
+def format_line(line):
+    return f"{line.rstrip().capitalize().replace(',', '')}...."
+
+# corrected/ debugged
+def format_line(line):
+    return f"{line.strip().upper().replace('.', '')}..."
+
+
+
+# In Python, functions are just values, like strings, integers, or objects. For example, we can assign an existing function to a variable:
+
+
+
+def add(x, y):
+    return x + y
+
+# assign the function to a new variable
+# called "addition". It behaves the same
+# as the original "add" function
+addition = add
+print(addition(2, 5))
+# 7
+
+
+# Assignment 
+def file_to_prompt(file, to_string):
+    new_string = to_string(file)
+    return (f"```\n{new_string}\n```")
+
+'''TESTING IT'''
+
+# Sample file dictionary
+sample_file = {
+    "filename": "sample.txt",
+    "content": "This is a test content.",
+    "author_first_name": "Alice",
+    "author_last_name": "Wonderland",
+}
+
+# Sample to_string function
+def to_string(file):
+    return (
+        f"File: {file['filename']}\n"
+        f"Author: {file['author_first_name']} {file['author_last_name']}\n"
+        f"Content: {file['content']}"
+    )
+
+# Call your file_to_prompt function
+result = file_to_prompt(sample_file, to_string)
+
+# Print the result
+print(result)
+
+
+
+
+
+'''
+ANONYMOUS FUNCTIONS
+Anonymous functions have no name, and in Python, they're called lambda functions after lambda calculus. Here's a lambda function that takes a single argument x and returns the result of x + 1:
+'''
+
+lambda x: x + 1
+
+'''
+Notice that the expression x + 1 is returned automatically, no need for a return statement. And because functions are just values, we can assign the function to a variable named add_one:
+'''
+
+add_one = lambda x: x + 1
+print(add_one(2))
+# 3
+
+
+'''
+Lambda functions might look scary, but they're still just functions. Because they simply return the result of an expression, they're often used for small, simple evaluations.
+ Here's an example that uses a lambda to get a value from a dictionary after modifying the key:
+'''
+
+get_age = lambda name: {
+    'lane_age': 29,
+    'hunter_age': 69,
+    'allan_age': 17
+}.get(name + '_age', 'not found')
+print(get_age('lane'))
+# 29
+
+
+# ASSIGNMENT 
+
+def filename_getter(name_extension_tuples):
+    # Step 1: Create an empty dictionary
+    map_dict = {}
+    
+    # Step 2: Loop through each tuple in the input list
+    for doc_type, extensions in name_extension_tuples:
+        # Step 3: Loop through each extension in the list of extensions
+        for ext in extensions:
+            # Step 4: Add the extension to the dictionary with the document type as the value
+            map_dict[ext] = doc_type
+    
+    # Return the lambda function
+    return lambda ext: map_dict.get(ext, "Unknown")
+
+
+'''
+A programming language "supports first-class functions" when functions are treated like any other variable. 
+That means functions can be passed as arguments to other functions, can be returned by other functions, and can be assigned to variables.
+
+First-class function: A function that is treated like any other value
+Higher-order function: A function that accepts another function as an argument or returns a function
+Python supports first-class and higher-order functions.
+'''
+
+# FIRST-CLASS EXAMPLE
+def square(x):
+    return x * x
+
+# Assign function to a variable
+f = square
+
+print(f(5))
+# 25
+
+
+# HIGHER-ORDER EXAMPLE
+def square(x):
+    return x * x
+
+def my_map(func, arg_list):
+    result = []
+    for i in arg_list:
+        result.append(func(i))
+    return result
+
+squares = my_map(square, [1, 2, 3, 4, 5])
+print(squares)
+# [1, 4, 9, 16, 25]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
