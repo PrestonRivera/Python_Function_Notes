@@ -3591,23 +3591,221 @@ squares = my_map(square, [1, 2, 3, 4, 5])
 print(squares)
 # [1, 4, 9, 16, 25]
 
+'''
+"Map", "filter", and "reduce" are three commonly used higher-order functions in functional programming.
+
+In Python, the built-in map function takes a function and an iterable (in this case a list) as inputs. 
+It applies the function to each element in the iterable and returns a new iterable with all the results.
+'''
+
+# With map, we can operate on lists without using loops and nasty stateful variables. For example:
+
+def square(x):
+    return x * x
+
+nums = [1, 2, 3, 4, 5]
+squared_nums = map(square, nums)
+print(list(squared_nums))
+# [1, 4, 9, 16, 25]
+
+# The list type constructor, list() converts the map object back into a standard list.
+
+# "map" higher order function 
+
+def change_bullet_style(document):
+    doc_lines = document.split("\n")
+    new_bullet = map(convert_line, doc_lines)
+    rejoined_doc = "\n".join(new_bullet)
+    return rejoined_doc
+    
+
+
+# Don't edit below this line
+
+
+def convert_line(line):
+    old_bullet = "-"
+    new_bullet = "*"
+    if len(line) > 0 and line[0] == old_bullet:
+        return new_bullet + line[1:]
+    return line
+
+'''
+ .split() and .join() to split the document into a list of lines, and then join the lines back together. This should preserve the original line breaks.
+'''
+
+# my_document is a string with newlines
+# Example
+lines_list = my_document.split("\n")
+
+rejoined_doc = "\n".join(lines_list)
 
 
 
+def remove_invalid_lines(document):
+    new_list = document.split("\n")
+    valid_lines = list(filter(lambda x: not x.startswith("-"), new_list))
+    return "\n".join(valid_lines)
 
 
 
+'''
+The built-in functools.reduce() function takes a function and a list of values, and applies the function to each value in the list, accumulating a single result as it goes
+'''
+
+# import functools from the standard library
+import functools
+
+def add(sum_so_far, x):
+    print(f"sum_so_far: {sum_so_far}, x: {x}")
+    return sum_so_far + x
+
+numbers = [1, 2, 3, 4]
+sum = functools.reduce(add, numbers)
+# sum_so_far: 1, x: 2
+# sum_so_far: 3, x: 3
+# sum_so_far: 6, x: 4
+# 10 doesn't print, it's just the final result
+print(sum)
+# 10
+
+
+import functools
+
+
+def join(doc_so_far, sentence):
+    return (doc_so_far + ". " + sentence)
+
+def join_first_sentences(sentences, n):
+    if n == 0:
+        return ""
+    firs_n_sentence = sentences[:n]
+    com_sentence = functools.reduce(join, firs_n_sentence)
+    return com_sentence + "."
 
 
 
+# Take a look at this imperative code that calculates the factorial of a number:
+
+def factorial(n):
+    # a procedure that continuously multiplies
+    # the current result by the next number
+    result = 1
+    for i in range(1, n + 1):
+        result *= i
+    return result
+
+
+# Here's the same factorial function using reduce:
+
+import functools
+
+def factorial(n):
+    return functools.reduce(lambda x, y: x * y, range(1, n + 1))
+
+
+# INTERSECT
+
+# The .intersection() method calculates the intersection of two sets.
+# The intersection of two sets is a new set that contains all of the elements that are in both original sets
+
+# For example:
+
+a = {1, 2, 3, 4}
+b = {3, 4, 5, 6}
+c = a.intersection(b)
+print(c)
+# {3, 4}
+
+
+def get_common_formats(formats1, formats2):
+    formats1_set = set(formats1) # Converts a ist to a set
+    formats2_set = set(formats2)
+    return formats1_set.intersection(formats2_set) # Using the .intersection method which can only be used on sets.
 
 
 
+# ZIP
+
+# The zip function takes two iterables (in this case lists), and returns a new iterable where each element is a tuple containing one element from each of the original iterables.
+
+a = [1, 2, 3]
+b = [4, 5, 6]
+
+c = list(zip(a, b))
+print(c)
+# [(1, 4), (2, 5), (3, 6)]
 
 
 
+valid_formats = [
+    "docx",
+    "pdf",
+    "txt",
+    "pptx",
+    "ppt",
+    "md",
+]
+
+# Don't edit above this line
 
 
+def pair_document_with_format(doc_names, doc_formats):
+    zipped = list(zip(doc_names, doc_formats))
+    filter_tuples = list(filter(lambda x: x[1] in valid_formats, zipped)) # x[1] is accessing the second element in my zipped tuple and compairing it to valid_formats
+    return filter_tuples
+
+
+# PURE FUNCTIONS
+
+# A pure function has two properties:
+
+# It always returns the same value given the same arguments.
+# Its evaluation has no side effects
+
+# EXAMPLE
+
+def findMax(nums):
+    max_val = float('-inf')
+    for num in nums:
+        if max_val < num:
+            max_val = num
+    return max_val
+
+
+
+# EXAMPLE OF AN IMPURE FUNCTION (impure becasue it has variabes outside of the function that get called to and can be mutated)
+
+# instead of returning a value
+# this function modifies a global variable
+global_max = float('-inf')
+
+def findMax(nums):
+    global global_max
+    for num in nums:
+        if global_max < num:
+            global_max = num
+
+# PURE FUNCTION
+
+
+def convert_file_format(filename, target_format):
+    valid_extensions = ["docx", "pdf", "txt", "pptx", "ppt", "md"]
+    valid_conversions = {
+    "docx": ["pdf", "txt", "md"],
+    "pdf": ["docx", "txt", "md"],
+    "txt": ["docx", "pdf", "md"],
+    "pptx": ["ppt", "pdf"],
+    "ppt": ["pptx", "pdf"],
+    "md": ["docx", "pdf", "txt"],
+    }
+    current_format = filename.split(".")[-1]
+    if (
+        current_format in valid_extensions
+        and target_format in valid_conversions[current_format]
+    ):
+        return filename.replace(current_format, target_format)
+    return None
 
 
 
