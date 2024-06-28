@@ -3808,6 +3808,115 @@ def convert_file_format(filename, target_format):
     return None
 
 
+'''
+REFERENCE VS. VALUE
+When you pass a value into a function as an argument, one of two things can happen:
+
+It's passed by reference: The function has access to the original value and can change it
+It's passed by value: The function only has access to a copy. Changes to the copy within the function don't affect the original
+There is a bit more nuance, but this explanation mostly works.
+
+These types are passed by reference:
+
+Lists
+Dictionaries
+Sets
+These types are passed by value:
+
+Integers
+Floats
+Strings
+Booleans
+Tuples
+Most collection types are passed by reference (except for tuples) and most primitive types are passed by value.
+'''
+
+# EXAMPLE OF PASS BY REFERENCE (MUTABLE)
+
+def modify_list(inner_lst):
+    inner_lst.append(4)
+    # the original "outer_lst" is updated
+    # because lst is a reference to the original
+
+outer_lst = [1, 2, 3]
+modify_list(outer_lst)
+# outer_lst = [1, 2, 3, 4]
+
+
+# EXAMPLE OF PASS BY VALUE (IMMUTABLE)
+
+def attempt_to_modify(inner_num):
+    inner_num += 1
+    # the original "outer_num" is not updated
+    # because num is a copy of the original
+
+outer_num = 1
+attempt_to_modify(outer_num)
+# outer_num = 1
+
+
+
+# Creating a new dictionary using .copy() to not modify the original
+# CORRECT
+def add_format(default_formats, new_format):
+    updated_dict = default_formats.copy()
+    updated_dict[new_format] = True
+    return updated_dict
+
+
+def remove_format(default_formats, old_format):
+    updated_dict = default_formats.copy()
+    updated_dict[old_format] = False
+    return updated_dict
+
+# THIS IS INCORRECT AND MODIFYS THE ORIGINAL DICTIONARY:
+def add_format(default_formats, new_format):
+    default_formats[new_format] = True
+    return default_formats
+
+
+def remove_format(default_formats, old_format):
+    default_formats[old_format] = False
+    return default_formats
+
+
+'''
+The term "i/o" stands for input/output. In the context of writing programs, i/o refers to anything in our code that interacts with the "outside world". 
+"Outside world" just means anything that's not stored in our application's memory (like variables).
+
+EXAMPLES OF I/O
+Reading from or writing to a file on the hard drive
+Accessing the internet
+Reading from or writing to a database
+Even simply printing to the console is considered i/o!
+All i/o is a form of "side effect".
+'''
+
+
+def convert_case(text, target_format):
+    if not text or not target_format:
+        raise ValueError(f"No text or target format provided")
+
+    if target_format == "uppercase":
+        return (text.upper())
+    if target_format == "lowercase":
+        return (text.lower())
+    if target_format == "titlecase":
+        return (text.title())
+    raise ValueError(f"Unsupported format: {target_format}")
+
+
+
+'''
+In functional programming, i/o is viewed as dirty but necessary. We know we can't eliminate i/o from our code, so we just contain it as much as possible. 
+There should be a clear place in your project that does nasty i/o stuff, and the rest of your code can be pure.
+
+For example, a Python program might:
+
+Read a file from the hard drive as the program starts
+Run a bunch of pure functions to analyze the data
+Write the results of the analysis to a file on the hard drive at the end
+'''
 
 
 
