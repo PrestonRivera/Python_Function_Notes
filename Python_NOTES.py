@@ -3919,18 +3919,177 @@ Write the results of the analysis to a file on the hard drive at the end
 '''
 
 
+'''
+NO-OP
+A no-op is an operation that does... nothing.
+
+If a function doesn't return anything, it's probably impure. If it doesn't return anything, the only reason for it to exist is to perform a side effect.
+'''
+
+
+# EXAMPLE NO-OP
+
+# This function performs a useless computation because it doesn't return anything or perform a side-effect. It's a no-op.
+
+def square(x):
+    x * x
+
+
+# EXAMPLE SIDE-EFFECT
+# This function performs a side effect. It changes the value of the y variable that outside of its scope. It's impure.
+
+y = 5
+def add_to_y(x):
+    global y
+    y += x
+
+add_to_y(3)
+# y = 8
+
+
+
+def remove_emphasis_from_word(word):
+    remove_from_word = word.strip('*')
+    return remove_from_word
+
+def remove_emphasis_from_line(line):
+    split_line = line.split()
+    remove_emp = map(remove_emphasis_from_word, split_line)
+    return ' '.join(remove_emp)
+    
+
+
+def remove_emphasis(doc_content):
+    doc_lines = doc_content.split("\n")
+    remove_emp = map(remove_emphasis_from_line, doc_lines)
+    rejoin_doc = "\n".join(remove_emp)
+    return rejoin_doc
+
+
+
+# MEMOIZATION
+'''At its core, memoization is just caching (storing a copy of) the result of a computation so that we don't have to compute it again in the future.'''
+
+# For example, take this simple function:
+
+def add(x, y):
+    return x + y
+
+'''
+A call to add(5, 7) will always evaluate to 12. So, if you think about it, once we know that add(5, 7) can be replaced with 12,
+we can just store the value 12 somewhere in memory so that we don't have to do the addition operation again in the future. Then, if we need to add(5, 7) again, we can just look up the value 12 instead of doing a (potentially expensive) CPU operation.
+
+The slower and more complex the function, the more memoization can help speed things up.
+
+Note: It's pronounced "memOization", not "memORization". This confused me for quite a while in college, I thought my professor just didn't speak goodly...
+'''
+
+
+
+def word_count_memo(document, memos):
+    copied_memos_dict = memos.copy() # copied the memos dictionary
+    if document in copied_memos_dict: # here I check to see if the document is already in the dictionary and if so return the word count and the dictionary
+        return copied_memos_dict[document], copied_memos_dict # (copied_memos_dict[document]) is accessingand returning the value of the key in the dictionary and copied_memos_dict is returning the dictionary
+    
+    doc_word_count = word_count(document) # if the doc is not in the dictionary then i call the word count function on it
+    copied_memos_dict[document] = doc_word_count # here i add the new doc and word count to the dictionary
+    return doc_word_count, copied_memos_dict # here i return word count for the new doc and the updated dictionary
+
+
+# Don't edit below this line
+
+
+def word_count(document): # word count function
+    count = len(document.split())
+    return count
+
+
+# exaple of creating dict from a list:
+
+students_scores = [("Alice", 85), ("Bob", 92), ("Charlie", 78), ("Diana", 90)]
+
+students_dict = {}
+
+for student, score in students_scores:
+    students_dict[student] = score
+print(students_dict)
+
+
+# Recursion
+
+'''Recursion is a famously tricky concept to grasp, but it's honestly quite simple - don't let it intimidate you! A recursive function is just a function that calls itself!'''
+
+def sum(nums):
+    if len(nums) == 0:
+        return 0
+    return nums[0] + sum(nums[1:])
+
+print(sum([1, 2, 3, 4, 5]))
+# 15
+
+
+def print_chars(word, i):
+    if i == len(word):
+        return
+    print(word[i])
+    print_chars(word, i + 1)
+
+print_chars("Hello", 0)
+# H
+# e
+# l
+# l
+# o
 
 
 
 
+def factorial_r(x):
+    if x == 0:
+        return 1
+    return x * factorial_r(x - 1)
+
+
+
+## ASSIGNMENT
+
+def zipmap(keys, values):
+    # Base case: if either list is empty, return an empty dictionary
+    if len(keys) == 0 or len(values) == 0:
+        return {}
+    
+    # Recursive call: get the dictionary for the remaining elements
+    smaller_dict = zipmap(keys[1:], values[1:])
+    
+    # Update dictionary with the first key-value pair
+    smaller_dict[keys[0]] = values[0]
+    
+    # Return the updated dictionary
+    return smaller_dict
 
 
 
 
+# Example
+
+def countdown(n):
+    print(n)
+    if n == 0:
+        return
+    else:
+        countdown(n - 1)
 
 
 
 
+def sum_nested_list(lst):
+    total = 0
+    for item in lst:
+        if isinstance(item, list):
+            total += sum_nested_list(item)  # Add the sum of the nested list to total
+        else:
+            total += item  # Add the integer to total
+    return total  # Return the total after the loop
 
 
 
