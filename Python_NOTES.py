@@ -4093,6 +4093,336 @@ def sum_nested_list(lst):
 
 
 
+# RECURSION ON A TREE
+# Recursion is often used in "tree-like" structures. For example:
+
+# Nested dictionaries
+# File systems
+# HTML documents
+# JSON objects
+
+# That's because trees can have unknown depth. It's hard to write a series of loops because you don't know how many levels deep the tree goes.
+
+
+def list_files(current_filetree, current_path=""): # cureent_filetree is a dictionary and current_path="" is a string representing the current path
+    file_paths = []
+    for node in current_filetree:
+        if current_filetree[node] is None:
+            file_paths.append(current_path + "/" + node)
+        else:
+            file_paths.extend(list_files(current_filetree[node], current_path + "/" + node)) 
+    return file_paths
+
+
+'''
+STEPS
+Create an empty list to store the file paths.
+
+For each "node" in the current dictionary (just use a loop):
+
+If the node's entry is None (meaning it's a final file, not a directory), append the full path for that node to the list.
+
+Otherwise, extend the file list with the results of a recursive list_files call.
+
+The new current_filetree for the recursive call is the one nested under the current node.
+
+The new current_path should be the old one with the new node's name added after a slash. e.g. old_current_path/node_name.
+
+Return the list of file paths.
+'''
+
+
+
+def count_nested_levels(nested_documents, target_document_id, level=1):
+    # Iterate through each key in the dictionary
+    for document_id in nested_documents:
+        # If the document id matches the target, return the current level
+        if document_id == target_document_id:
+            return level
+        # Recursively search in the nested dictionaries
+        found_level = count_nested_levels(nested_documents[document_id], target_document_id, level + 1)
+        # If the target document is found in nested levels, return the found level
+        if found_level != -1:
+            return found_level
+    # If the target document is not found in any nested level, return -1
+    return -1
+
+
+
+def reverse_string(s):
+    if s == "":
+        return ""  # Base case: reversing an empty string results in an empty string
+    # Recursive case: call reverse_string on the rest of the string and add the first character at the end
+    return reverse_string(s[1:]) + s[0]
+
+
+
+# FUNCTION TRANSFORMATIONS
+# "Function transformation" is just a more concise way to describe a specific type of higher order function. 
+# It's when a function takes a function (or functions) as input and returns a new function. Let's look at an example:
+
+def multiply(x, y):
+    return x * y
+
+def add(x, y):
+    return x + y
+
+# self_math is a higher order function
+# input: a function that takes two arguments and returns a value
+# output: a new function that takes one argument and returns a value
+def self_math(math_func):
+    def inner_func(x):
+        return math_func(x, x)
+    return inner_func
+
+square_func = self_math(multiply)
+double_func = self_math(add)
+
+print(square_func(5))
+# prints 25
+
+print(double_func(5))
+# prints 10
+
+
+# ASSIGNMENT
+
+
+def get_logger(formatter):
+    def inner_func(first, second):
+        print(formatter(first, second))
+    return inner_func
+
+
+# Don't edit below this line
+
+
+def test(first, errors, formatter):
+    print("Logs:")
+    logger = get_logger(formatter)
+    for err in errors:
+        logger(first, err)
+    print("====================================")
+
+
+def colon_delimit(first, second):
+    return f"{first}: {second}"
+
+
+def dash_delimit(first, second):
+    return f"{first} - {second}"
+
+
+def main():
+    db_errors = [
+        "out of memory",
+        "cpu is pegged",
+        "networking issue",
+        "invalid syntax",
+    ]
+    test("Doc2Doc FATAL", db_errors, colon_delimit)
+
+    mail_errors = [
+        "email too large",
+        "non alphanumeric symbols found",
+    ]
+    test("Doc2Doc WARNING", mail_errors, dash_delimit)
+
+
+main()
+
+
+# ASSIGNMENT
+
+def doc_format_checker_and_converter(conversion_function, valid_formats):
+    def inner_func(filename, content):
+        # Split the filename and get the last part as the file extension
+        file_extension = filename.split(".")[-1]
+        # Check if the file extension is in the list of valid formats
+        if file_extension in valid_formats:
+            return conversion_function(content)
+        # Raise an error if the file extension is not valid
+        raise ValueError("Invalid file format")
+    return inner_func
+
+# Don't edit below this line
+
+
+def capitalize_content(content):
+    return content.upper()
+
+
+def reverse_content(content):
+    return content[::-1]
+
+# FORMATTER
+
+def formatter(pattern):
+    def inner_func(text):
+        result = ""
+        i = 0
+        while i < len(pattern):
+            if pattern[i:i+2] == '{}':
+                result += text
+                i += 2
+            else:
+                result += pattern[i]
+                i += 1
+        return result
+    return inner_func
+
+# Now we can create new formatters easily:
+
+bold_formatter = formatter("**{}**")
+italic_formatter = formatter("*{}*")
+bullet_point_formatter = formatter("* {}")
+
+# And use them like this:
+
+print(bold_formatter("Hello"))
+# **Hello**
+print(italic_formatter("Hello"))
+# *Hello*
+print(bullet_point_formatter("Hello"))
+# * Hello
+
+
+# CLOSURES
+# 90% of the time, when I use function transformations, it's because I want to create a closure. We'll talk about closures in the next chapter!
+
+# A closure is a function that references variables from outside its own function body. The function definition and its environment are bundled together into a single entity.
+# Put simply, a closure is just a function that keeps track of some values from the place where it was defined, no matter where it is executed later on.
+
+
+# The concatter() function returns a function called doc_builder (yay higher-order functions!) that has a reference to an enclosed doc value.
+
+def concatter():
+	doc = ""
+	def doc_builder(word):
+		# "nonlocal" tells Python to use the 'doc'
+		# variable from the enclosing scope
+		nonlocal doc # Python has a keyword called nonlocal that's required to access variables from an enclosing scope. Most programming languages don't require this keyword, but Python does.
+		doc += word + " "
+		return doc
+	return doc_builder
+
+# save the returned 'doc_builder' function
+# to the new function 'harry_potter_aggregator'
+harry_potter_aggregator = concatter()
+harry_potter_aggregator("Mr.")
+harry_potter_aggregator("and")
+harry_potter_aggregator("Mrs.")
+harry_potter_aggregator("Dursley")
+harry_potter_aggregator("of")
+harry_potter_aggregator("number")
+harry_potter_aggregator("four,")
+harry_potter_aggregator("Privet")
+
+print(harry_potter_aggregator("Drive"))
+# Mr. and Mrs. Dursley of number four, Privet Drive
+
+# When concatter() is called, it creates a new "stateful" function that remembers the value of doc it's internal doc variable. 
+# Each successive call to harry_potter_aggregator appends to that same doc.
+
+
+def word_count_aggregator():
+    word_count = 0
+    def calc_word_count(doc):
+        nonlocal word_count
+        word_count += len(doc.split())
+        return word_count
+    return calc_word_count
+    
+            
+aggregator = word_count_aggregator()
+
+print(aggregator("hello world")) # word_count = 2
+print(aggregator("this is another test")) # word_count = 6
+
+# The whole point of a closure is that it's stateful. It's a function that "remembers" the values from the enclosing scope even after the enclosing scope has finished executing.
+
+def new_collection(initial_docs):
+    closed_list = initial_docs.copy()
+    def inner_function(string):
+        nonlocal closed_list
+        closed_list.append(string)
+        return closed_list
+    return inner_function
+
+
+# CURRYING
+
+# Function currying is a specific kind of function transformation where we translate a single function that accepts multiple arguments into multiple functions that each accept a single argument.
+
+
+# This is a "normal" 3-argument function:
+
+box_volume(3, 4, 5)
+
+# This is a "curried" series of functions that does the same thing:
+
+box_volume(3)(4)(5)
+
+
+# Here's another example that includes the implementations:
+
+def sum(a, b):
+  return a + b
+
+print(sum(1, 2))
+# prints 3
+
+
+# And the same thing curried:
+
+def sum(a):
+  def inner_sum(b):
+    return a + b
+  return inner_sum
+
+print(sum(1)(2))
+# prints 3
+
+# The sum function only takes a single input, a. It returns a new function that takes a single input, b. 
+# This new function when called with a value for b will return the sum of a and b. We'll talk later about why this is useful.
+
+
+def converted_font_size(font_size):
+    def inner_funtion(doc_type):
+        if doc_type == "txt":
+            return font_size
+        if doc_type == "md":
+            return font_size * 2
+        if doc_type == "docx":
+            return font_size * 3
+        raise ValueError("Invalid doc type")
+    return inner_funtion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
