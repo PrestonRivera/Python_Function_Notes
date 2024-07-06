@@ -168,6 +168,39 @@ def is_prime(number):
             return False
     return True
 
+
+
+# WHILE LOOPS
+
+
+def regenerate(current_health, max_health, enemy_distance):
+    while current_health < max_health and enemy_distance > 3:
+        current_health += 1  # Increases current_health by 1
+        enemy_distance -= 2  # Decreases enemy_distance by 2
+    return current_health  # Returns the final value of current_health
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # List Function 
 
 def get_inventory():
@@ -571,6 +604,13 @@ def double_string(string):
 # Dictionaries in Python are used to store data values in key -> value pairs. Dictionaries are a great way to store groups of information.
 # use curly braces
 # add key-value pairs
+
+
+# Dictionary comprehensions
+
+# {key_expression: value_expression for item in iterable}
+
+
 
 car = {
   "brand": "Tesla",
@@ -4397,6 +4437,753 @@ def converted_font_size(font_size):
             return font_size * 3
         raise ValueError("Invalid doc type")
     return inner_funtion
+
+
+# WHY CURRY?
+# It's fairly obvious that:
+
+def sum(a, b):
+  return a + b
+
+# is simpler than:
+
+def sum(a):
+  def inner_sum(b):
+    return a + b
+  return inner_sum
+
+# So why would we ever want to do the more complicated thing? Well, currying is often used to change a function's signature to make it conform to a specific shape. For example:
+
+def colorize(converter, doc):
+  # ...
+  converter(doc)
+  # ...
+
+# The colorize function accepts a function called converter as input, and at some point during its execution, it calls converter with a single argument. 
+# That means that it expects converter to accept exactly one argument. So, if I have a conversion function like this:
+
+def markdown_to_html(doc, asterisk_style):
+  # ...
+
+# I can't use it with colorize because it wants two arguments. To solve this problem, I can curry markdown_to_html into a function that takes a single argument:
+
+    def markdown_to_html(asterisk_style):
+        def asterisk_md_to_html(doc):
+        # do stuff with doc and asterisk_style...
+        return asterisk_md_to_html
+
+markdown_to_html_italic = markdown_to_html('italic')
+colorize(markdown_to_html_italic, doc)
+
+
+# Remember, currying is when we take a function that accepts multiple arguments:
+
+final_volume = box_volume(3, 4, 5)
+print(final_volume)
+# 60
+
+# And convert it into a series of functions that each accept a single argument:
+
+final_volume = box_volume(3)(4)(5)
+print(final_volume)
+# 60
+
+# box_volume(3) returns a new function that accepts a single integer and returns a new function
+# box_volume(3)(4) returns another new function that accepts a single integer and returns a new function
+# box_volume(3)(4)(5) returns the final result
+# Here's another way of calling it, where each function is stored in a variable before being called:
+
+with_length_3 = box_volume(3)
+with_len_3_width_4 = with_length_3(4)
+final_volume = with_len_3_width_4(5)
+print(final_volume)
+# 60
+
+# Here are the function definitions:
+
+def box_volume(length):
+  def box_volume_with_len(width):
+    def box_volume_with_len_width(height):
+      return length * width * height
+    return box_volume_with_len_width
+  return box_volume_with_len
+
+
+
+
+def lines_with_sequence(char): 
+    # returns a function with one argument char
+    def with_char(length): 
+        # returns another function with one argument length
+        sequence = char * length 
+        # defines sequence with the functions arguments char * length
+        def with_length(doc): 
+            # returns another function with one argument doc
+            split_doc = doc.split("\n") 
+            # split the doc into multiple lines
+            num_lines = 0 
+            # creating a variable that i can add to when needed
+            for line in split_doc: 
+                # Looping through the split_doc 
+                if sequence in line: 
+                    # if statement to see if sequence is in line
+                    num_lines += 1
+                    # if sequence is in line add to the num_lines counter
+            return num_lines 
+        # return the num_lines value
+        return with_length
+    # return the function with_length
+    return with_char 
+# return the function with_char
+
+# test
+doc = """
+aaaa
+aabb
+ccddaa
+aaacccaa
+acaca
+"""
+
+num_lines = lines_with_sequence("a")(2)(doc)
+print(num_lines)
+
+
+# same function but using reduce instead of for loop
+
+
+from functools import reduce
+
+def lines_with_sequence(char):
+    def with_char(length):
+        sequence = char * length  # Create the sequence to search for by repeating 'char' 'length' times
+        def with_length(doc):
+            split_doc = doc.split("\n")  # Split the document into lines
+            
+            # Define the reducer function
+            def reducer(count, line):
+                if sequence in line:
+                    return count + 1  # If the sequence is in the line, increment the count
+                return count  # Otherwise, return the count unchanged
+                
+            # Use 'reduce' to apply the 'reducer' function to each line in 'split_doc', starting with an initial count of 0
+            num_lines = reduce(reducer, split_doc, 0)
+            
+            return num_lines  # Return the final count of lines containing the sequence
+        
+        return with_length  # Return the inner function that processes the document
+    
+    return with_char  # Return the function that takes the length
+
+# Example usage:
+doc = """aaaa
+bbbb
+ccdd
+aabb"""
+
+num_lines = lines_with_sequence("a")(2)(doc)
+print(num_lines) # Expected output: 2
+
+
+
+
+### DECORATORS
+
+# Decorators are a Python-specific way of modifying functions.
+
+'''Example:'''
+
+def vowel_counter(func_to_decorate):
+    vowel_count = 0
+    def wrapper(doc):
+        nonlocal vowel_count
+        vowels = "aeiou"
+        for char in doc:
+            if char in vowels:
+                vowel_count += 1
+        print(f"Vowel count: {vowel_count}")
+        return func_to_decorate(doc)
+    return wrapper
+
+@vowel_counter
+def process_doc(doc):
+    print(f"Document: {doc}")
+
+process_doc("What")
+# Vowel count: 1
+# Document: What
+
+process_doc("a wonderful")
+# Vowel count: 5
+# Document: a wonderful
+
+process_doc("world")
+# Vowel count: 6
+# Document: world
+
+'''
+The @vowel_counter line is "decorating" the process_doc function with the vowel_counter function. vowel_counter is called once when process_doc is defined with the @ syntax,
+but the wrapper function that it returns is called every time process_doc is called.
+That's why vowel_count is preserved and printed after each time.
+'''
+
+
+# IT'S JUST SYNTACTIC SUGAR
+# Decorators are just syntactic sugar for higher-order functions. 
+# These two pieces of code are identical:
+
+# WITH DECORATOR
+@vowel_counter
+def process_doc(doc):
+    print(f"Document: {doc}")
+
+process_doc("Something wicked this way comes")
+
+
+# WITHOUT DECORATOR
+def process(doc):
+    print(f"Document: {doc}")
+
+process_doc = vowel_counter(process)
+process_doc("Something wicked this way comes")
+
+
+
+# ASSIGNMENT for DECORATORS
+
+def file_type_aggregator(func_to_decorate):
+    counts = {}
+
+    def wrapper(doc, file_type):
+        nonlocal counts
+
+        if file_type not in counts:
+            counts[file_type] = 0
+        counts[file_type] += 1
+        result = func_to_decorate(doc, file_type)
+
+        return result, counts
+
+    return wrapper
+
+
+# don't touch above this line
+
+@file_type_aggregator
+def process_doc(doc, file_type):
+    return (f"Processing doc: '{doc}'. File Type: {file_type}")
+
+
+
+### ARGS AND KWARGS
+
+# In Python, *args and **kwargs allow a function to accept and deal with a variable number of arguments.
+
+# *args collects positional arguments into a tuple
+# **kwargs collects keyword (named) arguments into a dictionary
+
+
+def print_arguments(*args, **kwargs):
+    print(f"Positional arguments: {args}")
+    print(f"Keyword arguments: {kwargs}")
+
+print_arguments("hello", "world", a=1, b=2)
+# Positional arguments: ('hello', 'world')
+# Keyword arguments: {'a': 1, 'b': 2}
+
+
+# Positional Arguments
+# Positional arguments are the ones you're already familiar with, where the order of the arguments matters. Like this:
+
+def sub(a, b):
+    return a - b
+
+# a=3, b=2
+res = sub(3, 2)
+# res = 1
+
+# KEYWORD ARGUMENTS
+# Keyword arguments are passed in by name. Order does not matter. Like this:
+
+def sub(a, b):
+    return a - b
+
+res = sub(b=3, a=2)
+# res = -1
+res = sub(a=3, b=2)
+# res = 1
+
+# A NOTE ON ORDERING
+# Any positional arguments must come before keyword arguments. 
+
+# This will not work:
+
+sub(b=3, 2)
+
+# The * and ** before args and kwargs in the function definition serve to unpack arguments when the function is called. Let's clarify the roles:
+
+# FUNCTION DEFINITION
+# When defining the function, *args and **kwargs tell Python to collect additional positional and keyword arguments into tuples and dictionaries, respectively:
+
+def example_function(*args, **kwargs):
+    print(args)
+    print(kwargs)
+
+# If you call
+example_function(1, 2, 'apple', color='red', size='large')
+
+# Inside the function:
+# args = (1, 2, 'apple')
+# kwargs = {'color': 'red', 'size': 'large'}
+
+
+
+# FUNCTION CALL
+# When calling a function:
+
+# * unpacks a sequence (like a list or tuple) into positional arguments.
+# ** unpacks a dictionary into keyword arguments.
+
+# Example:
+
+values = (1, 2, 3)
+options = {'color': 'blue', 'size': 'small'}
+
+example_function(*values, **options)
+
+# Inside the function:
+# args = (1, 2, 3)
+# kwargs = {'color': 'blue', 'size': 'small'}
+
+
+# INSIDE THE FUNCTION
+# Once inside the function, args and kwargs are already collected, so you work directly with them as standard variables:
+
+def example_function(*args, **kwargs):
+    # args is a tuple
+    for arg in args:
+        print(arg)
+    
+    # kwargs is a dictionary
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+# To summarize:
+
+# Function Definition: *args and **kwargs collect incoming arguments.
+# Function Call: *values and **options unpack collections into arguments.
+# Does this clarify why we don’t use * or ** within the function body?
+
+
+# EXAMPLE WITHOUT *ARGS AND **KWARGS
+# Without *args and **kwargs, you'd have to pack and unpack arguments manually:
+
+def example_without(args, kwargs):
+    for arg in args:
+        print(arg)
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+args = (1, 2, 3)
+kwargs = {'a': 'apple', 'b': 'banana'}
+
+example_without(args, kwargs)
+
+# Output:
+# 1
+# 2
+# 3
+# a: apple
+# b: banana
+
+
+
+
+
+# EXAMPLE WITH *ARGS AND **KWARGS
+# With *args and **kwargs, passing arguments becomes much simpler:
+
+def example_with(*args, **kwargs):
+    for arg in args:
+        print(arg)
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+example_with(1, 2, 3, a='apple', b='banana')
+
+# Output:
+# 1
+# 2
+# 3
+# a: apple
+# b: banana
+
+# The *args and **kwargs syntax is great for decorators that are intended to work on functions with different signatures.
+
+# The log_call_count function below doesn't care about the number or type of the decorated function's (func_to_decorate) arguments. 
+# It just wants to count how many times the function is called. However, it still needs to pass any arguments through to the wrapped function.
+
+def log_call_count(func_to_decorate):
+    count = 0
+
+    def wrapper(*args, **kwargs):
+        nonlocal count
+        count += 1
+        print(f"Called {count} times")
+        # The * and ** syntax unpacks the arguments
+        # and passes them to the decorated function
+        return func_to_decorate(*args, **kwargs)
+
+    return wrapper
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# BASIC SYNTAX
+# enumerate(iterable, start=0)
+
+# iterable: The sequence you want to loop over.
+# start: The index from which to start (defaults to 0).
+
+# EXAMPLE OF ENUMERATE
+# Here’s an example to illustrate:
+
+fruits = ['apple', 'banana', 'cherry']
+
+# Without enumerate
+index = 1
+for fruit in fruits:
+    print(f"{index}. {fruit}")
+    index += 1
+
+# With enumerate
+for index, fruit in enumerate(fruits, start=1):
+    print(f"{index}. {fruit}")
+
+
+
+
+
+
+
+
+# Use the list() function to convert map results to a list
+# Use the dict() function to convert map results to a dictionary
+# The .items() method can be used on a dictionary to get an iterable of key-value tuple pairs
+# The provided convert_md_to_txt function takes a string of Markdown text and returns a string of text with any "heading" symbols removed. For
+
+
+
+def markdown_to_text_decorator(func):
+    
+    def wrapper(*args, **kwargs):
+        converted_args = list(map(convert_md_to_txt, args)) 
+        converted_kwargs = {k: convert_md_to_txt(v) for k, v in kwargs.items()}
+        return func(*converted_args, **converted_kwargs)
+    return wrapper
+
+
+# don't touch below this line
+
+
+def convert_md_to_txt(doc):
+    lines = doc.split("\n")
+    for i in range(len(lines)):
+        line = lines[i]
+        lines[i] = line.lstrip("# ")
+    return "\n".join(lines)
+
+
+# BREAKDOWN
+
+
+def markdown_to_text_decorator(func):
+    def wrapper(*args, **kwargs):
+        # Convert positional arguments
+        converted_args = list(map(convert_md_to_txt, args))
+
+        # Convert keyword arguments with dictionary comprehension
+        converted_kwargs = {k: convert_md_to_txt(v) for k, v in kwargs.items()}
+
+        # Call the original function with converted arguments
+        return func(*converted_args, **converted_kwargs)
+
+    return wrapper
+
+
+
+# {key_expression: value_expression for item in iterable}
+
+# {k: convert_md_to_txt(v) for k, v in kwargs.items()}
+
+
+'''
+Here's how you can use it:
+
+for
+
+k, v in kwargs.items(): This iterates over each key-value pair in the kwargs dictionary.
+
+convert_md_to_txt(v): This expression converts each value (Markdown text) to plain text using convert_md_to_txt.
+'''
+
+
+
+
+
+# SUM TYPES
+
+
+'''
+As opposed to product types, which can have many (often infinite) combinations, sum types have a fixed number of possible values. For example, 
+let's say we need to represent the "colors" a user can choose from:
+
+RED
+GREEN
+BLUE
+
+We could use a plain-old string to represent these values, but that's annoying because we have to remember all the "valid" values and defensively check for invalid ones all over our codebase.
+The Enum module is generally better than a string or an int:
+'''
+
+from enum import Enum
+
+Color = Enum('Color', ['RED', 'GREEN', 'BLUE'])
+print(Color.RED)  # this works, prints 'Color.RED'
+print(Color.TEAL) # this raises an exception
+
+
+'''
+Now Color is a sum type! At least, as close as we can get in Python.
+
+There are a few benefits:
+
+A "Color" can only be RED, GREEN, or BLUE. If you try to use Color.TEAL, Python raises an exception.
+There is a central place to see the "valid" values for a Color.
+Each "Color" has a "name" (e.g. Color.RED) and a "value" (e.g. 1). The value is an integer and is used under the hood instead of the name. 
+Integers take up less memory than strings, which helps with performance.
+'''
+
+
+
+from enum import Enum
+
+Doctype = Enum('Doctype', ['PDF', 'TXT', 'DOCX', 'MD', 'HTML'])
+
+
+'''
+Unfortunately, Python does not support sum types as well as some of the other statically typed languages.
+
+Python does not enforce your types before your code runs. That's why we need this line here to raise an Exception if a color is invalid:
+'''
+
+def color_to_hex(color):
+    if color == Color.GREEN:
+        return '#00FF00'
+    elif color == Color.BLUE:
+        return '#0000FF'
+    elif color == Color.RED:
+        return '#FF0000'
+    # handle the case where the color is invalid
+    raise Exception('Unknown color')
+
+
+# In a language like Rust we could write the same thing like this:
+
+fn color_to_hex(color: Color) -> String {
+    match color {
+        Color::Green => "#00FF00".to_string(),
+        Color::Blue => "#0000FF".to_string(),
+        Color::Red => "#FF0000".to_string(),
+    }
+}
+
+
+# Notice how there isn't any case for an unknown value? That's because the Rust code will fail to compile (a step that happens before the code runs at all) if the Color is a different value. 
+# This static enforcement is a huge benefit of sum types, and it's a shame we can't get that in Python.
+
+
+# MATCH
+
+# WORKING WITH ENUMS
+
+'''
+Python has a match statement that tends to be a lot cleaner than a series of if/else/elif statements when we're working with 
+a fixed set of possible values (like a sum type, or more specifically an enum):
+'''
+
+def get_hex(color):
+    match color:
+        case Color.RED:
+            return "#FF0000"
+        case Color.GREEN:
+            return "#00FF00"
+        case Color.BLUE:
+            return "#0000FF"
+
+        # default case
+        # (invalid Color)    
+        case _:
+            return "#FFFFFF"
+
+# If you have two values to match, you can use a tuple:
+
+def get_hex(color, shade):
+    match (color, shade):
+        case (Color.RED, Shade.LIGHT):
+            return "#FFAAAA"
+        case (Color.RED, Shade.DARK):
+            return "#AA0000"
+        case (Color.GREEN, Shade.LIGHT):
+            return "#AAFFAA"
+        case (Color.GREEN, Shade.DARK):
+            return "#00AA00"
+        case (Color.BLUE, Shade.LIGHT):
+            return "#AAAAFF"
+        case (Color.BLUE, Shade.DARK):
+            return "#0000AA"
+
+        # default case
+        # (invalid combination)
+        case _:
+            return "#FFFFFF"
+
+
+
+
+from enum import Enum
+
+
+class DocFormat(Enum):
+    PDF = 1
+    TXT = 2
+    MD = 3
+    HTML = 4
+
+
+# don't touch above this line
+
+
+def convert_format(content, from_format, to_format):
+    match (from_format, to_format):
+        case (DocFormat.MD, DocFormat.HTML):
+            return content.replace('# ', '<h1>') + '</h1>'
+        case (DocFormat.TXT, DocFormat.PDF):
+            return (f"[PDF] {content} [PDF]" )
+        case (DocFormat.HTML, DocFormat.MD):
+            return content.replace('<h1>', '# ').replace('</h1>', '') # Here I am chaining the .replace call together to apply both calls to the same string
+            raise Exception("Invalid type")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
