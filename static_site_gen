@@ -1,0 +1,290 @@
+## NOTES ##
+
+Next use Python's built-in HTTP server to serve the contents of the public directory:
+
+cd public
+python -m http.server 8888
+
+
+Open your browser and paste in the URL of your server, (http://localhost:8888 if you used port 8888 as suggested) into the address bar. You should see your file rendered as a web page!
+
+
+
+The primary output of a static site generator is HTML (HyperText Markup Language), because HTML contains all the content of a web page
+
+HTML is a simple language for structuring content. It's not a "programming" language in the sense that it doesn't have variables, loops, or conditionals.
+
+
+HTML is a way to format text, images, links, and other media so that a web browser can render it in a GUI. Here's a simple HTML file:
+
+<html>
+<head>
+    <title>Why Frontend Development Sucks</title>
+</head>
+<body>
+    <h1>Front-end Development is the Worst</h1>
+    <p>
+        Look, front-end development is for script kiddies and soydevs who can't handle the real programming. I mean,
+        it's just a bunch of divs and spans, right? And css??? It's like, "Oh, I want this to be red, but not thaaaaat
+        red." What a joke.
+    </p>
+    <p>
+        Real programmers code, not silly markup languages. They code on Arch Linux, not Mac OS, and certainly not
+        Windows. They use Vim, not VS Code. They use C, not HTML. Come to the
+        <a href="https://www.boot.dev">backend</a>, where the real programming
+        happens.
+    </p>
+</body>
+</html>
+
+
+HTML is a tree-like structure where each "tag" (e.g. <p>, the bits enclosed in angle brackets) can contain other tags, and the whole thing is enclosed in an outermost <html> tag. Let's break down the structure of this HTML file:
+
+<html> is the root element of the document.
+<head> contains metadata about the document. Anything in the <head> is not rendered visibly in the browser window.
+<title> is the title of the document, which is displayed in the browser tab.
+<body> contains the content of the document, which is what is rendered in the browser window.
+<h1> is a top-level heading.
+<p> is a paragraph of text.
+<a> is a hyperlink. The href attribute is the URL the link points to. Attributes are key-value pairs that provide additional information about an element, like href="https://www.boot.dev".
+
+
+
+
+## CSS
+
+CSS (Cascading Style Sheets) is another "not-really-a-programming-language" that styles HTML elements. It's a way to dress up your HTML with colors, fonts, responsive layouts, animations, etc.
+
+
+/* Make all <h1> HTML elements red */
+
+h1 {
+  color: red;
+}
+
+Or maybe we want the max-width of our paragraphs to be 50% of the screen width:
+
+/* Make all <p> HTML elements 50% of the screen width */
+
+p {
+  max-width: 50%;
+}
+
+
+
+## MARKDOWN
+
+Here's the other deal: writing Markdown is pure bliss. Markdown is a less-verbose markup language designed for ease of writing. The trouble is web browsers don't understand Markdown. 
+They only understand HTML and CSS. The #1 job of a static site generator is to convert Markdown into HTML
+
+Instead of writing a verbose HTML list:
+
+<ul>
+    <li>I really</li>
+    <li>hate writing</li>
+    <li>in raw html</li>
+</ul>
+
+We can write this in Markdown:
+
+* I really
+* hate writing
+* in raw html
+
+Our static site generator will take a directory of Markdown files (one for each web page), and build a directory of HTML files. Because we're not savages, we'll also include a single CSS file to style the site.
+
+
+
+HTML HEADINGS
+<h1>Heading 1</h1>
+<h2>Heading 2</h2>
+<h3>Heading 3</h3>
+<h4>Heading 4</h4>
+<h5>Heading 5</h5>
+<h6>Heading 6</h6>
+
+
+MARKDOWN HEADINGS
+# Heading 1
+
+## Heading 2
+
+### Heading 3
+
+#### Heading 4
+
+##### Heading 5
+
+###### Heading 6
+
+
+HTML PARAGRAPHS
+<p>This is a paragraph of text.</p>
+
+
+MARKDOWN PARAGRAPHS
+This is a paragraph of text.
+
+
+HTML BOLD
+<p>This is a <b>bold</b> word.</p>
+
+
+MARKDOWN BOLD
+This is a **bold** word.
+
+
+HTML ITALICS
+<p>This is an <i>italic</i> word.</p>
+
+
+MARKDOWN ITALICS
+This is an *italic* word.
+
+
+HTML LINKS
+This is a paragraph with a <a href="https://www.google.com">link</a>.
+
+
+MARKDOWN LINKS
+This is a paragraph with a [link](https://www.google.com).
+
+
+HTML IMAGES
+<img src="url/of/image.jpg" alt="Description of image">
+
+
+MARKDOWN IMAGES
+![alt text for image](url/of/image.jpg)
+
+
+HTML UNORDERED LISTS
+<ul>
+    <li>Item 1</li>
+    <li>Item 2</li>
+    <li>Item 3</li>
+</ul>
+
+
+MARKDOWN UNORDERED LISTS
+* Item 1
+* Item 2
+* Item 3
+
+
+HTML ORDERED LISTS
+<ol>
+    <li>Item 1</li>
+    <li>Item 2</li>
+    <li>Item 3</li>
+</ol>
+
+
+MARKDOWN ORDERED LISTS
+1. Item 1
+2. Item 2
+3. Item 3
+
+
+HTML QUOTES
+<blockquote>
+    This is a quote.
+</blockquote>
+
+
+MARKDOWN QUOTES
+> This is a quote.
+
+
+HTML CODE
+<code>This is code</code>
+
+
+MARKDOWN CODE
+```
+This is code
+```
+
+
+TEXTNODE
+We're going to need a way to represent all the different types of inline text. We're going to be parsing Markdown text, and outputting it to HTML, so we need an intermediate representation of the text in our code.
+
+When I say "inline" I just mean text that is part of a larger block of text. For us, this includes:
+
+Normal text
+Bold text
+Italic text
+Code text
+Links
+Images
+
+
+Everything else we're considering block level, like headings, paragraphs, and bullet lists, and we'll handle those later.
+
+
+
+## LEAFNODE
+
+
+A LeafNode is a type of HTMLNode that represents a single HTML tag with no children. For example, a simple <p> tag with some text inside of it:
+
+<p>This is a paragraph of text.</p>
+
+
+
+
+KEY POINTS
+Structure:
+
+HTML documents follow a hierarchical structure defined by tags.
+The <html>, <head>, and <body> tags are fundamental in structuring a webpage.
+Document Parts:
+
+<html>: The root element of an HTML document.
+<head>: Contains meta-information about the document, such as the title and character set.
+<title>: Specifies the title of the document shown in the browser tab.
+<body>: Contains the content of the document displayed in the web browser.
+Content and Nesting:
+
+Nested elements (tags within tags) create a tree-like structure.
+Example of nested tags:
+<body>
+    <div>
+        <h1>Title</h1>
+        <p>Paragraph inside a div.</p>
+    </div>
+</body>
+Copy icon
+Attributes (Props):
+
+Enhance tags by providing additional information.
+Syntax: <tag attribute="value">Content</tag>.
+Example attributes include class, id, src, href.
+Closing and Self-closing Tags:
+
+Most tags have opening and closing parts, but some are self-closing.
+Example:
+<p>This is a paragraph.</p>  <!-- Opening and closing tag -->
+<img src="image.jpg" alt="An image">  <!-- Self-closing tag -->
+Copy icon
+Comments:
+
+Use comments to add annotations or leave notes in the HTML code. They won't be displayed on the webpage.
+Syntax: <!-- This is a comment -->.
+EXAMPLE REVISIT
+Let’s revisit the simple HTML document with these key points in mind:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Webpage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>Welcome to My Webpage</h1>  <!-- Main heading -->
+    <p>This is a paragraph describing the content of the webpage.</p>  <!-- Paragraph text -->
+    <a
+
+
+

@@ -180,27 +180,6 @@ def regenerate(current_health, max_health, enemy_distance):
     return current_health  # Returns the final value of current_health
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # List Function 
 
 def get_inventory():
@@ -4960,6 +4939,92 @@ We could use a plain-old string to represent these values, but that's annoying b
 The Enum module is generally better than a string or an int:
 '''
 
+# A "sum" type is the opposite of a "product" type. This Python object is an example of a product type:
+
+# man.studies_finance = True
+# man.has_trust_fund = False
+
+# The total number of combinations a man can have is 4, the product of 2 * 2:
+
+# studies_finance	has_trust_fund
+#       True	        True
+#       True	        False
+#       False	        True
+#       False	        False
+
+
+# If we add a third attribute, perhaps a has_blue_eyes boolean, the total number of possibilities multiplies again, to 8!
+
+# studies_finance	has_trust_fund	has_blue_eyes
+#        True	        True	        True
+#        True	        True	        False
+#        True	        False	        True
+#        True	        False	        False
+#        False	        True	        True
+#        False	        True	        False
+#        False	        False	        True
+#        False	        False	        False
+
+
+# But let's pretend that we live in a world where there are really only three types of people that our program cares about:
+
+# Dateable
+# Undateable
+# Maybe dateable
+# We can reduce the number of cases our code needs to handle by using a (admittedly fake Pythonic) sum type with only 3 possible types:
+
+class Person:
+    def __init__(self, name):
+        self.name = name
+
+class Dateable(Person):
+    pass
+
+class MaybeDateable(Person):
+    pass
+
+class Undateable(Person):
+    pass
+
+
+# SUM_TYPE example
+ 
+class MaybeParsed:
+    pass
+
+
+# don't touch above this line
+
+
+class Parsed(MaybeParsed):
+    def __init__(self, doc_name, text):
+        self.doc_name = doc_name
+        self.text = text
+        same_name_prop = self.doc_name + self.text
+        
+
+
+class ParseError(MaybeParsed):
+    def __init__(self, doc_name, err):
+        self.doc_name = doc_name
+        self.err = err
+        same_name_prop = self.doc_name + self.err
+
+
+
+# Then we can use the isinstance built-in function to check if a Person is an instance of one of the subclasses. It's a clunky way to represent sum types, but hey, it's Python.
+
+def respond_to_text(guy_at_bar):
+    if isinstance(guy_at_bar, Dateable):
+        return f"Hey {guy_at_bar.name}, I'd love to go out with you!"
+    elif isinstance(guy_at_bar, MaybeDateable):
+        return f"Hey {guy_at_bar.name}, I'm busy but let's hang out sometime later."
+    elif isinstance(guy_at_bar, Undateable):
+        return "Have you tried being rich?"
+    else:
+        raise ValueError("invalid Person type")
+
+
 from enum import Enum
 
 Color = Enum('Color', ['RED', 'GREEN', 'BLUE'])
@@ -5003,7 +5068,7 @@ def color_to_hex(color):
 
 
 # In a language like Rust we could write the same thing like this:
-
+'''
 fn color_to_hex(color: Color) -> String {
     match color {
         Color::Green => "#00FF00".to_string(),
@@ -5011,7 +5076,7 @@ fn color_to_hex(color: Color) -> String {
         Color::Red => "#FF0000".to_string(),
     }
 }
-
+'''
 
 # Notice how there isn't any case for an unknown value? That's because the Rust code will fail to compile (a step that happens before the code runs at all) if the Color is a different value. 
 # This static enforcement is a huge benefit of sum types, and it's a shame we can't get that in Python.
@@ -5064,9 +5129,33 @@ def get_hex(color, shade):
 
 
 
+def hex_to_rgb(hex_color):
+    # Check if it's a valid hex color
+    if not is_hexadecimal(hex_color) or len(hex_color) != 6:
+        raise Exception("not a hex color")
+
+    # Extract the red, green, and blue components
+    red_component = hex_color[:2]
+    green_component = hex_color[2:4]
+    blue_component = hex_color[4:]
+
+    # Convert each component to an integer using base 16
+    red = int(red_component, 16)
+    green = int(green_component, 16)
+    blue = int(blue_component, 16)
+
+    # Return the RGB values
+    return red, green, blue
+
+def is_hexadecimal(hex_string):
+    try:
+        int(hex_string, 16)
+        return True
+    except ValueError:
+        return False
+
 
 from enum import Enum
-
 
 class DocFormat(Enum):
     PDF = 1
@@ -5099,6 +5188,19 @@ def convert_format(content, from_format, to_format):
 
 
 
+# to run the unittest framework, you'll typically use Python's command-line interface.
+
+# You can run your test script with the following command in your terminal or command line:
+
+# python -m unittest test_htmlnode.py
+
+
+'''
+Here is a step-by-step guide:
+
+Ensure you're in the same directory as your test_htmlnode.py file.
+Run the above command.
+This will execute the test and show you whether it passed or failed.'''
 
 
 
@@ -5106,59 +5208,398 @@ def convert_format(content, from_format, to_format):
 
 
 
+# REGEX FOR A SINGLE WORD
+
+import re
+
+text = "I'm a little teapot, short and stout. Here is my handle, here is my spout."
+matches = re.findall(r"teapot", text)
+print(matches) # ['teapot']
+
+r"teapot" is a regex pattern.
+# The r tells Python to treat the string as a "raw" string, which means we don't have to escape backslashes
+# The pattern teapot will match any exact occurrences of the word "teapot" in the input.
+
+
+# REGEX FOR PHONE NUMBER
+text = "My phone number is 555-555-5555 and my friend's number is 555-555-5556"
+matches = re.findall(r"\d{3}-\d{3}-\d{4}", text)
+print(matches) # ['555-555-5555', '555-555-5556']
+
+# \d matches any digit
+# {3} means "exactly three of the preceding character"
+# - is just a literal - that we want to match
+
+
+# REGEX FOR TEXT BETWEEN PARENTHESES
+text = "I have a (cat) and a (dog)"
+matches = re.findall(r"\((.*?)\)", text)
+print(matches) # ['cat', 'dog']
+
+# \( and \) are literal parentheses that we want to match
+# .*? matches any number of characters (except for line terminators) between the parentheses
+
+
+# REGEX FOR EMAILS
+text = "My email is lane@example.com and my friend's email is hunter@example.com"
+matches = re.findall(r"\w+@\w+\.\w+", text)
+print(matches) # ['lane@example.com', 'hunter@example.com']
+
+# \w matches any word character (alphanumeric characters and underscores)
+# + means "one or more of the preceding character"
+# @ is just a literal @ symbol that we want to match
+# \. is a literal . that we want to match (The . is a special character in regex, so we escape it with a leading backslash)
+
+
+#### I love regexr.com for interactive regex testing, it breaks down each part of the pattern and explains what it does.
+
+
+def toggle_case(line):
+    if line.istitle():
+        return line.upper() + "!!!"
+    if line.isupper():
+        return line.capitalize().rstrip("!")
+    if len(line) > 0 and line[1:].islower():
+        return line.title()
+    else:
+        return line
+
+
+
+print(toggle_case("live long and prosper"))  # Expected: "Live Long And Prosper"
+print(toggle_case("...Khan"))                # Expected: "...KHAN!!!"
+print(toggle_case("ILLogicaL"))              # Expected: "ILLOGICAL!!!"
+print(toggle_case("BEAM ME UP, BOOTS!!!"))   # Expected: "Beam me up, boots"
+
+
+
+
+# UNDERSTANDING HEXADECIMAL COLORS
+'''Hexadecimal color codes are a way to represent colors using a base-16 numbering system. They are often used in web development and graphics. Here's a breakdown:
+
+Hexadecimal System: Uses 16 symbols (0-9 and A-F).
+
+0 in hexadecimal represents 0 in decimal.
+A in hexadecimal represents 10 in decimal.
+F in hexadecimal represents 15 in decimal.
+Color Representation:
+
+A hex color code is usually 6 characters long.
+Each pair of characters represents the intensity of red, green, and blue, respectively.
+
+EXAMPLE: #FFA07A
+Let's take #FFA07A step by step:
+
+Red Component: FF
+
+F = 15 and F = 15
+So FF in hexadecimal is 15 * 16 + 15 = 255 in decimal.
+
+Green Component: A0
+
+A = 10 and 0 = 0
+So A0 in hexadecimal is 10 * 16 + 0 = 160 in decimal.
+
+Blue Component: 7A
+
+7 = 7 and A = 10
+So 7A in hexadecimal is 7 * 16 + 10 = 122 in decimal.'''
+
+
+def hex_to_rgb(hex_color):
+    # Check if it's a valid hex color
+    if not is_hexadecimal(hex_color) or len(hex_color) != 6:
+        raise Exception("not a hex color")
+
+    # Extract the red, green, and blue components
+    red_component = hex_color[:2]
+    green_component = hex_color[2:4]
+    blue_component = hex_color[4:]
+
+    # Convert each component to an integer using base 16
+    red = int(red_component, 16)
+    green = int(green_component, 16)
+    blue = int(blue_component, 16)
+
+    # Return the RGB values
+    return red, green, blue
+
+def is_hexadecimal(hex_string):
+    try:
+        int(hex_string, 16)
+        return True
+    except ValueError:
+        return False
 
 
 
 
 
+# Originals and backups are tuples of document strings
+def restore_documents(originals, backups):
+    # Create a empty set
+    combined_docs = set()
+
+    # Loop through originals
+    for doc in originals:
+        # If doc is not a random numbers string
+        if not doc.isdigit():
+            # Add doc to combined_doc set
+            combined_docs.add(doc.upper())
+    # Loop through backups
+    for doc in backups:
+        # If doc is not a random number string
+        if not doc.isdigit():
+            # Add doc to combined_doc set
+            combined_docs.add(doc.upper())
+    return combined_docs
+
+
+
+
+def find_longest_word(content, longest=""):
+    # Check if `content` is empty (base case for recursion)
+    if len(content) == 0:
+        return longest
+
+    # If `content` is a string
+    if isinstance(content, str):
+        # Split the string into words
+        split_words = content.split()
+        # Check if the first word is longer than the current longest word
+        if len(split_words[0]) > len(longest):
+            longest = split_words[0]
+        # Recursively call the function with the remaining words
+        return find_longest_word(split_words[1:], longest)
+
+    # If `content` is a list
+    if isinstance(content, list):
+        # Recursively call the function with the first element of the list
+        longest = find_longest_word(content[0], longest)
+        # Recursively call the function with the rest of the list
+        return find_longest_word(content[1:], longest)
+
+    # Fallback return
+    return longest
+
+
+
+### ALGORITHMS ###
+
+'''
+An "algorithm" is simply a set of instructions to solve a particular problem. People use algorithms all the time, without even realizing it. 
+If you've ever organized books on a shelf, packed your luggage for a trip, or followed a cooking recipe, then you've already used an algorithm!
+'''
+
+def find_minimum(nums):
+    minimum = float("inf")
+    if len(nums) == 0:
+        return None
+    for num in nums:
+        if num < minimum:
+            minimum = num
+    return minimum
+
+
+'''
+WHAT IS AN ALGORITHM?
+As we discussed, an algorithm is a finite sequence of well-defined, computer-implementable instructions. Algorithms are always unambiguous and are used as specifications for real world implementations. Wikipedia Definition
+
+You'll often find algorithms written in what we call pseudocode (pronounced "soo-doe-code"), which is fake code that's meant to be more human readable. This makes it easier to implement the algorithm in whichever programming language you need.
+'''
+
+# In short, an algorithm is:
+
+# Defined: there is a specific sequence of steps that performs a task
+# Unambiguous: there is a "correct" and "incorrect" interpretation of the steps
+# Implementable: it can be performed in code or using hardware
+
+
+# Finding the sum of a list of numbers without using sum method. 
+
+def sum(nums):
+    sum = 0
+    if len(nums) == 0:
+        return None
+    for num in nums:
+        sum += num
+    return sum
+
+
+
+# Finding the average number in  a list of numbers 
+
+def average_followers(nums):
+    if len(nums) == 0:
+        return None
+    return sum(nums) / len(nums)
+
+
+# Finding the median of a list of number.
+
+def median_followers(nums):
+    sorted_list = sorted(nums)
+    list_len = len(sorted_list)
+    index = (list_len - 1) // 2
+    if len(sorted_list) == 0:
+        return None
+    elif (list_len % 2):
+        return sorted_list[index]
+    else:
+        return (sorted_list[index] + sorted_list[index + 1])/ 2.0
+    
+
+# Exponents 
+
+# An exponent indicates how many times a number is to be multiplied by itself.
+
+# For example: 53 = 5 * 5 * 5
+
+# Sometimes exponents are also written using the caret symbol (^):
+
+# 5^3 = 53
+
+
+# We can calculate exponents in Python using the ** operator. (Why not the ^ operator? Blame Fortran.)
+
+square = 2 ** 2
+# square = 4
+
+cube = 2 ** 3
+# cube = 8
+
+
+'''
+In the social media industry, there is a concept called "spread" - it refers to how much a post spreads due to "reshares" after all of the original author's followers see it. As it turns out, 
+social media posts spread at an exponential rate! We've found that the estimated spread of a social post can be calculated using the following formula:
+
+estimated_spread = average_audience_followers * ( num_followers ^ 1.2 )
+
+In the formula above, average_audience_followers refers to an average calculated from each number within the 
+audiences_followers argument - which is a list containing the individual follower counts of the author's followers. For example, if audiences_followers = [2, 3, 2, 19], then:
+
+- the author has 4 total followers
+- each follower has their own 2, 3, 2, and 19 followers, respectively.
+
+Complete the get_estimated_spread function by implementing the formula above. The only input is audiences_followers, which is a list of the follower counts of all the followers the author has. Return the estimated spread.
+'''
+
+def get_estimated_spread(audiences_followers):
+    num_followers = len(audiences_followers)
+    
+    average_audiences_followers = sum(audiences_followers) / len(audiences_followers)
+
+    if num_followers == 0:
+        return None
+    else:
+        return average_audiences_followers * (num_followers ** 1.2)
+
+
+# Using geometric sequence formula 
+
+# "fitness" influencers: follower count quadruples each month
+# "cosmetic" influencers: follower count triples each month
+# All other influencers: follower count doubles each month
+# Use a slightly modified geometric sequence formula: total = a1 * r^n
+
+def get_follower_prediction(follower_count, influencer_type, num_months):
+    if influencer_type == 'fitness':
+        r = 4
+        return follower_count * (r**num_months)
+    elif influencer_type == 'cosmetic':
+        r = 3
+        return follower_count * (r**num_months)
+    else:
+        r = 2
+        return follower_count * (r**num_months)
+
+
+
+
+## LOGARITHM
+
+'''
+A logarithm is the inverse of an exponent.
+
+24 = 16
+
+log216 = 4
+
+"log216" can be read as "log base 2 of 16", and means "the number of times 2 must be multiplied by itself to equal 16".
+
+"log216" can also be written as log2(16)
+
+Some more examples:
+
+log2(2) = 1
+log2(4) = 2
+log2(8) = 3
+log2(16) = 4
+log2(32) = 5
+log10(100) = 2
+log10(1000) = 3
+log10(10000) = 4
+'''
+
+
+# LOGS (LOGARITHMS) IN PYTHON
+# Just import the math library and use the math.log() function.
+
+import math
+
+print(f"Logarithm base 2 of 16 is: {math.log(16, 2)}")
+# Logarithm base 2 of 16 is: 4.0
+
+# ASSIGNMENT EXAMPLE
+
+# average_engagement_percentage * log2(num_followers)
+
+import math
+
+
+def get_influencer_score(num_followers, average_engagement_percentage):
+    return average_engagement_percentage * (math.log(num_followers, 2))
+
+
+# Import math module to use the math.factorial function.
+
+import math
+
+def num_possible_orders(num_posts):
+    return math.factorial(num_posts)
+
+
+
+## EXPONENTIAL DECAY
+
+'''
+In physics, exponential decay is a process where a quantity decreases over time at a rate proportional to its current value.
+
+We've found that Instagram influencers tend to lose followers similarly. This means that the more followers you have, the faster you lose them.
+'''
+
+# ASSIGNMENT 
+
+# remaining_total = quantity * ( retention_rate ^ time )
+
+def decayed_followers(intl_followers, fraction_lost_daily, days):
+    retention_rate = 1 - fraction_lost_daily
+    final_value = intl_followers * (retention_rate**days)
+    return final_value
 
 
 
 
 
+import math
 
+def log_scale(data, base):
+    new_list = []
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    for pos_n in data:
+        get_log = math.log(pos_n, base)
+        new_list.append(get_log)
+    return new_list
 
 
 
