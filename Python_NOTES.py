@@ -5602,57 +5602,569 @@ def log_scale(data, base):
     return new_list
 
 
+#  BIG O NOTATION
+
+'''
+There are lots of existing algorithms; some are fast and some are slow. Some use lots of memory. It can be hard to decide which algorithm is the best to solve a particular problem. "Big O" analysis (pronounced "Big Oh", not "Big Zero") is one way to compare algorithms.
+
+Big O is a characterization of algorithms according to their worst-case growth rates
+'''
+
+
+# We write Big-O notation like this:
+
+# O(formula)
+
+'''
+Where formula describes how an algorithm's run time or space requirements grow as the input size grows.
+
+O(1) - constant
+O(n) - linear
+O(n^2) - squared
+O(2^n) - exponential
+O(n!) - factorial
+
+'''
+
+
+# EXAMPLE O(N) - Order "N"
+
+def find_max(nums):
+    max = float("-inf")
+    for num in nums:
+        if num > max:
+            max = num
+    return max
+
+
+# EXAMPLE O(n^2) - Order "n" squared
+
+
+def does_name_exist(first_names, last_names, full_name):
+
+    for first_name in first_names:
+        for last_name in last_names:
+            combined_name = first_name + " " + last_name
+            if combined_name == full_name:
+                return True
+    return False
+
+
+# EXAMPLE O(NM)
+
+# O(nm) is very similar to O(n^2). The difference is that instead of a single input that we care about, there are 2. 
+# If n and m increase at the same rate, then O(nm) is effectively the same as O(n^2). However, if n or m increases faster or slower, then it's useful to track their complexity separately.
+
+# all_handles: a 2-dimensional list, or "list of lists" of strings representing instagram user handles on a per-influencer basis.
+# brand_name: a string.
+
+# get_avg_brand_followers returns the average number of handles that contain the brand_name across all the lists. Each list represents the audience of a single influencer.
+
+# EXAMPLE INPUT/OUTPUT
+
+all_handles = [
+    ["cosmofan1010", "cosmogirl", "billjane321"],
+    ["cosmokiller", "gr8", "cosmojane3"],
+    ["iloveboots", "paperthin"]
+]
+brand_name = "cosmo"
+
+
+def get_avg_brand_followers(all_handles, brand_name):
+    handles_with_brand_name = 0
+    
+    for lists in all_handles:
+        for handle in lists:
+            if brand_name in handle:
+                handles_with_brand_name += 1
+    return handles_with_brand_name / len(all_handles)
 
 
 
+'''
+In Big O analysis we drop all constants because they don't affect the change in the runtime, just the runtime itself.
+
+O(2 * n) -> O(n)
+
+O(10 * n^2) -> O(n^2)
+'''
+
+# ORDER 1
+# O(1) means that no matter the size of the input, there is no growth in the runtime of the algorithm. This is also referred to as a "constant time" algorithm.
+
+# In Python, the dictionary data structure offers the ability to look items up by key, which is an operation that is independent of the size of the dictionary. In other words, dictionary lookups are O(1).
 
 
 
+# O(1) with dictionary
+
+def find_last_name(names_dict, first_name):
+    if first_name in names_dict:
+        last_name = names_dict[first_name]
+    else:
+        last_name = None
+    return last_name
+
+# OR
+
+def find_last_name(names_dict, first_name):
+    last_name = names_dict.get(first_name, None) # Using the .get method to access a key/value in a dictionary - value = dictionary.get(key) usage with default - value value = dictionary.get(key, default_value)
+    return last_name
 
 
 
+# BINARY SEARCH ALGORITHM
+
+def binary_search(target, arr):
+    n = len(arr)
+    low = 0 
+    high = n - 1
+    while low <= high:
+        median = (low + high) // 2
+        if arr[median] == target:
+            return True
+        elif arr[median] < target:
+            low = median + 1
+        else:
+            high = median - 1
+    return False
+
+# BREAKDOWN
+
+'''
+Let's break it down step-by-step using the array [1, 3, 5, 7, 9, 11, 13, 15, 17, 19] and target 10.
+
+Initial Setup:
+
+target = 10
+arr = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
+low = 0
+high = len(arr) - 1 = 9
+FIRST ITERATION:
+Calculate median:
+
+median = (low + high) // 2 = (0 + 9) // 2 = 4
+arr[median] = arr[4] = 9
+Comparison:
+
+arr[median] < target (i.e., 9 < 10)
+So, we update low = median + 1 = 4 + 1 = 5
+SECOND ITERATION:
+Calculate median:
+
+median = (low + high) // 2 = (5 + 9) // 2 = 7
+arr[median] = arr[7] = 15
+Comparison:
+
+arr[median] > target (i.e., 15 > 10)
+So, we update high = median - 1 = 7 - 1 = 6
+THIRD ITERATION:
+Calculate median:
+
+median = (low + high) // 2 = (5 + 6) // 2 = 5
+arr[median] = arr[5] = 11
+Comparison:
+
+arr[median] > target (i.e., 11 > 10)
+So, we update high = median - 1 = 5 - 1 = 4
+FOURTH ITERATION:
+Now, low = 5 and high = 4.
+Since low > high, the while loop condition low <= high is False and we exit the loop.
+After exiting the loop, it returns False because we didn't find the target in the array.
+'''
+
+def count_names(list_of_lists, target_name):
+    name_count = 0
+    for list in list_of_lists:
+        for name in list:
+            if name == target_name:
+                name_count += 1
+    return name_count
+
+
+# Rmoving duplicates from list
+
+def remove_duplicates(nums):
+    uniq_foll = []
+    
+    for num in nums:
+        if num not in uniq_foll:
+            uniq_foll.append(num)
+    return uniq_foll
+
+
+# Sorting algorithm
+
+
+class Influencer:
+    def __init__(self, num_selfies, num_bio_links):
+        self.num_selfies = num_selfies
+        self.num_bio_links = num_bio_links
+
+    def __repr__(self):
+        return f"({self.num_selfies}, {self.num_bio_links})"
+
+# dont touch above this line
+
+def vanity(influencer):
+    inf_vanity = influencer.num_bio_links * 5 + influencer.num_selfies
+    return inf_vanity
+
+def vanity_sort(influencers):
+    sorted_inf_list = sorted(influencers, key=vanity)
+    return sorted_inf_list
+
+
+# BUBBLE SORT
+
+# Bubble sort repeatedly steps through a slice and compares adjacent elements, swapping them if they are out of order. It continues to loop over the slice until the whole list is completely sorted.
+
+# Pseudocode for bubble sort:
+
+# Procedure bubble_sort(nums):
+    # Set swapping to True
+    # Set end to the length of nums
+    # While swapping is True:
+        # Set swapping to False
+        # For i from the 2nd element to end:
+            # If the (i-1)th element of nums is greater than the ith element:
+                # Swap the (i-1)th element and the ith element of nums
+                # Set swapping to True
+        # Reduce end by one
+    # Return nums
+# End Procedure
+
+def bubble_sort(nums):
+    swapping = True
+    end = len(nums)
+    while swapping is True:
+        swapping = False
+        for i in range(1, end):
+            if nums[i - 1] > nums[i]:
+                nums[i - 1], nums[i] = nums[i], nums[i - 1]
+                swapping = True
+        end -= 1
+    return nums
+
+# MERGE SORT
+
+# Merge sort is a recursive sorting algorithm and it's quite a bit faster than bubble sort.
+
+'''
+# DIVIDE AND CONQUER
+Merge sort is a divide and conquer algorithm.:
+
+Divide: divide the large problem into smaller problems, and recursively solve the smaller problems
+Conquer: Combine the results of the smaller problems to solve the large problem
+
+In merge sort specifically we:
+
+# DIVIDE
+
+Divide the array into two (equal) halves
+Recursively sort the two halves
+# CONQUER
+
+Merge the two halves to form a sorted array
+merge sort gif
+
+# ALGORITHM
+
+The algorithm consists of two separate functions, merge_sort and merge.
+
+merge_sort() divides the input array into two halves, calls itself for the two halves, and then merges the two sorted halves.
+
+The merge() function is used for merging two sorted lists back into a single sorted list. At the lowest level of recursion, the two "sorted" lists will each have a length of 1. 
+Those single element lists will be merged into a sorted list of length two, and we can build from there.
+
+# MERGE_SORT() IMPLEMENTATION
+
+Input: A, a list of integers
+
+If the length of A is less than 2, it's already sorted so return it
+Split the input array into two halves down the middle
+Call merge_sort() twice, once on each half
+Return the result of calling merge(sorted_left_side, sorted_right_side) on the results of the merge_sort() calls
+MERGE() IMPLEMENTATION
+Inputs: A, B. Two lists of integers
+
+Create a new "final" list of integers.
+Set i and j equal to zero. They will be used to keep track of indexes in the input lists (A and B).
+Use a loop to iterate over A and B at the same time. If an element in A is less than or equal to its respective element in B, add it to the final list and increment i. Otherwise, add the item in B to the final list and increment j.
+After comparing all the items, there may be some items left over in either A or B (if one of the lists is longer than the other). Add those extra items to the final list.
+Return the final list.
+'''
+
+def merge_sort(nums):
+    if len(nums) < 2:
+        return nums
+    list_a = nums[0:len(nums)//2]
+    list_b = nums[len(nums)//2:]
+    sorted_a = merge_sort(list_a)
+    sorted_b = merge_sort(list_b)
+    return merge(sorted_a, sorted_b)
+
+
+def merge(first, second):
+    final_list = []
+    i = 0
+    j = 0
+    while i < len(first) and j < len(second):
+        if first[i] <= second[j]:
+            final_list.append(first[i])
+            i += 1
+        else:
+            final_list.append(second[j])
+            j += 1
+    while i < len(first):
+        final_list.append(first[i])
+        i += 1
+    while j < len(second):
+        final_list.append(second[j])
+        j += 1
+    return final_list
+
+# O(n*log(n)) Explained and why its better then O(n^2)
+
+'''
+Number of Operations for O(n*log(n)):
+
+Doubling the size of the input (i.e., doubling n) for an O(n*log(n)) algorithm does not simply double the number of operations. The log(n) part means it grows a bit slower because log(n) increases slowly as n gets larger.
+
+For example:
+
+If n is 1000, log(1000) ≈ 10, so O(n*log(n)) would be about 1000 * 10 = 10,000 operations.
+If n doubles to 2000, log(2000) ≈ 11, so O(n*log(n)) would be about 2000 * 11 = 22,000 operations.
+So, it's not a simple doubling; the growth is more balanced and efficient due to the logarithmic factor.
+
+Splitting into Smaller Problems:
+
+You're right that splitting the problem into smaller chunks helps handle each chunk faster, and this is the essence of Divide and Conquer algorithms like Merge Sort.
+
+Comparison with O(n^2):
+
+For an O(n^2) algorithm:
+
+If n is 1000, you'd have about 1000^2 = 1,000,000 operations.
+If n doubles to 2000, you get 2000^2 = 4,000,000 operations.
+This shows a much faster growth in the number of operations compared to O(n*log(n)). That's why O(n*log(n)) is significantly more efficient for large input sizes.
+'''
+
+'''
+WHY USE MERGE SORT?
+Fast: Merge sort is much faster than bubble sort, being O(n*log(n)) instead of O(n^2).
+
+Stable: Merge sort is also a stable sort which means that values with duplicate keys in the original list will be in the same order in the sorted list.
+
+Extra memory: Most sorting algorithms can be performed using a single copy of the original array. Merge sort requires an extra array in memory to merge the sorted subarrays.
+
+Recursive: Merge sort requires many recursive function calls, and function calls can have significant resource overhead.
+'''
+
+'''
+PSEUDOCODE
+For each index in the input list:
+Set a j variable to the current index
+While j is greater than 0 and the element at index j-1 is greater than the element at index j:
+Swap the elements at indices j and j-1
+Decrement j by 1
+Return the list
+
+TIP
+In some languages you need to use a temp variable to swap values, but in python you can do that in a single line:
+'''
+
+def insertion_sort(nums):
+    for i in range(len(nums)):
+        j = i
+        while j > 0 and nums[j - 1] > nums[j]:
+            nums[j], nums[j - 1] = nums[j - 1], nums[j]
+            j -= 1
+    return nums
+
+'''
+WHY USE INSERTION SORT?
+Simple implementation, easy to write
+Fast for very small data sets
+Faster than other simple sorting algorithms like Bubble Sort
+Adaptive: Faster for partially sorted data sets
+Stable: Does not change the relative order of elements with equal keys
+In-Place: Only requires a constant amount of memory
+Online: Can sort a list as it receives it
+'''
+
+'''
+WHY IS INSERTION SORT FAST FOR SMALL LISTS?
+Some production sorting implementations use insertion sort for very small inputs under a certain threshold (very small, like 10-ish). Insertion sort is better for very small lists than some of the faster algorithms because:
+
+There is no recursion overhead
+Tiny memory footprint
+It's a stable sort as described above
+'''
+
+# QUICK SORT 
+
+'''
+Quick sort is an efficient sorting algorithm that's widely used in production sorting implementations. Like merge sort, quick sort is a divide and conquer algorithm.
+
+DIVIDE
+Select a pivot element that will preferably end up close to the center of the sorted pack
+Move everything onto the "greater than" or "less than" side of the pivot
+The pivot is now in its final position
+Recursively repeat the operation on both sides of the pivot
+CONQUER
+The array is sorted after all elements have been through the pivot operation
+VISUALS
+The quick_sort algorithm is recursive. And it works in the following way:
+
+Select a "pivot" element - We'll arbitrarily choose the last element in the list
+Move through all the elements in the list and swap them around until all the numbers less than the pivot are on the left, and the numbers greater than the pivot are on the right
+Move the pivot between the two sections where it belongs
+recursively repeat for both sections
+'''
+
+
+def quick_sort(nums, low, high):
+    if low < high:
+        p = partition(nums, low, high)  # partition and get pivot index
+        quick_sort(nums, low, p - 1)  # recursively sort left
+        quick_sort(nums, p + 1, high)  # recursively sort right
 
 
 
+def partition(nums, low, high):
+    pivot = nums[high]  # Step 1: Choose the pivot element
+    i = low  # Step 2: Set the initial index
+    
+    # Step 3: Traverse and compare
+    for j in range(low, high):  # j will run from low to high-1
+        if nums[j] < pivot:  # Compare current element with pivot
+            nums[i], nums[j] = nums[j], nums[i]  # Swap elements
+            i += 1  # Increment i
+    
+    # Step 4: Final swap to place pivot in its correct position
+    nums[i], nums[high] = nums[high], nums[i]
+    return i  # Step 5: Return the index of the pivot
+
+'''
+QUICK SORT BIG O
+On average, quicksort has a Big O of O(n*log(n)). In the worst case, and assuming we don't take any steps to protect ourselves, it can break down to O(n^2).
+
+partition() has a single for-loop that ranges from the lowest index to the highest index in the array. By itself, the partition() function is O(n). The overall complexity of quicksort is dependent on how many times partition() is called.
+
+In the worst case, the input is already sorted. An already sorted array results in the pivot being the largest or smallest element in the partition each time. When this is the case, partition() is called a total of n times.
+
+In the best case, the pivot is the middle element of each sublist which results in log(n) calls to partition().
+'''
+
+'''
+FIXING QUICK SORT BIG O
+As we discussed, while the version of quicksort that we implemented is almost always able to perform at speeds of O(n*log(n)), its Big O is still technically O(n^2). We can fix this by altering the algorithm slightly.
+
+There are two approaches:
+
+Shuffle input randomly before sorting. This can trivially be done in O(n) time
+Actively find the median of a sample of data from the partition, this can be done in O(1) time.
+RANDOM APPROACH
+The random approach is easy to code, works practically all of the time, and as such is often used.
+
+The idea is to quickly shuffle the list before sorting it. The likelihood of shuffling into a sorted list is astronomically unlikely, and is also more unlikely the larger the input.
+
+MEDIAN APPROACH
+One of the most popular solutions is to use the "median of three" approach. Three elements (for example: the first, middle, and last elements) of each partition are chosen and the median is found between them. That item is then used as the pivot.
+
+This approach has the advantage that it can't break down to O(n^2) time because we are guaranteed to never use the worst item in the partition as the pivot. That said, it can still be slower because a true median isn't used.
+'''
+
+# PROS AND CONS OF QUICK SORT
+
+# Pros:
+
+# Very fast in the average case
+# In-Place: Saves on memory, doesn't need to do a lot of copying and allocating
+# Cons:
+
+# More complex implementation
+# Typically unstable: changes the relative order of elements with equal keys
+
+# SELECTION SORT
+'''Another sorting algorithm we never covered in-depth is called "selection sort". It's similar to bubble sort in that it works by repeatedly swapping items in a list. However, it's slightly more efficient than bubble sort because it only makes one swap per iteration.
+
+Selection sort pseudocode:
+
+For each index:
+Set smallest_idx to the current index
+For each index from smallest_idx+1 to the end of the list:
+If the number at the inner index is smaller than the number at smallest_idx, set smallest_idx to the inner index
+Swap the number at the current index with the number at smallest_idx
+'''
+
+def selection_sort(nums):
+    for j in range(len(nums)): # Outer loop iterates through each index of the list
+        smallest_index = j # Set smallest index to the current index j
+        for k in range(j + 1, len(nums)): # Inner loop iterates through j + 1 to end of list
+            if nums[k] < nums[smallest_index]: # Compares each value in the inner loop to the current smallest value
+                smallest_index = k
+        nums[j], nums[smallest_index] = nums[smallest_index], nums[j] # Swaps the smallest found value with the value at index j
+    return nums
 
 
 
+# POLYNOMIAL VS EXPONENTIAL
 
+# POLYNOMIAL TIME:
+# O(1)
+# O(n)
+# O(n*log(n))
+# O(n^2)
+# O(n^3)
+# O(n^4)
+# .....
 
+# EXPONENTIAL TIME
 
+# O(2^n)
+# O(3^n)
+# ...
+# O(n^n)
+# ON(n!)
 
+'''
+Algorithm's Runtime: This refers to how long it takes for an algorithm to finish its job, usually in terms of the size of the input (n).
 
+Polynomial Time: When we say an algorithm runs in polynomial time, we're saying that the number of steps it takes to complete is no more than a polynomial function of the size of the input n.
 
+n^k: The expression n^k represents a polynomial, where n is the size of the input and k is some constant. For example:
 
+If k=1, we get n^1, which is just n.
+If k=2, we get n^2.
+If k=3, we get n^3, and so on.
+Does Not Grow Faster: This means that as the size of the input (n) increases, the time the algorithm takes to run increases at a rate that can be represented by some polynomial (n^k). It won't be faster than this rate.
 
+EXAMPLES:
+n^1 (Linear Time): If an algorithm's runtime is proportional to the input size, it's O(n). This means if you double the input size, the time taken doubles.
 
+n^2 (Quadratic Time): If the runtime is proportional to the square of the input size, it's O(n^2). This means if you double the input size, the time taken grows four times.
 
+VISUAL UNDERSTANDING:
+If you plot these functions:
 
+Polynomial functions like n, n^2, n^3 grow, but at a manageable rate.
+Exponential functions (e.g., 2^n) grow exceedingly fast, becoming impractical for even slightly large inputs.
+Here is a simple comparison to visualize:
 
+For n = 10:
+n = 10
+n^2 = 100
+2^n = 1024
+Notice how 2^n skyrockets compared to n and n^2.
 
+POLYNOMIAL TIME = P
+Back in the 1970s, some computer scientist researchers wanted to come up with a good, descriptive name for the set of polynomial time algorithms. After much deliberation, they settled on the letter P (naming things is hard).
 
+In general, the main important takeaway is that:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Problems that fall into class P are practical to solve on computers.
+Problems that don't fall into P are hard, slow, and impractical.
+'''
 
