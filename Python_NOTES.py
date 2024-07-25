@@ -6168,3 +6168,314 @@ Problems that fall into class P are practical to solve on computers.
 Problems that don't fall into P are hard, slow, and impractical.
 '''
 
+# REDUCTION TO P
+
+'''
+Here are the implementation details to do it in polynomial time:
+
+The input n represents the index of the desired Fibonacci value
+Initialize three values. One will hold the current value, one will hold the parent value (1 before), and one will hold the grandparent value (2 before the current). You'll need to hard-code the first two values of the sequence. grandparent=0 and parent=1
+Write a loop that iterates n-1 times. (For example, the loop should not repeat when n=2.)
+Inside the loop update the current based on the parents, then update the parents to their appropriate values.
+Return the current value once the loop completes
+'''
+
+def fib(n):
+    # Handle the simplest cases directly
+    if n == 0:
+        return 0
+    if n == 1:
+        return 1
+    
+    grandparent = 0  # This is F(0)
+    parent = 1       # This is F(1)
+    current = 1      # Starting value for the loop
+    
+    for i in range(2, n + 1):
+        current = parent + grandparent  # This is F(i) = F(i-1) + F(i-2)
+        grandparent = parent            # Move parent to grandparent
+        parent = current                # Update parent to the new current value
+    
+    return current
+
+
+# ORDER 2^N - EXPONENTIAL
+# O(2^n) is the first Big O class that we've dealt with that falls into the scary exponential category of algorithms.
+
+# Algorithms that grow at an exponential rate become impossible to compute after so few iterations that they are almost worthless in practicality.
+
+
+def power_set(input_set):
+    if len(input_set) == 0:
+        return [[]]  # Base case: return list with an empty list
+
+    # Recursive case
+    first_element = input_set[0]
+    remaining_elements = input_set[1:]
+
+    # Get the power set of the remaining elements
+    subsets_without_first = power_set(remaining_elements)
+
+    power_set_list = []
+
+    for subset in subsets_without_first:
+        # Subset without the first element
+        power_set_list.append(subset)
+        # Subset with the first element
+        power_set_list.append([first_element] + subset)
+
+    return power_set_list
+
+'''
+OBSERVE!
+Notice how the power_set() function gets exponentially slower with each iteration. This is because its complexity class is O(2^n)
+
+If we could calculate one subset per millisecond, completing the power_set() of just 25 items would take approximately 9 hours, and that's not accounting for the massive amounts of memory we would need.
+
+40 items would take over 34 years!
+'''
+
+import time
+
+def power_set(input_set):
+
+    if len(input_set) == 0:
+        return [[]]
+
+    power_set_list = []
+    recursive = power_set(input_set[1:])
+
+    for subset in recursive:
+        power_set_list.append([input_set[0]] + subset)
+        power_set_list.append(subset)
+    return power_set_list
+
+input_set = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
+result = power_set(input_set)
+
+print("Power set of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]:")
+for subset in result:
+    print(subset)
+
+print(f"\nTotal subets: {len(result)}")
+
+# Sample input list with 20 items
+input_set = list(range(1, 21))  # [1, 2, 3, ..., 20]
+
+# Measure the start time
+start_time = time.time()
+
+# Running the power_set function
+result = power_set(input_set)
+
+# Measure the end time
+end_time = time.time()
+
+# Printing the output (optional, as it's very large)
+# print("Power set of [1, 2, ..., 20]:")
+
+# for subset in result:
+#     print(subset)
+
+print(f"\nTotal subsets: {len(result)}")
+print(f"Time taken: {end_time - start_time} seconds")
+
+
+### BIG O COMPLEXITY NOTES
+
+# O(1) - constant - *Best* The algorithm always takes the same amount of time, regardless of how much data there is. Example: Looking up an item in a list by index
+
+# O(log n) - logarithmic - *Great* Algorithms that remove a percentage of the total steps with each iteration. Very fast, even with large amounts of data. Example: Binary search
+
+# O(n) - linear - *Good*  100 items, 100 units of work. 200 items, 200 units of work. This is usually the case for a single, non-nested loop. Example: unsorted array search.
+
+# O(n log n) - "linearithmic" - Okay This is slightly worse than linear, but not too bad. Example: mergesort and other "fast" sorting algorithms.
+
+# O(n^2) - quadratic - Slow The amount of work is the square of the input size. 10 inputs, 100 units of work. 100 Inputs, 10,000 units of work. Example: A nested for loop to find all the ordered pairs in a list.
+
+# O(n^3) - cubic - Slower If you have 100 items, this does 100^3 = 1,000,000 units of work. Example: A doubly nested for loop to find all the ordered triples in a list.
+
+# O(2^n) - exponential - Horrible We want to avoid this kind of algorithm at all costs. Adding one to the input doubles the amount of steps. Example: Brute-force guessing results of a sequence of n coin flips.
+
+# O(n!) - Factorial - Even More Horrible The algorithm becomes so slow so fast, that is practically unusable. Example: Generating all the permutations of a list
+
+# EXAMPLES
+
+# O(1) - Constant Time
+# The time or space taken by the function doesn't change relative to the input size.
+
+def get_first_element(array):
+    return array[0]
+
+# O(log n) - Logarithmic Time
+# The time grows logarithmically as the input size increases.
+
+def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    
+    while left <= right:
+        mid = (left + right) // 2
+        
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+            
+    return None
+
+# O(n) - Linear Time
+# The time grows linearly with the size of the input.
+
+def sum_array(arr):
+    total = 0
+    for num in arr:
+        total += num
+    return total
+
+# O(n log n) - Linearithmic Time
+# Commonly seen in efficient sorting algorithms.
+
+def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    i = j = 0
+    
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    
+    result.extend(left[i:])
+    result.extend(right[j:])
+    
+    return result
+
+# O(n^2) - Quadratic Time
+# The time grows quadratically with the input size.
+
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+
+# O(2^n) - Exponential Time
+# This time complexity grows exponentially with each additional element. Here's an example using a recursive function to generate all subsets of a set:
+
+def find_subsets(s):
+    def backtrack(start, path):
+        result.append(path)
+        for i in range(start, len(s)):
+            backtrack(i + 1, path + [s[i]])
+
+    result = []
+    backtrack(0, [])
+    return result
+
+# Example of usage
+set_elements = [1, 2, 3]
+print(find_subsets(set_elements))
+
+# O(n!) - Factorial Time
+# This time complexity grows factorially with the input size. One common example is to generate all permutations of a list:
+
+def generate_permutations(arr):
+    def backtrack(start):
+        if start == len(arr):
+            result.append(arr[:])
+        for i in range(start, len(arr)):
+            arr[start], arr[i] = arr[i], arr[start]
+            backtrack(start + 1)
+            arr[start], arr[i] = arr[i], arr[start]
+
+    result = []
+    backtrack(0)
+    return result
+
+# Example of usage
+array = [1, 2, 3]
+print(generate_permutations(array))
+
+# O(n^3) - Cubic Time
+# This time complexity grows cubically with the input size. An example could be three nested loops, like matrix multiplication:
+
+def matrix_multiplication(A, B):
+    n = len(A)
+    result = [[0]*n for _ in range(n)]
+    
+    for i in range(n):
+        for j in range(n):
+            for k in range(n):
+                result[i][j] += A[i][k] * B[k][j]
+                
+    return result
+
+# Example of usage
+A = [[1, 2], [3, 4]]
+B = [[2, 0], [1, 2]]
+print(matrix_multiplication(A, B))
+
+# O(2n)
+
+#   halvedSections returns a list of lists. For example,
+#	    the input "12" would result in
+#	    [
+#		    [0 1 2 3 4 5 6 7 8 9 10 11 12]
+#			[0 1 2 3 4 5 6]
+#			[0 1 2 3]
+#			[0 1]
+#		]
+def halved_sections(n):
+    rows = []
+    i = n
+    while i > 0:
+        col = []
+        for j in range(i+1):
+            col.append(j)
+        rows.append(col)
+        i //= 2
+    return rows
+
+# Which has a specific time complexity of:
+
+# T(n) = O(n + n/2 + n/4 + … 1)
+
+# Hint: This is a tricky one. You need to take into account the shrinking size of each successive list.
+
+
+
+
+# EXPONENTIAL GROWTH SEQUENCE 
+
+def exponential_growth(n, factor, days):
+    growth_sequence = [n]
+
+    for _ in range(days):
+        growth = growth_sequence[-1] * factor
+        growth_sequence.append(growth)
+    return growth_sequence
+
+'''
+Suppose n = 10, factor = 2, and days = 4.
+Your list starts with [10].
+On the first loop iteration, growth_sequence[-1] is 10, and 10 * 2 = 20, so the list becomes [10, 20].
+Next iteration, growth_sequence[-1] is 20, and 20 * 2 = 40, so the list becomes [10, 20, 40].
+This continues until you've looped days times.
+'''
+
