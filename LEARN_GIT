@@ -29,7 +29,7 @@ mine is set to
  │       - 'name ='
  │       - 'defaultBranch = master'
 
-
+cat .git/HEAD = Manually check and see what HEAD is pointing to from the root of your repo
 
 git init is used to create a new Git repo through the termianl.
 
@@ -61,7 +61,7 @@ cdb5fd4 B: add missing title and fix typo
 8e9ab7f Update contents.md
 465ddc8 A: add contents.md
 
-git merge remote/branch <--syntax--> = git merge origin/main = command used to merge the branches from the remote repo main branch to the local repo main branch. fast-forward merge since th elocal repo main branch is empty. Run this from the local repo 
+git merge remote/branch <--syntax--> = git merge origin/main = command used to merge the branches from the remote repo main branch to the local repo main branch. fast-forward merge since the local repo main branch is empty. Run this from the local repo 
 
 
 git push origin <localbranch>:<remotebranch> = command used to  push a local branch to a remote with a different name:
@@ -72,7 +72,7 @@ git push origin main = The git push command pushes (sends) local changes to any 
 
 git rebase -i HEAD~3 = Start an interactive rebase on the commit before the faulty one; This will open an editor with the last 3 commits.
 
-Got it, you want to remove the extra I: Dummy commit for merge. We can do this using an interactive rebase:
+Got it, you want to  the extra I: Dummy commit for merge. We can do this using an interactive rebase:
 
 Switch to the main branch (if you're not already on it):
 
@@ -110,6 +110,8 @@ c1fd8e9 (HEAD -> main) K: Merge Branch update_dune
 0cc6b8c I: Another dummy commit for merge
 01d6435 I: Dummy commit for merge
 324c901  (origin/main) J: Update classics.csv
+
+
 
 
 
@@ -707,4 +709,63 @@ You can add comments to your .gitignore file by starting a line with a #. For ex
 
 explorer.exe advert.html = used this to open an html file in my browser
 
+
+
+
+
+
+
+#### GIT COURSE # 2
+
+git branch -d branch_name =  delete a branch locally while in a different branch
+
+cat .git/HEAD = Manually check and see what HEAD is pointing to from the root of your repo
+
+git reflog = kinda like git log but stands for "reference log" and specifically logs the changes to a "reference" that have happened over time.
+
+Reflog uses a different format to show the history of a branch or HEAD: one that's more concerned with the number of steps back in time. For example:
+
+reflog	meaning
+HEAD@{0}	where HEAD is now
+HEAD@{1}	where HEAD was 1 move ago
+HEAD@{2}	where HEAD was 2 moves ago
+HEAD@{3}	where HEAD was 3 moves ago
+...	...
+
+# How to recover a commit from a deleted branch
+
+-Use git reflog to look at where your HEAD has been. Find the commit hash that corresponds to the "slander" change that we lost.
+-Remember the git cat-file -p command from the first course? Provide it the short commit hash from the reflog.
+-Use the tree hash from the commit to find the blob hash for the slander.md file.
+-Use it one last time to print the contents of the deleted file.
+-Recreate the slander.md file in the root of the repo with the same text.
+-Commit that file with a message: B: recovery
+
+# a faster way is to use git merge <commitish> for example - git merge HEAD@{1}
+A "commitish" is something that looks like a commit (branch, tag, commit, HEAD@{1})
+
+0d16f95 (HEAD -> main, origin/main, origin/HEAD) HEAD@{0}: checkout: moving from slander to main
+# 543772e HEAD@{1}: commit: B: slander
+0d16f95 (HEAD -> main, origin/main, origin/HEAD) HEAD@{2}: checkout: moving from main to slander
+0d16f95 (HEAD -> main, origin/main, origin/HEAD) HEAD@{3}: checkout: moving from add_contrib to main
+f5d686d (origin/add_contrib) HEAD@{4}: commit: add myself as a contributor
+0d16f95 (HEAD -> main, origin/main, origin/HEAD) HEAD@{5}: checkout: moving from main to add_contrib
+0d16f95 (HEAD -> main, origin/main, origin/HEAD) HEAD@{6}: checkout: moving from add_contrib to main
+e4c23c7 HEAD@{7}: checkout: moving from main to add_contrib
+0d16f95 (HEAD -> main, origin/main, origin/HEAD) HEAD@{8}: reset: moving to HEAD~1
+e4c23c7 HEAD@{9}: checkout: moving from add_contrib to main
+e4c23c7 HEAD@{10}: reset: moving to origin/add_contrib
+e4c23c7 HEAD@{11}: checkout: moving from main to add_contrib
+e4c23c7 HEAD@{12}: checkout: moving from add_contrib to main
+e4c23c7 HEAD@{13}: checkout: moving from main to add_contrib
+e4c23c7 HEAD@{14}: checkout: moving from add_contrib to main
+e4c23c7 HEAD@{15}: checkout: moving from main to add_contrib
+e4c23c7 HEAD@{16}: commit: added myself as a contributer
+
+
+git reset --hard (desired commit hash without parenthesis) will remove recent commits back to desired commmit. 
+
+git checkout --theirs path/to/file = The git checkout command can checkout the individual changes during a merge conflict using the --theirs or --ours flags.
+--ours will overwrite the file with the changes from the branch you are currently on and merging into
+--theirs will overwrite the file with the changes from the branch you are merging into the current branch
 

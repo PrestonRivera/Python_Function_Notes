@@ -6479,3 +6479,190 @@ Next iteration, growth_sequence[-1] is 20, and 20 * 2 = 40, so the list becomes 
 This continues until you've looped days times.
 '''
 
+# TRAVEL TIME LEFT
+
+def num_countries_in_days(max_days, factor):
+    time_left = max_days
+    count = 0
+    time_in_country = 1
+
+
+    while time_left >= time_in_country:
+        time_left -= time_in_country  # Subtract time spent in the current country from time_left
+        time_in_country *= factor     # Increase the time required for the next country
+        count += 1                    # Increment the count of countries visited
+    return count
+
+# Non-Deterministic Polynomial Time
+'''NP (which stands for nondeterministic polynomial time) is the set of problems whose solutions can be verified in polynomial time, but not necessarily solved in polynomial time.
+
+For a more precise definition of NP, take a look here.
+
+P is in NP
+Because all problems that can be solved in polynomial time can also be verified in polynomial time, all the problems in P are also in NP
+
+P in NP
+
+The Oracle
+A good way of thinking about problems in NP is to imagine that we have a magic oracle that gives us potential solutions to problems. Here would be our process for finding if a problem is in NP:
+
+Present the problem to the magic oracle
+The magic oracle gives us a potential solution
+We verify in polynomial time that the solution is correct
+If we can do the verification in polynomial time, the problem is in NP, otherwise, it isn't.'''
+
+# TRAVELING SALESMAN PROBLEM
+
+# Probelm solved in NP(Non polynomial time) (O(n!)) Factorial
+
+def tsp(cities, paths, dist):
+    posible_paths = permutations(cities)
+    
+    for path in posible_paths:
+        total_distance = 0  # Initialize for each path
+        
+        for i in range(len(path) - 1):
+            from_city = path[i]
+            to_city = path[i + 1]
+            total_distance += paths[from_city][to_city]  # Accumulate the distance
+        
+        # After summing the path distance, check if it's less than dist
+        if total_distance < dist:
+            return True
+    
+    # If no path found within the distance, return False
+    return False
+
+# Dont touch below this line
+
+def permutations(arr):
+    res = []  # Initialize the result list to store permutations
+    res = helper(res, arr, len(arr))  # Call the helper function
+    return res  # Return the final result
+
+
+def helper(res, arr, n):
+    if n == 1:
+        tmp = arr.copy()  # Make a copy of arr
+        res.append(tmp)  # Append the copy to res
+    else:
+        for i in range(n):
+            # Recursive call to generate permutations for n-1 elements
+            res = helper(res, arr, n - 1)
+
+            # Swap logic for generating permutations
+            if n % 2 == 1:  # If n is odd
+                arr[n - 1], arr[i] = arr[i], arr[n - 1]  # Swap the last element with the i-th element
+            else:  # If n is even
+                arr[0], arr[n - 1] = arr[n - 1], arr[0]  # Swap the first element with the last element
+    return res
+
+# Probem verified in P(Polynomial time) - O(n)
+
+def verify_tsp(paths, dist, actual_path):
+
+    verify_distance = 0
+    # Calculate the distance for travelling through the path
+    for i in range(len(actual_path) - 1):
+        path_a = actual_path[i]
+        path_b = actual_path[i + 1]
+        verify_distance += paths[path_a][path_b]
+    # Add the distance from the last city back to the starting city
+    verify_distance += paths[actual_path[-1]][actual_path[0]]
+    # Compare the computed distance to the provided distance
+    if  verify_distance < dist:
+        return True
+    return False
+
+# NP-Complete / reducer
+'''Some, but not all problems in NP are also considered to be NP-complete.
+
+A problem in NP is also NP-complete if every other problem in NP can be reduced into it in polynomial time.
+
+How is a problem "reduced"?
+We won't go in deep on the subject of reductions in this course, but we can cover the basics.
+
+Any problem, let's call it Problem A, can be reduced to a different problem, Problem B, if there is an algorithm (called a reducer) that changes an algorithm that solves Problem B into an algorithm that solves Problem A.
+
+Algorithm to solve B -> reducer -> Algorithm to solve A
+
+We say that "Problem A is reducible to problem B" if the reducer from the above can be run in polynomial time.
+
+What Does That Mean With NP-Complete?
+If we have an algorithm that solves an NP-complete problem, it has been proven that we can quickly reduce that algorithm into a new algorithm to solve any other problem in NP.'''
+
+
+
+
+# Password guesses given a pasaword length
+
+def get_num_guesses(length):
+    guesses = 0
+    
+    for i in range(1, length + 1):
+        guesses += 26 ** i
+    return guesses
+        
+'''Does P Equal NP?
+SUSPECT P != NP
+We don't know if P = NP.
+
+We have been unable to prove that P = NP because we can't find any polynomial-time solutions to NP-complete problems. Additionally, we have been unable to prove that P != NP. We suspect P != NP just because it has been so difficult to prove that P = NP.
+
+That said, it's actually more complicated to prove the negative case. To prove the positive case, that P = NP, we simply need to solve an NP-complete problem like TSP in polynomial time. 
+In order to prove the negative case, that P != NP, we would need to exhaustively prove that there's no possible way to solve TSP in polynomial time. That's a lot trickier.'''
+
+
+# NP-HARD
+
+# All NP-complete problems are NP-hard, but not all NP-hard problems are NP-complete. The determining factor between NP-complete and NP-hard is that not all NP-hard problems are in NP.
+
+# math.sqrt(x)
+# Return the square root of x.
+# PRoblem is NP
+
+import math
+
+def prime_factors(n):
+    prime_factor_list = []
+    
+    # Handle factor of 2
+    while n % 2 == 0:
+        prime_factor_list.append(2)
+        n = n // 2 # same thing as shorthand n //= 2
+    
+    # Handle odd factors up to square root of n
+    for i in range(3, int(math.sqrt(n)) + 1, 2):
+        while n % i == 0:
+            prime_factor_list.append(i)
+            n = n // i # same thing as shorthand n //= i
+    
+    # If n is still a prime number and greater than 2, append it to the list
+    if n > 2:
+        prime_factor_list.append(n)
+    
+    return prime_factor_list
+
+# n /= 2 performs floating-point division and assigns the resulting floating-point number back to n. This means if n was an integer, after this operation, n would become a float.
+
+# n //= 2, on the other hand, performs integer (or floor) division and keeps n as an integer. This means it discards any decimal portion and keeps only the whole number part.
+
+
+
+
+
+def find_subset_sum(nums, target, index):
+    # Step 1: If target is 0, we've found a subset
+    if target == 0:
+        return True
+    
+    # Step 2: If index is below 0 and target is not 0, no subset found
+    if index < 0 and target != 0:
+        return False
+    
+    # Step 3: If current number is more than target, skip it
+    if nums[index] > target:
+        return find_subset_sum(nums, target, index - 1)
+    
+    # Step 4: Try excluding and including the current number
+    return find_subset_sum(nums, target, index - 1) or find_subset_sum(nums, target - nums[index], index - 1)
