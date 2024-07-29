@@ -3840,6 +3840,7 @@ These types are passed by reference:
 Lists
 Dictionaries
 Sets
+
 These types are passed by value:
 
 Integers
@@ -3849,6 +3850,47 @@ Booleans
 Tuples
 Most collection types are passed by reference (except for tuples) and most primitive types are passed by value.
 '''
+
+
+keywords = [
+    "functional",
+    "immutable",
+    "declarative",
+    "higher-order",
+    "lambda",
+    "deterministic",
+    "side-effects",
+    "memoization",
+    "referential transparency",
+]
+
+
+def index_keywords(document, index):
+    
+    index_copy = index.copy()
+    if document in index_copy:
+        return index_copy[document], index_copy
+    found_keywords = find_keywords(document)
+    index_copy[document] = found_keywords
+    return found_keywords, index_copy
+
+
+def find_keywords(document):
+    keywords = [
+    "functional",
+    "immutable",
+    "declarative",
+    "higher-order",
+    "lambda",
+    "deterministic",
+    "side-effects",
+    "memoization",
+    "referential transparency",
+    ]
+    found_keywords = [keyword for keyword in keywords if keyword in document]
+    return found_keywords
+
+
 
 # EXAMPLE OF PASS BY REFERENCE (MUTABLE)
 
@@ -5155,6 +5197,19 @@ def is_hexadecimal(hex_string):
         return False
 
 
+def deduplicate_lists(lst1, lst2, reverse=False):
+    combined_list = lst1 + lst2  # Step 1: Combine the lists
+    deduplicate = set(combined_list)  # Step 2: Remove duplicates
+    convert_list = list(deduplicate)  # Step 2: Convert set back to list
+    return sorted(convert_list, reverse=reverse)  # Step 3: Sort the list
+
+# example usage 
+# For ascending order (default)
+print(sorted([4, 2, 5, 1, 3]))  # Output: [1, 2, 3, 4, 5]
+
+# For descending order
+print(sorted([4, 2, 5, 1, 3], reverse=True))  # Output: [5, 4, 3, 2, 1]
+
 from enum import Enum
 
 class DocFormat(Enum):
@@ -5180,6 +5235,21 @@ def convert_format(content, from_format, to_format):
 
 
 
+
+def sort_dates(dates):
+    return sorted(dates, key=format_date)
+
+
+def format_date(date):
+    month, day, year = date.split("-")
+    return f"{year:0>4}-{month:0>2}-{day:0>2}"
+
+'''Let's break it down:
+
+0>4:
+0 is the fill character. It means if the value is shorter than the specified width, pad it with zeros.
+> is the alignment option. It ensures the padding characters (zeros) are added to the left of the number.
+4 is the width. It specifies that the resulting string should be at least 4 characters long.'''
 
 
 
