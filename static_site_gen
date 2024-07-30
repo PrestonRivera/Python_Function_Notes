@@ -287,4 +287,9 @@ Let’s revisit the simple HTML document with these key points in mind:
     <a
 
 
+# Syntax for adding an image to markdown
+# alt text a brief description for screen readers and web scapers. Required for accessibility.
+# url url or relative path to image.
+# title shown on mouse hover. Optional.
 
+![alt text](url "title")

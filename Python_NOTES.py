@@ -876,12 +876,12 @@ for fruit in fruits:
 
     def remove_duplicates(spells):
 
-    learned_spells = set(spells) # I add the spells to a set. Removing any duplicates by adding to a set. 
-    com_spells = [] # created an empty list to add to later.
+        learned_spells = set(spells) # I add the spells to a set. Removing any duplicates by adding to a set. 
+        com_spells = [] # created an empty list to add to later.
     
-    for spells in learned_spells: # iterate over spells in the set.
-        com_spells.append(spells) # add spells to the com_spells list with removed duplicates. 
-    return com_spells
+        for spells in learned_spells: # iterate over spells in the set.
+            com_spells.append(spells) # add spells to the com_spells list with removed duplicates. 
+        return com_spells
 
 # How to remove values from a set. my_set.remove("item")
 
@@ -3723,6 +3723,28 @@ def factorial(n):
     return functools.reduce(lambda x, y: x * y, range(1, n + 1))
 
 
+
+# Splitting document into pages using reduce funciton
+ 
+from functools import reduce
+
+
+def paginator(page_length):
+    def paginate(document):
+        words = document.split()
+        def add_word_to_pages(pages, word):
+            if not pages:
+                return [word]
+            current_page = pages[-1]
+            if len(current_page) + len(word) + 1 > page_length:
+                pages.append(word)
+            else:
+                pages[-1] = current_page + " " + word
+            return pages
+        return reduce(add_word_to_pages, words, [])
+    return paginate
+
+
 # INTERSECT
 
 # The .intersection() method calculates the intersection of two sets.
@@ -4411,6 +4433,123 @@ def new_collection(initial_docs):
     return inner_function
 
 
+def new_clipboard(initial_clipboard):
+    clipboard = initial_clipboard.copy() # Copy original dictionary
+    
+    def copy_to_clipboard(key, value):
+        clipboard[key] = value # Add key value pairs to the copied dictionary
+        
+    def paste_from_clipboard(key):
+        if key in clipboard: # If the key is in dictionary
+            return clipboard[key] # Return its value
+        return "" # If key not in dictionary return empty string
+        
+    return copy_to_clipboard, paste_from_clipboard # return the two functions
+
+
+# selector is the first key and its value should be a dictionary.
+# property is the key for the selector's dictionary and value is its value.
+
+
+def css_styles(initial_styles):
+    # Make a copy of the initial styles to avoid modifying the original dictionary
+    styles = initial_styles.copy()
+
+    # selector is the first key and its value should be a dictionary.
+    # property is the key for the selector's dictionary and value is its value.    
+    def add_style(selector, property, value):
+        # If the selector is not in the styles dictionary, initialize it with an empty dictionary
+        if selector not in styles:
+            styles[selector] = {}
+        # Add or update the property with the given value in the selector's dictionary
+        styles[selector][property] = value
+        # Return the updated styles dictionary
+        return styles
+    
+    # Return the nested add_style function
+    return add_style
+
+
+# Spellchecker and ading words
+
+def user_words(initial_words): # intitial_words is a tuple
+    init_words_list = list(initial_words) # Convert tuple into a list
+    def add_word(word): # Create the add word function
+        init_words_list.append(word) # add words to the list
+        return tuple(init_words_list) # change list back into a tuple and return it
+    return add_word # return the add word funciton
+
+ 
+
+
+
+def get_filter_cmd(filters):
+    # This is the outer function. It takes a dictionary 'filters' as input.
+    # 'filters' is expected to contain option strings as keys and the corresponding
+    # filtering functions as values.
+    
+    def filter_cmd(content, options, word_pairs):
+        # This is the inner function. It's defined inside get_filter_cmd and
+        # will use the 'filters' dictionary passed to the outer function.
+        # It takes three parameters:
+        # - 'content': the string to be filtered.
+        # - 'options': a list of filter option strings.
+        # - 'word_pairs': a list of tuples for word replacements/removals, etc.
+
+        if not options:
+            # If the 'options' list is empty, raise an exception with the message
+            # "missing options".
+            raise Exception("missing options")
+
+        for option in options:
+            # Loop through each option in the 'options' list.
+            if option in filters:
+                # If the option is a valid key in the 'filters' dictionary,
+                # apply the corresponding filter function to 'content'.
+                # The function call 'filters[option](content, word_pairs)' replaces
+                # 'content' with the filtered output.
+                content = filters[option](content, word_pairs)
+            else:
+                # If the option is not a valid key in 'filters', raise an exception with
+                # the message "invalid option".
+                raise Exception("invalid option")
+
+        # After applying all the specified filters, return the modified 'content'.
+        return content
+
+    # Return the 'filter_cmd' function when 'get_filter_cmd' is called.
+    return filter_cmd
+
+def replace_words(content, word_pairs):
+    for pair in word_pairs:
+        content = content.replace(pair[0], pair[1])
+    return content
+
+
+def remove_words(content, word_pairs):
+    for pair in word_pairs:
+        content = content.replace(pair[0], "")
+    return content
+
+
+def capitalize_sentences(content, word_pairs):
+    return ". ".join(map(str.capitalize, content.split(". ")))
+
+
+def uppercase_words(content, word_pairs):
+    for pair in word_pairs:
+        content = content.replace(pair[0], pair[0].upper())
+    return content
+
+
+filters = {
+    "--replace": replace_words,
+    "--remove": remove_words,
+    "--capitalize": capitalize_sentences,
+    "--uppercase": uppercase_words,
+}
+
+
 # CURRYING
 
 # Function currying is a specific kind of function transformation where we translate a single function that accepts multiple arguments into multiple functions that each accept a single argument.
@@ -4491,10 +4630,39 @@ def markdown_to_html(doc, asterisk_style):
     def markdown_to_html(asterisk_style):
         def asterisk_md_to_html(doc):
         # do stuff with doc and asterisk_style...
-        return asterisk_md_to_html
+            return asterisk_md_to_html
 
-markdown_to_html_italic = markdown_to_html('italic')
-colorize(markdown_to_html_italic, doc)
+    markdown_to_html_italic = markdown_to_html('italic')
+    colorize(markdown_to_html_italic, doc)
+
+
+# Configure image size using min and max functions. 
+
+def configure_image_size(max_width, max_height):
+    def inner_function(min_width=0, min_height=0): # Set default values to zero
+        if min_width > max_width or min_height > max_height:
+            raise Exception("minimum size cannot exceed maximum size")
+        
+        def innermost_function(width, height):
+            new_width = min(max(width, min_width), max_width)  # Ensuring width is between min_width and max_width
+            new_height = min(max(height, min_height), max_height)  # Ensuring height is between min_height and max_height
+            
+            return new_width, new_height  # Returning the constrained width and height
+        
+        return innermost_function  # Returning the innermost function itself
+    
+    return inner_function  # Returning the intermediate function itself
+
+'''Innermost Call: max(height, min_height)
+    This ensures height is at least min_height.
+
+    Outermost Call: min(result, max_height)
+    This ensures the result of the max call is at most max_height.
+    
+For height=1200:
+
+max(1200, 600) results in 1200.
+min(1200, 1080) results in 1080.'''
 
 
 # Remember, currying is when we take a function that accepts multiple arguments:
@@ -4605,12 +4773,27 @@ aabb"""
 num_lines = lines_with_sequence("a")(2)(doc)
 print(num_lines) # Expected output: 2
 
+#
+
+def create_markdown_image(alt_text):
+    alt_text_md = f"![{alt_text}]"
+    def inner_function(url):
+        escaped_url = url.replace("(", "%28").replace(")", "%29")
+        enclosed_url = f"({escaped_url})"
+        combined = alt_text_md + enclosed_url
+        def innermost_function(title=None):
+            if title:
+                enclosed_title = f' "{title}"'
+                return combined[:-1] + enclosed_title + ")"
+            return combined
+        return innermost_function
+    return inner_function
 
 
 
-### DECORATORS
+### DECERATORS
 
-# Decorators are a Python-specific way of modifying functions.
+# decerators are a Python-specific way of modifying functions.
 
 '''Example:'''
 
@@ -4861,7 +5044,35 @@ def log_call_count(func_to_decorate):
 
 
 
+def configure_plugin_decorator(func):
+    def wrapper(*args):
+        dictionary = dict(args)
+        global_config = dict(
+            map(lambda item: (func.__name__ + "." + item[0], item[1]), dictionary.items())
+        )
+        result = func(**dictionary)
 
+        return result, global_config
+    return wrapper
+
+# Original dictionary
+dictionary = {"path": "~/documents", "prefix": "copy_", "extension": ".md"}
+
+# Function name pretending to be inside a function
+func_name = "configure_backups"
+
+# Transform each (key, value) to ("func_name.key", value)
+transformed_items = map(lambda item: (func_name + "." + item[0], item[1]), dictionary.items())
+
+# Convert the transformed items back to a dictionary
+global_config = dict(transformed_items)
+
+# global_config now looks like:
+# {
+#    "configure_backups.path": "~/documents",
+#    "configure_backups.prefix": "copy_",
+#    "configure_backups.extension": ".md"
+# }
 
 
 
