@@ -4878,6 +4878,22 @@ def process_doc(doc, file_type):
     return (f"Processing doc: '{doc}'. File Type: {file_type}")
 
 
+from functools import lru_cache # lru_cache memoizes the inputs and outputs of the decorated function in a size-restricted dictionary
+
+@lru_cache()
+def is_palindrome(word):
+    # Base case
+    if len(word) <= 1:
+        return True
+    
+    # Compare the first and last letters
+    if word[0] != word[-1]:
+        return False
+    
+    # Recursive call, examining the substring without the first and last letters
+    return is_palindrome(word[1:-1]) # creates a substring starting from the second character up to, but not including, the last character.
+
+
 
 ### ARGS AND KWARGS
 
@@ -5296,7 +5312,126 @@ Each "Color" has a "name" (e.g. Color.RED) and a "value" (e.g. 1). The value is 
 Integers take up less memory than strings, which helps with performance.
 '''
 
+from enum import Enum
 
+
+class CSVExportStatus(Enum):
+    PENDING = 1
+    PROCESSING = 2
+    SUCCESS = 3
+    FAILURE = 4
+
+
+def get_csv_status(status, data):
+    if status == CSVExportStatus.PENDING:
+        return handle_pending(data)
+    elif status == CSVExportStatus.PROCESSING:
+        return handle_processing(data)
+    elif status == CSVExportStatus.SUCCESS:
+        return "Success!", data
+    elif status == CSVExportStatus.FAILURE:
+        prepared_data = handle_pending(data)[1]
+        return "Unknown error, retrying...", handle_processing(prepared_data)[1]
+    else:
+        raise Exception("Unknown export status")
+
+
+
+def handle_pending(data):
+    converted_data = list(map(lambda lst: list(map(str, lst)), data))
+    return "Pending...", converted_data
+
+def handle_processing(data):
+    csv_rows = map(lambda lst: ",".join(lst), data)
+    csv_string = "\n".join(csv_rows)
+    return "Processing...", csv_string
+
+####
+
+
+from enum import Enum
+
+
+class EditType(Enum):
+    NEWLINE = 1
+    SUBSTITUTE = 2
+    INSERT = 3
+    DELETE = 4
+
+
+def handle_edit(document, edit_type, edit):
+    match edit_type:
+        case EditType.NEWLINE:
+            return handle_newline(document, edit)
+        case EditType.SUBSTITUTE:
+            return handle_substitute(document, edit)
+        case EditType.INSERT:
+            return handle_insert(document, edit)
+        case EditType.DELETE:
+            return handle_delete(document, edit)
+        case _:
+            raise Exception("Unknown edit type")
+
+def handle_newline(document, edit):
+    line_number = edit['line_number']
+    lines = document.split("\n")
+    if line_number >= len(lines):
+        raise Exception("Invalid line number")
+    lines[line_number] += "\n"
+    return "\n".join(lines)
+
+
+def handle_substitute(document, edit):
+    line_number = edit["line_number"]
+    start = edit["start"]
+    end = edit["end"]
+    insert_text = edit["insert_text"]
+    lines = document.split("\n")
+    
+    if line_number >= len(lines):
+        raise Exception("Invalid line number")
+    if start > len(lines[line_number]):
+        raise Exception("Invalid start index")
+    if end > len(lines[line_number]) or end < start:
+        raise Exception("Invalid end index")
+
+    lines[line_number] = lines[line_number][:start] + insert_text + lines[line_number][end:]
+    return "\n".join(lines)
+
+
+def handle_insert(document, edit):
+    insert_text = edit["insert_text"]
+    line_number = edit["line_number"]
+    start = edit["start"]
+    lines = document.split("\n")
+
+    if line_number >= len(lines):
+        raise Exception("Invalid line number")
+    if start > len(lines[line_number]):
+        raise Exception("Invalid start index")
+
+    lines[line_number] = lines[line_number][:start] + insert_text + lines[line_number][start:]
+    return "\n".join(lines)
+
+
+def handle_delete(document, edit):
+    line_number = edit["line_number"]
+    start = edit["start"]
+    end = edit["end"]
+    lines = document.split("\n")
+    
+    if line_number >= len(lines):
+        raise Exception("Invalid line number")
+    if start > len(lines[line_number]):
+        raise exception("Invalid start index")
+    if end > len(lines[line_number]) or end < start:
+        raise Exception("Invalid end index")
+
+    lines[line_number] = lines[line_number][:start] + lines[line_number][end:]
+    return "\n".join(lines)
+
+
+####
 
 from enum import Enum
 
@@ -6947,3 +7082,279 @@ def find_subset_sum(nums, target, index):
     
     # Step 4: Try excluding and including the current number
     return find_subset_sum(nums, target, index - 1) or find_subset_sum(nums, target - nums[index], index - 1)
+
+
+
+### DATA STRUCTURES ###
+
+
+def count_potions(inventory):
+    count = 0
+
+    for item in inventory:
+        if item == "Healing potion":
+            count += 1
+    return count
+
+
+# WHAT IS A DATA STRUCTURE
+
+'''More formally, a data structure is a data organization, management, and storage format that enables efficient access and modification. More precisely, a data structure is a collection of data values, the relationships among them, and the functions or operations that can be applied to the data.'''
+
+'''
+In other words, a data structure:
+
+Stores data
+Organizes data in such a way that we can read and modify it quickly
+Implements algorithmic functions that expose the ability to read and modify the data
+Examples of data structures you are likely already familiar with:'''
+
+# Array (AKA list or slice) - several elements stored in a specific order
+myList = ['cat', 'dog', 'mouse']
+
+# Record (AKA dictionary or map) - Unordered* elements stored by key/value pair
+myDict = {
+  "brand": "Ford",
+  "model": "Mustang",
+  "year": 1964
+}
+
+
+# LIST INDEXING
+
+def last_item(inventory):
+    if len(inventory) < 1: # If list is empty return none
+        return None
+    return inventory[-1] # return the last item in the list
+
+
+# or 
+
+def last_item(inventory):
+    if len(inventory) > 0:
+        return inventory[len(inventory) - 1]
+    return None
+
+
+## STACKS
+
+# What is a stack?
+'''A stack is an abstract data type that serves as a collection of elements. Our stack will have several operations:
+
+stack.push(item) -> places a new item on top of the stack
+stack.pop() -> removes the top item from the stack and returns it
+stack.peek() -> returns the top item from the stack without modifying the stack
+stack.size() -> returns the number of items in the stack'''
+
+
+class Stack:
+    def __init__(self):
+        self.arrows = []
+
+    def push(self, arrow): # adds item to the end of the list
+        self.arrows.append(arrow)
+
+    def pop(self): # removes the last item from the list
+        if len(self.arrows) == 0:
+            return None
+        return self.arrows.pop()    
+
+    def peek(self): # shows the last item in the list without modifying the list
+        if len(self.arrows) == 0:
+            return None
+        return self.arrows[-1] # Or self.arrows[len(self.arrows) - 1]
+
+    def size(self): # returns the length of the list
+        return len(self.arrows)
+    
+
+###
+
+
+def function_one():
+	# function_one is pushed onto the callstack
+	function_two()
+	function_two()
+	# function_one is popped off of the callstack
+
+def function_two():
+	# function_two is pushed onto the callstack
+	function_three()
+	function_three()
+	# function_two is popped off of the callstack
+
+def function_three():
+	# function_three is pushed onto the callstack
+	print("function three")
+	# function_three is popped off of the callstack
+
+function_one()
+    
+'''
+For simplicity's sake, let's just focus on the runtime's call frames to understand why a stack is used. A call frame is just an area of memory that is set aside by the language to keep track of a function call in progress.
+Call frames are born when a function is called, and they die when a function returns.
+
+In other words:
+
+Calling a function pushes a call frame onto the runtime stack
+Returning from a function pops the top frame off the stack.'''
+
+'''
+Let's do a runtime stack simulation so we can better visualize how it works.
+
+I've provided a call() function that takes a function as input and executes it with some additional logging. Instead of calling each function in the normal way you can use the call function. For example:
+
+call(my_function)
+Copy icon
+instead of:
+
+my_function()
+Copy icon
+The call function will push and pop the name of the function on and off of our own Stack implementation, and will print the state of the stack at each step.'''
+
+def attack_action():
+    call(shoot_arrow)
+    call(calc_new_health)
+
+
+def shoot_arrow():
+    call(calc_damage)
+
+
+def calc_damage():
+    call(apply_damage)
+
+
+# don't touch below this line
+
+
+def calc_new_health():
+    pass
+
+
+def apply_damage():
+    pass
+
+
+class Stack:
+    def __init__(self):
+        self.items = []
+
+    def push(self, item):
+        self.items.append(item)
+
+    def pop(self):
+        if len(self.items) == 0:
+            return None
+        return self.items.pop()
+
+    def peek(self):
+        if len(self.items) == 0:
+            return None
+        return self.items[len(self.items) - 1]
+
+
+stack = Stack()
+
+
+def call(func):
+    stack.push(func.__name__)
+    print("Pushing " + func.__name__)
+    print("Stack: " + str(stack.items))
+    print("=================================")
+    func()
+    stack.pop()
+    print("Popping " + func.__name__)
+    print("Stack: " + str(stack.items))
+    print("=================================")
+
+
+call(attack_action)
+
+###
+
+'''
+Balanced Parentheses
+
+((()))
+(())()
+(())
+()()
+()
+Copy icon
+Unbalanced Parentheses
+
+(()))
+())
+)
+(
+'''
+
+
+def is_balanced(input_str):
+    stack = Stack()
+    for char in input_str:
+        if char == "(":
+            stack.push(char)
+        elif char == ")":  # Use `elif` here
+            if stack.pop() is None:  # Check if the stack is empty when popping
+                return False
+    return stack.peek() is None  # Final check outside the loop
+            
+
+
+# don't modify below this line
+
+
+class Stack:
+    def __init__(self):
+        self.items = []
+
+    def push(self, item):
+        self.items.append(item)
+
+    def pop(self):
+        if len(self.items) == 0:
+            return None
+        return self.items.pop()
+
+    def peek(self):
+        if len(self.items) == 0:
+            return None
+        return self.items[len(self.items) - 1]
+    
+
+
+###
+
+# Overiding parent class push method in child class 
+
+class Stack:
+    def __init__(self):
+        self.items = []
+
+    def push(self, item):
+        self.items.append(item)
+
+    def pop(self):
+        if len(self.items) == 0:
+            return None
+        return self.items.pop()
+
+    def peek(self):
+        if len(self.items) == 0:
+            return None
+        return self.items[len(self.items) - 1]
+
+
+# don't modify above this line
+
+
+class PotionStack(Stack):
+    def push(self, potion):
+        if self.peek() != potion:
+            return super().push(potion)
+        
+
+###
+
