@@ -7205,11 +7205,11 @@ Let's do a runtime stack simulation so we can better visualize how it works.
 I've provided a call() function that takes a function as input and executes it with some additional logging. Instead of calling each function in the normal way you can use the call function. For example:
 
 call(my_function)
-Copy icon
+
 instead of:
 
 my_function()
-Copy icon
+
 The call function will push and pop the name of the function on and off of our own Stack implementation, and will print the state of the stack at each step.'''
 
 def attack_action():
@@ -7357,4 +7357,233 @@ class PotionStack(Stack):
         
 
 ###
+
+# QUEUE
+
+'''A queue is an abstract data type that serves as an ordered collection of elements. A simple queue typically has several operations:'''
+
+# queue.push(item) -> adds an item to the tail of the queue
+# queue.pop() -> removes and returns an item from the head of the queue
+# queue.peek() -> returns an item from the head of the queue
+# queue.size() -> returns the number of items in the queue
+
+'''
+The order in which elements come off a queue gives rise to its alternative name, FIFO (first in, first out)
+
+Think of a line to get tickets. The first person to get in line will be the first person to receive a ticket and get out of line.
+
+-> [tail, item, item, item, head] ->'''
+
+class Queue:
+    def __init__(self):
+        self.items = []
+
+    def push(self, item):
+        self.items.insert(0, item)
+
+    def pop(self):
+        if len(self.items) == 0:
+            return None
+        return self.items.pop(-1)
+
+    def peek(self):
+        if len(self.items) == 0:
+            return None
+        return self.items[-1]
+
+    def size(self):
+        return len(self.items)
+
+
+
+ # If we were dealing with a dictionary 
+
+# Initializing the Dictionary Queue
+
+# Dictionary-Based Initialization:
+
+class DictQueue:
+    def __init__(self):
+        self.items = {}
+        self.next_key = 0  # Track the next key to use for insertion
+
+# Here, we use items as a dictionary and next_key to track the insertion order since dictionaries do not maintain an explicit order.
+
+# Dictionary-Based Push:
+
+def push(self, item):
+    self.items[self.next_key] = item
+    self.next_key += 1
+
+# In the dictionary version, we add the item with an integer key (next_key) that increases with each push to maintain order.
+
+# Dictionary-Based Pop:
+
+def pop(self):
+    if len(self.items) == 0:
+        return None
+    last_key = max(self.items.keys())  # The key with the highest number, representing the last inserted
+    temp = self.items[last_key]
+    del self.items[last_key]
+    return temp
+
+# In the dictionary version, we find the last key using max, retrieve the item, and then delete it.
+
+# Dictionary-Based Peek:
+
+def peek(self):
+    if len(self.items) == 0:
+        return None
+    last_key = max(self.items.keys())
+    return self.items[last_key]
+
+
+
+# Linked Lists (LL)
+
+# A linked list is a linear data structure where elements are not stored next to each other in memory. The elements in a linked list are linked using pointers.
+
+# Linked lists can be contrasted with the native List (aka Array) in Python. Items in a normal list are stored next to each other in memory, and to get an item from a List we need to use the numbered index:
+
+# item = myList[1]
+
+# In a linked list, there are no indexes. We need to walk each node of the list because the only way to get the location of the second item in a linked list is to look at the pointer of the first item.
+
+'''
+head node -> node -> node -> node -> tail node
+
+The direction of flow above might feel opposite to what you're used to with a Queue, but it's really the same. Above I'm using arrows to show which nodes are pointing to which other nodes. In a future lesson when we implement a Queue using a LinkedList, we'll add elements to the tail and remove elements from the head. When we use arrows to denote the flow of data through the queue, it will still be:
+
+tail node -> node -> node -> node -> head node
+'''
+    
+
+# EXAMPLE USAGE
+
+# Create nodes
+node1 = Node("Node 1")
+node2 = Node("Node 2")
+node3 = Node("Node 3")
+
+# Link nodes
+node1.next = node2
+node2.next = node3
+
+# Create a linked list and set its head
+linked_list = LinkedList()
+linked_list.head = node1
+
+# Let's iterate over our linked list
+for node in linked_list:
+    print(node.val)
+
+# Output should be:
+# Node 1
+# Node 2
+# Node 3
+
+
+
+# ADDED add_to_tail method to class LinkedList
+# ADDED add_to_head method to class LinkedList
+
+
+class LinkedList:
+
+    def add_to_head(self, node):
+        if self.head is None:
+            self.head = node
+            self.tail = node
+            return 
+        node.next = self.head
+        self.head = node
+
+    def add_to_tail(self, node):
+        if self.head is None:
+            self.head = node
+            self.tail = node
+            return 
+        self.tail.next = node
+        self.tail = node
+
+    def __init__(self):
+        self.head = None
+
+    def __iter__(self):
+        node = self.head
+        while node is not None:
+            yield node
+            node = node.next
+
+    def __repr__(self):
+        nodes = []
+        for node in self:
+            nodes.append(node.val)
+        return " -> ".join(nodes)
+
+
+class Node:
+    def __init__(self, val):
+        self.val = val
+        self.next = None
+
+    def set_next(self, node):
+        self.next = node
+
+    def __repr__(self):
+        return self.val
+
+
+
+# Changed LinkedList class to LLQueue class and removed add_to_head functionality because Queues don't allow inserting into the wrong end.
+
+class LLQueue:
+    def remove_from_head(self):
+        if self.head is None:
+            return None
+        else:
+            current_head = self.head
+            self.head = current_head.next
+            if self.head is None:
+                self.tail = None
+            return current_head
+        
+    # don't touch below this line
+
+    def add_to_tail(self, node):
+        if self.head is None:
+            self.head = node
+            self.tail = node
+            return
+        self.tail.next = node
+        self.tail = node
+
+    def __init__(self):
+        self.tail = None
+        self.head = None
+
+    def __iter__(self):
+        node = self.head
+        while node is not None:
+            yield node
+            node = node.next
+
+    def __repr__(self):
+        nodes = []
+        for node in self:
+            nodes.append(node.val)
+        return " <- ".join(nodes)
+
+
+class Node:
+    def __init__(self, val):
+        self.val = val
+        self.next = None
+
+    def set_next(self, node):
+        self.next = node
+
+    def __repr__(self):
+        return self.val
+    
 
