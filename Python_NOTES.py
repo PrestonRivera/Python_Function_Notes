@@ -7587,3 +7587,235 @@ class Node:
         return self.val
     
 
+### Matchmaking queue
+
+def matchmake(queue, player):
+    if player[-1] == "join":
+        queue.push(player[0])
+    if player[-1] == "leave":
+        queue.search_and_remove(player[0])
+    if queue.size() >= 4:
+        player1 = queue.pop()
+        player2 = queue.pop()
+        return f"{player1} matched {player2}!"
+    if queue.size() < 4:
+        return "No match found"
+
+        
+
+class Queue:
+    def __init__(self):
+        self.items = []
+
+    def push(self, item):
+        self.items.insert(0, item)
+
+    def pop(self):
+        if len(self.items) == 0:
+            return None
+        temp = self.items[-1]
+        del self.items[-1]
+        return temp
+
+    def peek(self):
+        if len(self.items) == 0:
+            return None
+        return self.items[-1]
+
+    def size(self):
+        return len(self.items)
+
+    def search_and_remove(self, item):
+        if item not in self.items:
+            return None
+        self.items.remove(item)
+        return item
+
+    def __repr__(self):
+        return f"[{', '.join(self.items)}]"
+    
+
+
+
+### What is a tree
+
+'''A tree is a widely used data structure that simulates a hierarchical tree structure, with a root value and subtrees of children with a parent node, represented as a set of linked nodes.'''
+
+'''
+A tree is a collection of nodes starting at a root or head node, similar to how our Linked List was a collection of nodes starting with a head (root). The big difference between a LL and a tree is that a tree's nodes can have multiple children instead of just one.
+
+A generic tree structure has the following rules:
+
+Each node has a value and a list of "children"
+Children can only have a single "parent"
+Duplicate values are allowed, multiple nodes can have the same value
+Linked List
+node -> node -> node
+Copy icon
+Tree
+            > node
+      > node
+            > node
+> node            
+            > node
+      > node
+            > node
+'''
+
+
+### Binary trees 
+
+# Trees aren't particularly useful data structures unless they're ordered in some way. One of the most common types of ordered tree is a Binary Search Tree or BST. 
+# In addition to the properties we've already talked about, a BST has some additional constraints:
+
+
+'''Binary search tree or BST'''
+
+# Instead of a list of children, each node has at most 2 children, a right and a left child
+# The left child's value must be less than its parent's value
+# The right child's value must be greater than its parents
+# No two nodes in the BST can have the same value
+
+'''Some of the simpler algorithms in regard to a BST are the get_min and get_max methods. The get_min function should loop through all the left child nodes and return the value of the last one. The get_max function should do the same for the right children.'''
+
+
+class BSTNode:
+
+
+    def get_min(self):
+        if self.left == None:
+            min = self.val
+        if self.left != None:
+            min = self.left.get_min()
+        return min
+        
+
+    def get_max(self):
+        if self.right == None:
+            max = self.val
+        if self.right != None:
+            max = self.right.get_max()
+        return max 
+
+
+    def __init__(self, val=None):
+        self.left = None
+        self.right = None
+        self.val = val
+    
+
+    def insert(self, val):
+        # If the current node is empty, assign the value here
+        if self.val is None:
+            self.val = val
+
+        # If the current node's value matches the inserted value, do nothing (no duplicates)
+        elif self.val == val:
+            pass
+
+         # If the inserted value is less than the current node's value
+        elif val < self.val:
+
+            # If there's no left child, create a new node there
+            if self.left is None:
+                self.left = BSTNode(val)
+
+            # Otherwise, recursively attempt to insert on the left child
+            else:
+                 self.left.insert(val)
+
+        # If the inserted value is greater than the current node's value
+        else:
+
+            # If there's no right child, create a new node there
+            if self.right is None:
+                self.right = BSTNode(val)
+
+            # Otherwise, recursively attempt to insert on the right child
+            else:
+                self.right.insert(val)
+
+
+    def delete(self, val):
+        # If the node is empty, return None. This handles cases where you try to delete from an empty tree.
+        if self.val == None:
+            return None
+        # If the value to be deleted is less than the current node's value, recursively delete it from the left subtree.
+        if val < self.val:
+            #  Check if the left child exists before making the recursive call.
+            if self.left:
+                self.left = self.left.delete(val)
+            return self
+        # Similarly, if the value is greater than the current node's value, recursively delete it from the right subtree.
+        if val > self.val:
+            # Check if the right child exists before making the recursive call.
+            if self.right:
+                self.right = self.right.delete(val)
+            return self
+        #  If the value matches the current node's value, we have found the node to be deleted.
+        # Handle three scenarios:
+        if val == self.val:
+            # If there's no right child, just return the left child. 
+            # This effectively deletes the current node and replaces it with the left subtree.
+            if self.right is None:
+                return self.left
+            # Similarly, if there's no left child, return the right child.
+            if self.left is None:
+                return self.right
+            # Handles node with two children
+            if self.left and self.right:
+                #  We're going to find the in-order successor, starting from the right child.
+                right_child = self.right
+                #Traverse to the leftmost child in the right subtree, which is the in-order successor.
+                while right_child.left:
+                    right_child = right_child.left
+                # Replace the current node's value with the successor’s value.
+                self.val = right_child.val
+                #  Recursively delete the successor, which is now a duplicate, from the right subtree.
+                self.right = self.right.delete(right_child.val)
+                # Finally, return the current node to link back properly to its parent in the BST.
+                return self
+            
+   # Implement the recursive preorder method. It returns a list of the values in the order they are visited, and it takes as an argument the ordering of values we have visited so far.
+    def preorder(self, visited):
+        visited.append(self.val)
+
+        if self.left:
+            self.left.preorder(visited)
+        if self.right:
+            self.right.preorder(visited)
+        return visited
+    
+    # Implement the recursive postorder method. It returns a list of the values in the order they are visited, and it takes as an argument the ordering of values we have visited so far.
+    def postorder(self, visited):
+        if self.left:
+            self.left.postorder(visited)
+        if self.right:
+            self.right.postorder(visited)
+        visited.append(self.val)
+        return visited
+    
+    # Implement the recursive inorder method. It returns a list of the values in the order they are visited, and it takes as an argument the ordering of values visited so far.
+    def inorder(self, visited):
+        if self.left:
+            self.left.inorder(visited)
+        if self.val is not None:
+            visited.append(self.val)
+        if self.right:
+            self.right.inorder(visited)
+        return visited
+
+    # Implement the exists method. It should take a value as input and return True if the value exists in the tree, and False if it doesn't.
+    def exists(self, val):
+        if val == self.val:
+            return True
+        if val < self.val:
+            if self.left:
+                return self.left.exists(val)
+        if val > self.val:
+            if self.right:
+                return self.right.exists(val)
+        return False
+   
+
+   
