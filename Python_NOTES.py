@@ -7663,13 +7663,13 @@ Tree
 '''
 
 
-### Binary trees 
+### Binary trees ###
 
 # Trees aren't particularly useful data structures unless they're ordered in some way. One of the most common types of ordered tree is a Binary Search Tree or BST. 
 # In addition to the properties we've already talked about, a BST has some additional constraints:
 
 
-'''Binary search tree or BST'''
+#### Binary search tree or BST ####
 
 # Instead of a list of children, each node has at most 2 children, a right and a left child
 # The left child's value must be less than its parent's value
@@ -7679,7 +7679,46 @@ Tree
 '''Some of the simpler algorithms in regard to a BST are the get_min and get_max methods. The get_min function should loop through all the left child nodes and return the value of the last one. The get_max function should do the same for the right children.'''
 
 
+
+
+
+
 class BSTNode:
+
+
+    def height(self):
+        left_height = 0
+        right_height = 0
+        
+        if self.val == None:
+            return 0
+        else:
+            if self.left:
+                left_height = self.left.height()
+            if self.right:
+                right_height = self.right.height()
+        return max(left_height, right_height) + 1
+
+
+    def search_range(self, lower_bound, upper_bound):
+        
+        character_names = []
+        left_subtree = []
+        right_subtree = []
+        
+        if self.val.gamertag >= lower_bound and self.val.gamertag <= upper_bound:
+            character_names.append(self.val)
+        if self.val.gamertag > lower_bound:
+            if self.left:
+                left_subtree = self.left.search_range(lower_bound, upper_bound)
+        if self.val.gamertag < upper_bound:
+            if self.right:
+                right_subtree = self.right.search_range(lower_bound, upper_bound)
+        if left_subtree:
+            character_names.extend(left_subtree)
+        if right_subtree:
+            character_names.extend(right_subtree)
+        return character_names
 
 
     def get_min(self):
@@ -7737,44 +7776,48 @@ class BSTNode:
 
 
     def delete(self, val):
-        # If the node is empty, return None. This handles cases where you try to delete from an empty tree.
-        if self.val == None:
+         # Check if the current node is empty
+        if self.val is None:
             return None
-        # If the value to be deleted is less than the current node's value, recursively delete it from the left subtree.
+    
+        # If the value to be deleted is less than the current node's value,
+        # recurse into the left subtree
         if val < self.val:
-            #  Check if the left child exists before making the recursive call.
             if self.left:
                 self.left = self.left.delete(val)
             return self
-        # Similarly, if the value is greater than the current node's value, recursively delete it from the right subtree.
+    
+        # If the value to be deleted is greater than the current node's value,
+        # recurse into the right subtree
         if val > self.val:
-            # Check if the right child exists before making the recursive call.
             if self.right:
                 self.right = self.right.delete(val)
             return self
-        #  If the value matches the current node's value, we have found the node to be deleted.
-        # Handle three scenarios:
-        if val == self.val:
-            # If there's no right child, just return the left child. 
-            # This effectively deletes the current node and replaces it with the left subtree.
-            if self.right is None:
-                return self.left
-            # Similarly, if there's no left child, return the right child.
-            if self.left is None:
-                return self.right
-            # Handles node with two children
-            if self.left and self.right:
-                #  We're going to find the in-order successor, starting from the right child.
-                right_child = self.right
-                #Traverse to the leftmost child in the right subtree, which is the in-order successor.
-                while right_child.left:
-                    right_child = right_child.left
-                # Replace the current node's value with the successor’s value.
-                self.val = right_child.val
-                #  Recursively delete the successor, which is now a duplicate, from the right subtree.
-                self.right = self.right.delete(right_child.val)
-                # Finally, return the current node to link back properly to its parent in the BST.
-                return self
+    
+        # If the current node is the one to be deleted and it has no right child,
+        # return the left child (bypassing the current node)
+        if self.right is None:
+            return self.left
+    
+        # If the current node is the one to be deleted and it has no left child,
+        # return the right child (bypassing the current node)
+        if self.left is None:
+            return self.right
+    
+        # When the node to be deleted has two children,
+        # find the in-order successor (smallest node in the right subtree)
+        min_larger_node = self.right
+        while min_larger_node.left:
+            min_larger_node = min_larger_node.left
+    
+        # Replace the current node's value with the in-order successor's value
+        self.val = min_larger_node.val
+    
+        # Delete the in-order successor from the right subtree
+        self.right = self.right.delete(min_larger_node.val)
+    
+        # Return the current node (now updated) to maintain tree structure
+        return self
             
    # Implement the recursive preorder method. It returns a list of the values in the order they are visited, and it takes as an argument the ordering of values we have visited so far.
     def preorder(self, visited):
@@ -7818,4 +7861,159 @@ class BSTNode:
         return False
    
 
-   
+
+
+
+
+
+## Red-Black tree ###
+
+'''
+A red-black tree is a kind of self-balancing binary search tree. Each node stores an extra bit, which we will call the color, red or black. The color ensures that the tree remains approximately balanced during insertions and deletions.
+
+When the tree is modified, the new tree is rearranged and repainted to restore the coloring properties that constrain how unbalanced the tree can become in the worst case.
+'''
+
+# In addition to all the properties of a Binary Search Tree, a red-black tree must have the following:
+
+# Each node is either red or black
+# The root is black. This rule is sometimes omitted. Since the root can always be changed from red to black, but not necessarily vice versa, this rule has little effect on analysis.
+# All Nil leaf nodes are black.
+# If a node is red, then both its children are black.
+# All paths from a single node go through the same number of black nodes to reach any of its descendant NIL nodes.
+
+
+
+class RBNode:
+    def __init__(self, val):
+        self.red = False
+        self.parent = None
+        self.val = val
+        self.left = None
+        self.right = None
+
+
+class RBTree:
+    def __init__(self):
+        self.nil = RBNode(None)
+        self.nil.red = False
+        self.nil.left = None
+        self.nil.right = None
+        self.root = self.nil
+
+
+    def exists(self, val):
+        curr = self.root
+        while curr != self.nil and val != curr.val:
+            if val < curr.val:
+                curr = curr.left
+            else:
+                curr = curr.right
+        return curr
+
+
+    def rotate_left(self, x):
+        if x == self.nil or x.right == self.nil:
+            return x
+        y = x.right
+        x.right = y.left
+        if y.left != self.nil:
+            y.left.parent = x
+        y.parent = x.parent
+        if x == self.root:
+            self.root = y
+        elif x == x.parent.left:
+            x.parent.left = y
+        elif x == x.parent.right:
+            x.parent.right = y
+        y.left = x
+        x.parent = y
+
+
+    def rotate_right(self, x):
+        if x == self.nil or x.left == self.nil:
+            return x
+        y = x.left
+        x.left = y.right
+        if y.right != self.nil:
+            y.right.parent = x
+        y.parent = x.parent
+        if x == self.root:
+            self.root = y
+        elif x == x.parent.right:
+            x.parent.right = y
+        elif x == x.parent.left:
+            x.parent.left = y
+        y.right = x
+        x.parent = y
+    
+
+    def insert(self, val):
+        new_node = RBNode(val)
+        new_node.parent = None
+        new_node.left = self.nil
+        new_node.right = self.nil
+        new_node.red = True
+
+        parent = None
+        current = self.root
+        while current != self.nil:
+            parent = current
+            if new_node.val < current.val:
+                current = current.left
+            elif new_node.val > current.val:
+                current = current.right
+            else:
+                # duplicate, just ignore
+                return
+
+        new_node.parent = parent
+        if parent is None:
+            self.root = new_node
+        elif new_node.val < parent.val:
+            parent.left = new_node
+        else:
+            parent.right = new_node
+        self.fix_insert(new_node)
+
+    
+    def fix_insert(self, new_node):
+        while new_node != self.root and new_node.parent.red:
+            if new_node.parent == new_node.parent.parent.right:
+                uncle = new_node.parent.parent.left
+                if uncle.red:
+                    uncle.red = False
+                    new_node.parent.red = False
+                    new_node.parent.parent.red = True
+                    new_node = new_node.parent.parent
+                elif not uncle.red:
+                    if new_node == new_node.parent.left:
+                        new_node = new_node.parent
+                        self.rotate_right(new_node)
+                    new_node.parent.red = False
+                    new_node.parent.parent.red = True
+                    self.rotate_left(new_node.parent.parent)
+            else:
+                uncle = new_node.parent.parent.right
+                if uncle.red:
+                    uncle.red = False
+                    new_node.parent.red = False
+                    new_node.parent.parent.red = True
+                    new_node = new_node.parent.parent
+                elif not uncle.red:
+                    if new_node == new_node.parent.right:
+                        new_node = new_node.parent
+                        self.rotate_left(new_node)
+                    new_node.parent.red = False
+                    new_node.parent.parent.red = True
+                    self.rotate_right(new_node.parent.parent)
+        self.root.red = False
+
+
+
+
+
+### HASH MAP (AKA HASH TABLE) ####
+
+
+
