@@ -1,50 +1,97 @@
-import time
+import json
 
-# O(2^n) 
+class Trie:
+    def add(self, word):
+        current = self.root
+        
+        for char in word:
+            if char not in current:
+                current[char] = {}
+            current = current[char]
+        current[self.end_symbol] = True
+                
 
-def power_set(input_set):
+    # don't touch below this line
 
-    if len(input_set) == 0:
-        return [[]]
+    def __init__(self):
+        self.root = {}
+        self.end_symbol = "*"
 
-    power_set_list = []
-    recursive = power_set(input_set[1:])
+run_cases = [
+    (
+        ["arc", "art", "arg"],
+        {"a": {"r": {"c": {"*": True}, "g": {"*": True}, "t": {"*": True}}}},
+    ),
+    (
+        ["be", "bad", "back", "bat"],
+        {
+            "b": {
+                "a": {"c": {"k": {"*": True}}, "d": {"*": True}, "t": {"*": True}},
+                "e": {"*": True},
+            }
+        },
+    ),
+]
 
-    for subset in recursive:
-        power_set_list.append([input_set[0]] + subset)
-        power_set_list.append(subset)
-    return power_set_list
+submit_cases = run_cases + [
+    (
+        ["a", "to", "tea", "ted", "ten", "i", "in", "inn"],
+        {
+            "a": {"*": True},
+            "i": {"*": True, "n": {"*": True, "n": {"*": True}}},
+            "t": {
+                "e": {"a": {"*": True}, "d": {"*": True}, "n": {"*": True}},
+                "o": {"*": True},
+            },
+        },
+    ),
+]
 
-input_set = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
-result = power_set(input_set)
+def test(words, expected_trie):
+    print("---------------------------------")
+    print(f"Inputs:")
+    print(f" * Words: {words}")
+    print(" * Expected trie:")
+    print(f"{json.dumps(expected_trie, sort_keys=True, indent=2)}")
+    try:
+        trie = Trie()
+        for word in words:
+            trie.add(word)
+            print(f"Adding {word}...")
+        print("Actual Trie:")
+        print(json.dumps(trie.root, sort_keys=True, indent=2))
+        if trie.root == expected_trie:
+            print("Pass \n")
+            return True
+        print("Fail \n")
+        return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
 
-print("Power set of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]:")
-for subset in result:
-    print(subset)
 
-print(f"\nTotal subets: {len(result)}")
+def main():
+    passed = 0
+    failed = 0
+    for test_case in test_cases:
+        correct = test(*test_case)
+        if correct:
+            passed += 1
+        else:
+            failed += 1
+    if failed == 0:
+        print("============= PASS ==============")
+    else:
+        print("============= FAIL ==============")
+    print(f"{passed} passed, {failed} failed")
 
-# Sample input list with 20 items
-input_set = list(range(1, 21))  # [1, 2, 3, ..., 20]
 
-# Measure the start time
-start_time = time.time()
+test_cases = submit_cases
+if "__RUN__" in globals():
+    test_cases = run_cases
 
-# Running the power_set function
-result = power_set(input_set)
-
-# Measure the end time
-end_time = time.time()
-
-# Printing the output (optional, as it's very large)
-# print("Power set of [1, 2, ..., 20]:")
-
-# for subset in result:
-#     print(subset)
-
-print(f"\nTotal subsets: {len(result)}")
-print(f"Time taken: {end_time - start_time} seconds")
+main()
 
 
 

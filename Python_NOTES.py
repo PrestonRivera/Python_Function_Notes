@@ -7912,7 +7912,7 @@ class RBTree:
         return curr
 
 
-    def rotate_left(self, x):
+    def rotate_left(self, x: RBNode) -> None | RBNode:
         if x == self.nil or x.right == self.nil:
             return x
         y = x.right
@@ -8016,4 +8016,147 @@ class RBTree:
 ### HASH MAP (AKA HASH TABLE) ####
 
 
+class HashMap:
 
+
+    def get(self, key):
+        i = self.key_to_index(key)
+        bucket = self.hashmap[i]
+        if bucket is None:
+            raise Exception("sorry, key not found")
+        return bucket[1]
+
+
+    def insert(self, key, value):
+        self.resize()
+        index = self.key_to_index(key)
+        self.hashmap[index] = (key, value)
+
+
+    def key_to_index(self, key):
+        unicode = 0  # Initialize a variable to hold the sum of Unicode values
+        for char in key:  # Iterate over each character in the key
+            unicode += ord(char)  # Add the Unicode value of each character to the sum
+        return unicode % len(self.hashmap)  # Return the index within the hashmap based on modulus
+
+
+    def resize(self):
+        if len(self.hashmap) == 0:
+            self.hashmap = [None]
+            return
+        current_load = self.current_load()
+        if current_load < 0.05:
+            return
+        else:
+            new_hashmap = [None for i in range(len(self.hashmap) * 10)]
+            old_hashmap = self.hashmap
+            self.hashmap = new_hashmap
+            for item in old_hashmap:
+                if item is not None:
+                    key, value = item
+                    self.insert(key, value)
+
+
+    def current_load(self):
+        filled_buckets = 0
+        if len(self.hashmap) == 0:
+            filled_buckets = 1
+        elif len(self.hashmap) > 0:
+            for bucket in self.hashmap:
+                if bucket != None:
+                    filled_buckets += 1
+        percentage = filled_buckets / len(self.hashmap)
+        return percentage
+
+
+    def __init__(self, size):
+        # Initialize the hashmap with a list of None values of the given size
+        self.hashmap = [None for i in range(size)]
+
+
+    def __repr__(self):
+        buckets = []  # Create a list to hold non-None values
+        for v in self.hashmap:  # Iterate over each element in the hashmap
+            if v != None:  # If the element is not None, add it to the buckets list
+                buckets.append(v)
+        return str(buckets)  # Return a string representation of non-None values
+
+
+
+
+### TRIES ###
+
+'''Tries are one of my favorite data structures, I've used them in the past for natural language processing tasks. At its core, a trie is often represented as a nested tree of dictionaries where each key is a character, 
+and it maps to the next character in the word. For example, the words "hello", "help" and "hi" would be represented as:'''
+
+{
+	"h": {
+		"e": {
+			"l": {
+				"l": {
+					"o": {
+						"*": True
+					}
+				},
+				"p": {
+					"*": True
+				}
+			}
+		},
+		"i": {
+			"*": True
+		}
+	}
+}
+
+# A trie is also often referred to as a "prefix tree" because it can be used to efficiently find all of the words that start with a given prefix.
+
+
+class Trie:
+    
+    
+    def exists(self, word):
+        current = self.root
+        for letter in word:
+            if letter not in current:
+                return False
+            elif letter in current:
+                current = current[letter]
+        if self.end_symbol in current:
+            return True
+        return False
+
+
+    def add(self, word):
+        current = self.root
+        for letter in word:
+            if letter not in current:
+                current[letter] = {}
+            current = current[letter]
+        current[self.end_symbol] = True
+
+
+    def words_with_prefix(self, prefix):
+        words_list = []
+        current = self.root
+        for letter in prefix:
+            if letter not in current:
+                return []
+            else:
+                current = current[letter]
+        return self.search_level(current, prefix, words_list)
+    
+
+    def search_level(self, cur, cur_prefix, words):
+        if self.end_symbol in cur:
+            words.append(cur_prefix)
+        current_keys = sorted(cur.keys())
+        for key in current_keys:
+            if key != self.end_symbol:
+                self.search_level(cur[key], cur_prefix + key, words)
+        return words
+
+    
+    def __init__(self):
+        self.root = {}
+        self.end_symbol = "*"
