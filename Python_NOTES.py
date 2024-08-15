@@ -1224,6 +1224,8 @@ def fight_soldiers(soldier_one, soldier_two):
 
 # CLASSES:
 
+
+
 # """A class is a special type of value in an object-oriented programming language like Python. It's similar to a dictionary in that it usually stores other types inside itself.
 # Just like a string, integer or float, a class is a type, but instead of being a built-in type, your classes are custom types that you define.
 # An object is just an instance of a class type. For example:
@@ -8113,6 +8115,21 @@ and it maps to the next character in the word. For example, the words "hello", "
 
 
 class Trie:
+
+
+    def find_matches(self, document):
+        word_matches = set()
+        
+        for i in range(len(document)):
+            level = self.root
+            for j in range(i, len(document)):
+                char = document[j]
+                if char not in level:
+                    break
+                level = level[char]
+                if self.end_symbol in level:
+                    word_matches.add(document[i:j+1])
+        return word_matches
     
     
     def exists(self, word):
@@ -8155,8 +8172,334 @@ class Trie:
             if key != self.end_symbol:
                 self.search_level(cur[key], cur_prefix + key, words)
         return words
+    
+
+    def longest_common_prefix(self):
+        current = self.root
+        prefix = ""
+        
+        while True:
+            if current != None:
+                children = current.keys()
+                if self.end_symbol in current:
+                    break
+                if len(children) == 1:
+                    prefix += list(children)[0]
+                child_key = list(children)[0]
+                current = current[child_key]
+                if len(children) > 1 or len(children) == None:
+                    break
+        return prefix
 
     
+    def advanced_find_matches(self, document, variations):
+        matches = set()
+        for i in range(len(document)):
+            level = self.root
+            for j in range(i, len(document)):
+                ch = document[j]
+                if ch in variations:
+                    ch = variations[ch]
+                if ch not in level:
+                    break
+                level = level[ch]
+                if self.end_symbol in level:
+                    matches.add(document[i : j+1])             
+        return matches
+
+
+
     def __init__(self):
         self.root = {}
         self.end_symbol = "*"
+
+
+### Intro to graphs ###
+
+'''A graph is an abstract data type that represents a set of vertices and the edges that connect those vertices.'''
+
+# Properties for simple undirected graphs
+'''Graphs can have between 0 and n vertices, there's no maximum
+Graphs can have between 0 and n(n - 1)/2 edges, where n is the number of vertices = n * (n - 1) / 2. vertices 2, 3, 4 could have 1, 3, 6 edges.
+Vertices don't need to be connected at all (they can have no edges). That said, they may be unreachable if this is the case
+An edge connects exactly 2 vertices, and there can't be 2 edges between the same two vertices.
+In directed graphs or multigraphs, there can be multiple edges between the same pair of vertices, especially in different directions.
+Some graphs (called weighted graphs) assign a "cost" to each edge. For example, if a graph represented a geographical map of cities in the real world, 
+the cities would be vertices and the edges would be roads. The weight on the roads could be their lengths. We won't be using weighted graphs for now.'''
+
+# For now, we'll use a matrix to represent the edges in a graph that connect each pair of vertices. For example, here's a matrix that represents the graph above.
+
+#     0	      1	      2	      3	      4
+# 0	false	true	false	false	true
+# 1	true	false	true	true	true
+# 2	false	true	false	true	false
+# 3	false	true	true	false	true
+# 4	true	true	false	true	false
+
+# In Python, we can use a list of lists to represent this matrix:
+
+[
+  [False, True, False, False, True],
+  [True, False, True, True, True],
+  [False, True, False, True, False],
+  [False, True, True, False, True],
+  [True, True, False, True, False]
+]
+
+'''An adjacency matrix is a square matrix used to represent a finite graph. The elements of the matrix indicate whether pairs of vertices are adjacent or not in the graph. 
+True indicates the presence of an edge, false represents the absence.'''
+
+'''Adjacency matrix'''
+
+class Graph:
+    def __init__(self, num_vertices):
+        self.num_vertices = num_vertices
+        self.graph = []
+        for n in range(num_vertices):
+            n = [False] * num_vertices
+            self.graph.append(n)
+        
+    def add_edge(self, u, v):
+        self.graph[u][v] = True
+        self.graph[v][u] = True
+        
+
+
+    def edge_exists(self, u, v):
+        if u < 0 or u >= len(self.graph):
+            return False
+        if len(self.graph) == 0:
+            return False
+        row1 = self.graph[0]
+        if v < 0 or v >= len(row1):
+            return False
+        return self.graph[u][v]
+    
+
+'''Through the rest of this course, we'll primarily be using an adjacency list instead. 
+An adjacency list stores a list of vertices for each vertex that indicates where the connections are.'''
+
+
+# Adjacency List
+# 0	 connects with	1	4		
+# 1	 connects with	0	2	3	4
+# 2	 connects with	1	3		
+# 3	 connects with	1	2	4	
+# 4	 connects with	0	1	3	
+
+
+# Breadth First Search (BFS)
+'''Breadth-first search (BFS) is an algorithm for traversing or searching tree or graph data structures. It starts at the tree root (or some arbitrary node of a graph), 
+and explores all of the neighbor nodes at the present depth before moving on to the nodes at the next depth level.'''
+
+'''
+It should:
+
+Create an empty visited list.
+Create an empty to_visit list.
+Queue up the start vertex by adding it to the to_visit list.
+While to_visit is not empty:
+    Remove the first vertex off the to_visit list with pop and visit it by appending it to visited.
+    Get a sorted() list of the neighbors of the vertex we just visited.
+    For each sorted neighbor:
+        If the neighbor hasn't been visited and it isn't already queued up to be visited:
+            Queue up the neighbor by adding it to the to_visit loop.
+Once to_visit is empty, we've traversed the whole graph so just return visited.
+'''
+
+# sorted() Function
+# Non-integer sets are not stable in Python. While we are testing we want our algorithm to search the same way every time to make debugging easier.
+# Python offers a sorted() function we can call on our set() that allows us to iterate deterministically.
+
+
+'''Adjacency list'''
+
+
+class Graph:
+    def __init__(self):
+        self.graph = {}
+
+    # Breadth first search(BFS)
+    def breadth_first_search(self, v):
+        visited = []
+        to_visit = []
+        vertex = v
+        to_visit.append(vertex)
+
+        while len(to_visit) != 0:
+            s = to_visit.pop(0) # s = current vertex being processed
+            visited.append(s)
+            sorted_neighbors = sorted(self.graph[s])
+            for neighbor in sorted_neighbors:
+                if neighbor not in visited and neighbor not in to_visit:
+                    to_visit.append(neighbor)
+        return visited
+
+
+    def bfs_path(self, start, end):
+        predecessor = {}
+        to_visit = []
+        visited = []
+        shortest_path = []
+        to_visit.append(start)
+
+        while len(to_visit) != 0:
+            s = to_visit.pop(0)
+            visited.append(s)
+            sorted_neighbors = sorted(self.graph[s])
+            
+            for neighbor in sorted_neighbors:
+                if neighbor not in visited and neighbor not in to_visit:
+                    to_visit.append(neighbor)
+                    predecessor[neighbor] = s
+                    if neighbor == end:
+                        current = end
+                        while current is not None:
+                            shortest_path.append(current)
+                            current = predecessor.get(current)
+                        shortest_path.reverse()
+                        return shortest_path
+        return None
+
+
+    # Depth first search(DFS)
+    def depth_first_search(self, start_vertex):
+        visited = []
+        self.depth_first_search_r(visited, start_vertex)
+        return visited
+     
+
+    def depth_first_search_r(self, visited, current_vertex):
+        visited.append(current_vertex)
+        sorted_neighbors = sorted(self.graph[current_vertex])
+        for neighbors in sorted_neighbors:
+            if neighbors not in visited:
+                self.depth_first_search_r(visited, neighbors)
+
+
+    def unconnected_vertices(self):
+        unconnected = []
+        for vertex, connections in self.graph.items():
+            if not connections:
+                unconnected.append(vertex)
+        return unconnected
+
+
+    def adjacent_nodes(self, node):
+        if node not in self.graph:
+            return []
+        return list(self.graph[node])
+
+
+    def add_edge(self, u, v):
+        if u in self.graph:
+            self.graph[u].add(v)
+        else:
+            self.graph[u] = {v}
+        if v in self.graph:
+            self.graph[v].add(u)
+        else:
+            self.graph[v] = {u}
+            
+
+    def edge_exists(self, u, v):
+        if u in self.graph and v in self.graph:
+            return (v in self.graph[u]) and (u in self.graph[v])
+        return False
+    
+
+    def __repr__(self):
+        result = ""
+        for key in self.graph.keys():
+            result += f"Vertex: '{key}'\n"
+            for v in sorted(self.graph[key]):
+                result += f"has an edge leading to --> {v} \n"
+        return result
+    
+
+'''__repr__ stands for "representation." It's a special method in Python used to define a string that ideally provides a clear and unambiguous description of an object, usually for debugging or development purposes. 
+When you print an instance of a class or use the repr() function on it, Python will internally call __repr__.
+The goal is to return a string that could, if possible, be used to recreate the object. It's different from __str__, which is meant to provide a more readable or user-friendly version of the string representation.'''
+
+
+
+
+'''Is the solution close to the root?
+If you have a good reason to believe the vertex you're looking for is close to the root (where you plan to start searching) then BFS should be faster.
+
+Is the graph extremely wide, but not very deep (from the root)?
+Imagine a tree with 10 vertices on the first level. Each of those ten vertices point to another ten vertices. The number of vertices at each level would be:
+
+level 0: 1
+level 1: 10
+level 2: 100
+level 3: 1000
+level 4: 10000
+
+Because BFS stores entire horizontal levels in memory, you may not have enough memory on your machine to execute the search.
+
+Is the search space infinite?
+In some searches, the graph has infinite size. For example, imagine a simulation of a game of chess.
+
+The first level of the graph would be all the possible current moves, the next level would be all the possible 2nd moves, and this could go on forever, especially when you consider that there are loops within the game. For example, each player could just move their queens back and forth forever.
+
+In these cases, true DFS is practically impossible, you would need to either use BFS, another algorithm, or put a limit on how far your DFS algorithm can search before returning.
+
+Are you trying to reach an "end"?
+Think of a maze simulator. You want your algorithm to explore the end of a path before exiting to know if it has hit a dead end. DFS will typically find a solution much more quickly than BFS for this kind of exhaustive search.'''
+
+
+'''Weights in a graph represent the cost or value associated with traversing an edge between two nodes. Here are some common uses for weights:
+
+Distance or Cost:
+
+Transportation Networks: Represent actual distances between locations or travel costs.
+Electric Circuits: Indicate resistance or impedance between nodes in an electrical network.
+Capacity:
+
+Network Bandwidth: In network graphs, weights might represent the available throughput on a network link.
+Importance or Preference:
+
+Search Algorithms: Influence decisions in algorithms to find the least-cost path, such as Dijkstra's or A*.
+Social Networks: Weights can denote the strength of relationships or frequency of interactions between people.
+Flow constraints:
+
+Resource Allocation: Weights can specify how much of a resource can flow through an edge in a flow network.
+In algorithms like Dijkstra's or A*, weights play a crucial role in determining the most efficient path by calculating the cumulative cost from a starting node to an endpoint.
+
+In general, weights can provide additional context or constraints that guide decision-making and optimization in a variety of applications.'''
+
+
+
+
+
+'''Graph algorithms like the one you're working on have many real-world applications. Here are a few examples:
+
+Networking:
+
+Internet Routing: BFS helps in finding the shortest path in networks to efficiently route data packets.
+Social Networks: Graphs represent users as nodes and connections as edges to find shortest paths (e.g., friend recommendations).
+Pathfinding and Navigation:
+
+Maps and GPS Systems: Quickly finding the shortest path in large networks of roads.
+Robotics and AI: Navigating robots or game AI through environments.
+Scheduling:
+
+Task Scheduling: Ensuring tasks are done in order, especially when tasks depend on each other.
+Project Management: Finding optimal task sequences in complex projects.
+Recommendation Systems:
+
+Content Recommendations: Models user interactions as a graph to recommend new items based on paths.
+Biology:
+
+Gene Sequencing: Mapping DNA sequences and understanding relationships.
+Ecosystems: Analyzing food webs or species interactions.
+Computer Networks:
+
+Peer-to-Peer Networks: Efficiently locating and exchanging files.
+Transportation Planning:
+
+Public Transit Systems: Designing optimal routes and schedules.
+Each example represents scenarios where understanding relationships and paths between nodes is crucial. Graph algorithms like BFS provide an efficient way to explore these connections.'''
+
+

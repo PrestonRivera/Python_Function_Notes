@@ -1,97 +1,94 @@
 import json
 
 class Trie:
+
+
+    def find_matches(self, document):
+        word_matches = set()
+        
+        for i in range(len(document)):
+            level = self.root
+            for j in range(i, len(document)):
+                char = document[j]
+                if char not in level:
+                    break
+                level = level[char]
+                if self.end_symbol in level:
+                    word_matches.add(document[i:j+1])
+        return word_matches
+    
+    
+    def exists(self, word):
+        current = self.root
+        for letter in word:
+            if letter not in current:
+                return False
+            elif letter in current:
+                current = current[letter]
+        if self.end_symbol in current:
+            return True
+        return False
+
+
     def add(self, word):
         current = self.root
-        
-        for char in word:
-            if char not in current:
-                current[char] = {}
-            current = current[char]
+        for letter in word:
+            if letter not in current:
+                current[letter] = {}
+            current = current[letter]
         current[self.end_symbol] = True
-                
 
-    # don't touch below this line
 
+    def words_with_prefix(self, prefix):
+        words_list = []
+        current = self.root
+        for letter in prefix:
+            if letter not in current:
+                return []
+            else:
+                current = current[letter]
+        return self.search_level(current, prefix, words_list)
+    
+
+    def search_level(self, cur, cur_prefix, words):
+        if self.end_symbol in cur:
+            words.append(cur_prefix)
+        current_keys = sorted(cur.keys())
+        for key in current_keys:
+            if key != self.end_symbol:
+                self.search_level(cur[key], cur_prefix + key, words)
+        return words
+    
+
+    def longest_common_prefix(self):
+        current = self.root
+        prefix = ""
+        
+        while True:
+            if current != None:
+                children = current.keys()
+                if self.end_symbol in current:
+                    break
+                if len(children) == 1:
+                    prefix += list(children)[0]
+                child_key = list(children)[0]
+                current = current[child_key]
+                if len(children) > 1 or len(children) == None:
+                    break
+        return prefix
+
+    
     def __init__(self):
         self.root = {}
         self.end_symbol = "*"
 
-run_cases = [
-    (
-        ["arc", "art", "arg"],
-        {"a": {"r": {"c": {"*": True}, "g": {"*": True}, "t": {"*": True}}}},
-    ),
-    (
-        ["be", "bad", "back", "bat"],
-        {
-            "b": {
-                "a": {"c": {"k": {"*": True}}, "d": {"*": True}, "t": {"*": True}},
-                "e": {"*": True},
-            }
-        },
-    ),
-]
 
-submit_cases = run_cases + [
-    (
-        ["a", "to", "tea", "ted", "ten", "i", "in", "inn"],
-        {
-            "a": {"*": True},
-            "i": {"*": True, "n": {"*": True, "n": {"*": True}}},
-            "t": {
-                "e": {"a": {"*": True}, "d": {"*": True}, "n": {"*": True}},
-                "o": {"*": True},
-            },
-        },
-    ),
-]
+trie = Trie()
 
-
-def test(words, expected_trie):
-    print("---------------------------------")
-    print(f"Inputs:")
-    print(f" * Words: {words}")
-    print(" * Expected trie:")
-    print(f"{json.dumps(expected_trie, sort_keys=True, indent=2)}")
-    try:
-        trie = Trie()
-        for word in words:
-            trie.add(word)
-            print(f"Adding {word}...")
-        print("Actual Trie:")
-        print(json.dumps(trie.root, sort_keys=True, indent=2))
-        if trie.root == expected_trie:
-            print("Pass \n")
-            return True
-        print("Fail \n")
-        return False
-    except Exception as e:
-        print(f"Error: {e}")
-        return False
-
-
-def main():
-    passed = 0
-    failed = 0
-    for test_case in test_cases:
-        correct = test(*test_case)
-        if correct:
-            passed += 1
-        else:
-            failed += 1
-    if failed == 0:
-        print("============= PASS ==============")
-    else:
-        print("============= FAIL ==============")
-    print(f"{passed} passed, {failed} failed")
-
-
-test_cases = submit_cases
-if "__RUN__" in globals():
-    test_cases = run_cases
-
-main()
+words = ["apple", "appetizer", "apricot", "anything", "anywhere", "always", "everything", "everyday"]
+for word in words:
+    trie.add(word)
+print(json.dumps(trie.root, indent=2))
 
 
 
