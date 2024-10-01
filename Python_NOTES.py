@@ -6028,6 +6028,19 @@ There are lots of existing algorithms; some are fast and some are slow. Some use
 Big O is a characterization of algorithms according to their worst-case growth rates
 '''
 
+'''
+( O(1) ): Constant time. The algorithm's running time doesn't change with input size. Think about accessing an element in an array by index.
+
+( O(\log n) ): Logarithmic time. This complexity indicates that the time increases slowly, like in binary search on a sorted array.
+
+( O(n) ): Linear time, as we've discussed. If you iterate over every element in a list once, that's linear time.
+
+( O(n \log n) ): Linearithmic time. Used in more efficient sorting algorithms like quicksort and mergesort.
+
+( O(n^2) ): Quadratic time, where time increases by the square of the input size. Common in algorithms with nested loops over the input data.
+
+
+'''
 
 # We write Big-O notation like this:
 
@@ -7283,7 +7296,7 @@ Balanced Parentheses
 (())
 ()()
 ()
-Copy icon
+00.000  zxz
 Unbalanced Parentheses
 
 (()))
