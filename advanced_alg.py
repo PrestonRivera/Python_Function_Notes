@@ -730,3 +730,235 @@ def edit_distance(str1, str2):
                )
    return table[-1][-1]
 
+
+'''
+--Tabulation (Bottom-Up):
+
+We solve all subproblems first and use those to construct a solution for the main problem.
+Implemented using iteration and typically with a table (like an array).
+Think: "Fill out the table completely before getting the final answer."
+
+
+--Memoization (Top-Down):
+
+We solve the main problem and recursively break it into subproblems, caching results to avoid redundant calculations.
+Implemented using recursion and caching/store mechanisms like dictionaries.
+Think: "Solve the main problem and recall the solution to subproblems as needed."
+'''
+
+
+### Linear Programming Intro
+'''
+Linear programming is a technique where we depict complex relationships through linear functions and then find the optimum inputs to maximize for a given output. The real relationships might be much more complex – but we can simplify them to linear relationships.
+
+In LP we're given some variables, and we want to assign real values to them in order to:
+
+Satisfy a related set of linear equations and/or linear inequalities
+Maximize or minimize a given linear function'''
+
+
+'''
+A linear programs can be represented in a Tableau, which is just a fancy word for a matrix.
+
+The Tableau is useful because it allows us to keep track of the state of the program (moving around the vertices of the graph) without storing all the vertices explicitly.
+'''
+
+# Objective function
+# profit = x * 5 + y
+
+# or
+
+# -5x - y + profit = 0
+
+# Constraints
+# x <= 250
+# y <= 200
+# x + y <= 300
+# 0 <= x
+# 0 <= y
+
+# self.constraints: [250, 200, 300]
+
+# Tableau:
+# self.rows = [1.0, 0.0]
+#             [0.0, 1.0]
+#             [1.0, 1.0]
+# self.objective =  [-5.0, -1.0]
+
+
+'''
+Baseline: You're absolutely correct that this gives us a baseline. In the simplex method, we start at the origin (where all variables are zero) and move towards the optimal solution.
+
+Consistency: By having all variables on one side and zero on the other, we create a consistent format for all equations in our system (objective function and constraints). 
+This consistency makes it easier to apply the algorithm systematically.
+
+Improvement direction: The negative coefficients in the objective function row of the tableau actually help indicate which direction we should move to improve our solution. 
+If we see a negative value in the bottom row (excluding the rightmost column), it suggests that increasing that variable will improve our objective function value.
+
+Stopping condition: This format also gives us a clear stopping condition. When all values in the bottom row (except the rightmost) are non-negative, we've reached the optimal solution.
+
+Pivot selection: The arrangement helps in selecting pivot elements during the algorithm's iterations, guiding us towards the optimal solution step by step.
+'''
+
+# The Tableau is basically just a matrix of coefficients, which really makes it a system of equations. The nice thing about systems of equations is we can do mathematical operations on them, 
+# and because we know they share variables, one equation can provide information about another.
+
+# -5x - y + profit = 0
+# 1x  + 0y          <= 250
+# 0x  + 1y          <= 200
+# 1x  + 1y          <= 300
+
+
+# Slack Variables
+
+'''
+For each inequality constraint, we need to add a new variable, called a slack variable. The purpose of the slack variable is to change the inequality constraint to an equality constraint. 
+This variable represents the difference between the two sides of the inequality and is assumed to be non-negative. For example, the inequalities
+'''
+
+# 1x + 0y <= 250
+# 0x + 1y <= 200
+# 1x + 1y <= 300
+
+# become
+
+# 1x + 0y + s1 = 250
+# 0x + 1y + s2 = 200
+# 1x + 1y + s3 = 300
+
+
+# By adding a slack variable for each inequality, the size of our tableau will grow, because instead of two variables, x and y, we now have 5 variables, x, y, s1, s2, and s3.
+
+
+class SimplexSolver:
+    def solve(self):
+        self.add_slack_variables()
+        while self.should_pivot():
+            pivot_col = self.get_pivot_col()
+            pivot_row = self.get_pivot_row(pivot_col)
+            self.pivot(pivot_row, pivot_col)
+            
+
+    # don't touch below this line
+
+    def __init__(self, func_coefficients):
+        self.objective = []
+        for func_coefficient in func_coefficients:
+            self.objective.append(func_coefficient)
+        self.rows = []
+        self.constraints = []
+
+    def add_constraint(self, coefficients, value):
+        row = []
+        for coefficient in coefficients:
+            row.append(coefficient)
+        self.rows.append(row)
+        self.constraints.append(value)
+
+    def get_pivot_col(self):
+        low = 0
+        pivot_idx = 0
+        for i in range(len(self.objective) - 1):
+            if self.objective[i] < low:
+                low = self.objective[i]
+                pivot_idx = i
+        return pivot_idx
+
+    def get_pivot_row(self, col_idx):
+        last_col = [self.rows[i][-1] for i in range(len(self.rows))]
+        pivot_col = [self.rows[i][col_idx] for i in range(len(self.rows))]
+        min_ratio = float("inf")
+        min_ratio_idx = -1
+        for i in range(len(last_col)):
+            ratio = float("inf")
+            if pivot_col[i] == 0:
+                ratio = 99999999
+            else:
+                ratio = last_col[i] / pivot_col[i]
+            if ratio < 0:
+                continue
+            if ratio < min_ratio:
+                min_ratio = ratio
+                min_ratio_idx = i
+        if min_ratio_idx == -1:
+            raise Exception("no non-negative ratios, problem doesn't have a solution")
+        return min_ratio_idx
+
+    def pivot(self, pivot_row_idx, pivot_col_idx):
+        pivot_val = self.rows[pivot_row_idx][pivot_col_idx]
+        for i in range(len(self.rows[pivot_row_idx])):
+            self.rows[pivot_row_idx][i] = self.rows[pivot_row_idx][i] / pivot_val
+        for i in range(len(self.rows)):
+            if i == pivot_row_idx:
+                continue
+            mul = self.rows[i][pivot_col_idx]
+            for j in range(len(self.rows[i])):
+                self.rows[i][j] = self.rows[i][j] - mul * self.rows[pivot_row_idx][j]
+        mul = self.objective[pivot_col_idx]
+        for i in range(len(self.objective)):
+            self.objective[i] = self.objective[i] - mul * self.rows[pivot_row_idx][i]
+
+    def should_pivot(self):
+        return min(self.objective[:-1]) < 0
+
+    def add_slack_variables(self):
+        for i in range(len(self.rows)):
+            self.objective.append(0)
+            basic_cols = [0] * len(self.rows)
+            basic_cols[i] = 1
+            basic_cols.append(self.constraints[i])
+            self.rows[i] += basic_cols
+        self.objective.append(0)
+
+    def get_solution_from_tableau(self):
+        cols = []
+        for colI in range(len(self.rows[0])):
+            col = [0] * len(self.rows)
+            for rowI in range(len(self.rows)):
+                col[rowI] = self.rows[rowI][colI]
+            cols.append(col)
+
+        results = []
+        for i in range(len(cols) - 1):
+            if cols[i].count(0) == len(cols[i]) - 1 and 1 in cols[i]:
+                results.append(cols[-1][cols[i].index(1)])
+            else:
+                results.append(0)
+        return results, self.objective[-1]
+
+    
+
+
+'''
+Simplex Tableau - Basic Variables and the solution
+Basic and non-basic variables
+-5x - y + profit = 0
+1x  + 0y          <= 250
+0x  + 1y          <= 200
+1x  + 1y          <= 300
+
+became
+
+  x    y   s1   s2   s3   constraint
+[1.0, 0.0, 1.0, 0.0, 0.0, 250.0]
+[0.0, 1.0, 0.0, 1.0, 0.0, 200.0]
+[1.0, 1.0, 0.0, 0.0, 1.0, 300.0]
+[-5.0, -1.0, 0.0, 0.0, 0.0, 0.0]
+
+The tableau is useful due to it's two kinds of variables, basic and non-basic variables. In the tableau's current initial state, all the slack variables, s1, s2, and s3 are basic. x and y are non-basic.
+
+In a Simplex tableau, a variable is basic if its the only number you see in its column and that number is exactly 1.
+
+Who cares about basic variables?
+To any dictionary there's an associated solution to the system of equations: just set all the non-basic variables to zero and compute the values of the basic variables. For the tableau above the associated solution is:
+
+x = 0
+y = 0
+s1 = 250
+s2 = 200
+s3 = 300
+
+As you can probably tell, this isn't the optimal solution to our problem. This is just the initial state of the tableau, and as you can see, it represents the point (0,0) on our graph, 
+which is just the starting point, not the final vertex.
+'''
+

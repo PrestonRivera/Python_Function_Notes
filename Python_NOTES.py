@@ -5634,7 +5634,7 @@ text = "I'm a little teapot, short and stout. Here is my handle, here is my spou
 matches = re.findall(r"teapot", text)
 print(matches) # ['teapot']
 
-r"teapot" is a regex pattern.
+# r"teapot" is a regex pattern.
 # The r tells Python to treat the string as a "raw" string, which means we don't have to escape backslashes
 # The pattern teapot will match any exact occurrences of the word "teapot" in the input.
 
