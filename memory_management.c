@@ -1703,3 +1703,241 @@ typedef enum {
   TEEJ_WPM,  // 202
 } WordsPerMinute;
 
+
+// Switch Case
+
+// One of the best features of enums is that it can be used in switch statements. Enums + switch statements:
+
+/*
+Avoid "magic numbers"
+Use descriptive names
+With modern tooling, will give you an error/warning that you haven't handled all the cases in your switch
+*/
+
+// Here's an example:
+
+switch (logLevel) {
+  case LOG_DEBUG:
+    printf("Debug logging enabled\n");
+    break;
+  case LOG_INFO:
+    printf("Info logging enabled\n");
+    break;
+  case LOG_WARN:
+    printf("Warning logging enabled\n");
+    break;
+  case LOG_ERROR:
+    printf("Error logging enabled\n");
+    break;
+  default:
+    printf("Unknown log level: %d\n", logLevel);
+    break;
+}
+
+// You'll notice that we have a break after each case. If you do not have a break, the next case will still execute: it "falls through" to the next case. Many devs have written bugs when using switch statements, 
+// because they forgot to add break.
+
+// In some rare cases, you might want the fallthrough:
+
+switch (errorCode) {
+  case 1:
+  case 2:
+  case 3:
+    // 1, 2, and 3 are all minor errors
+    printf("Minor error occurred. Please try again.\n");
+    break;
+  case 4:
+  case 5:
+    // 4 and 5 are major errors
+    printf("Major error occurred. Restart required.\n");
+    break;
+  default:
+    printf("Unknown error.\n");
+    break;
+}
+
+// But usually, it's a footgun. You'll almost always want a break at the end of each case statement.
+
+// #include "http.h"
+
+char *http_to_str(HttpErrorCode code) {
+  switch (code) {
+  case HTTP_BAD_REQUEST:
+    return "400 Bad Request";
+  case HTTP_UNAUTHORIZED:
+    return "401 Unauthorized";
+  case HTTP_NOT_FOUND:
+    return "404 Not Found";
+  case HTTP_TEAPOT:
+    return "418 I AM A TEAPOT!";
+  case HTTP_INTERNAL_SERVER_ERROR:
+    return "500 Internal Server Error";
+  default:
+    return "Unknown HTTP status code";
+  }
+}
+
+/*
+Sizeof Enum
+The same sizeof operator that we've talked about works on enums.
+
+Generally, enums in C are the same size as an int. However, if an enum value exceeds the range of an int, the C compiler will use a larger integer type to accommodate the value, such as an unsigned int or a long.
+
+unsigned int doesn't represent negative numbers, so it can represent larger positive numbers.
+long is just a larger integer type than int, so it can represent larger numbers.
+Just Fancy Integers
+Enums are often used to represent the possibilities in a set. For example:
+
+SMALL = 0
+MEDIUM = 1
+LARGE = 2
+EXTRA_LARGE = 3
+Your code probably cares a lot about which size a variable represents, but it probably doesn't care that SMALL happens to be 0 under the hood. From the compiler's perspective, enums are just fancy integers.
+*/
+
+#include <stdio.h>
+
+typedef enum {
+  BIG = 123412341234,
+  BIGGER,
+  BIGGEST,
+} BigNumbers;
+
+typedef enum {
+  HTTP_BAD_REQUEST = 400,
+  HTTP_UNAUTHORIZED = 401,
+  HTTP_NOT_FOUND = 404,
+  HTTP_I_AM_A_TEAPOT = 418,
+  HTTP_INTERNAL_SERVER_ERROR = 500
+} HttpErrorCode;
+
+int main() {
+  printf("The size of BigNumbers is %zu bytes\n", sizeof(BigNumbers));
+  printf("The size of HttpErrorcode is %zu bytes\n", sizeof(HttpErrorCode));
+  return 0;
+}
+
+
+// Union
+/*
+Now that we understand structs and enums, we can learn aboutunions: a combination of the two concepts.
+
+This is not the kind of union that $300k-earning Google employees fight for because they are "underpaid" and "don't have enough oat milk in the office kitchen". 
+// No, this feature is one that even Golang doesn't have (probably because they were worried about getting fired from Google for just mentioning the word!)
+
+Unions in C can hold one of several types. They're like a less-strict sum type from the world of functional programming. Here's an example union:
+*/
+typedef union AgeOrName {
+  int age;
+  char *name;
+} age_or_name_t;
+
+// The age_or_name_t type can hold either an int or a char *, but not both at the same time (that would be a struct). 
+// We provide the list of possible types so that the C compiler knows the maximum potential memory requirement, and can account for that. This is how the union is used:
+
+age_or_name_t lane = { .age = 29 };
+printf("age: %d\n", lane.age);
+// age: 29
+
+// Here's where it gets interesting. What happens if we try to access the name field (even though we set the age field)?
+
+printf("name: %s\n", lane.name);
+// name:
+
+// We get... nothing? To be more specific, we get undefined behavior. A union only reserves enough space to hold the largest type in the union and then all of the fields use the same memory. 
+// So when we set .age to 29, we are writing the integer representation of 29 to the memory of the lane union:
+
+// 0000 0000 0000 0000 0000 0000 0001 1101
+
+// Then if we try to access .name, we read from the same block of memory but try to interpret the bytes as a char *, which is why we get garbage (which is interpreted as nothing in this case). 
+// Put simply, setting the value of .age overwrites the value of .name and vice versa, and you should only access the field that you set.
+
+// excercise.h
+typedef enum SnekObjectKind{
+  INTEGER = 0,
+  STRING = 1,
+} snek_object_kind_t;
+
+// don't touch below this line'
+
+typedef union SnekObjectData {
+  int v_int;
+  char *v_string;
+} snek_object_data_t;
+
+typedef struct SnekObject {
+  snek_object_kind_t kind;
+  snek_object_data_t data;
+} snek_object_t;
+
+snek_object_t new_integer(int);
+snek_object_t new_string(char *str);
+void format_object(snek_object_t obj, char *buffer);
+
+// excercise.c
+#include "exercise.h"
+
+void format_object(snek_object_t obj, char *buffer) {
+  switch (obj.kind) {
+    case INTEGER:
+      sprintf(buffer, "int:%d", obj.data.v_int);
+      break;
+    case STRING:
+      sprintf(buffer, "string:%s", obj.data.v_string);
+      break;
+  }
+}
+
+// don't touch below this line'
+
+snek_object_t new_integer(int i) {
+  return (snek_object_t){
+    .kind = INTEGER,
+    .data = {.v_int = i}
+  };
+}
+
+snek_object_t new_string(char *str) {
+  // NOTE: We will learn how to copy this data later.
+  return (snek_object_t){
+    .kind = STRING,
+    .data = {.v_string = str}
+  };
+}
+
+// Helper Fields
+// One interesting (albeit not commonly used) trick is to use unions to create "helpers" for accessing different parts of a piece of memory. Consider the following:
+
+typedef union Color {
+  struct {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t a;
+  } components;
+  uint32_t rgba;
+} color_t;
+
+// It results in a memory layout like this:
+
+// Only 4 bytes are used. And, unlike in 99% of scenarios, it makes sense to both set and get values from this union through both the components and rgba fields! 
+// Both fields in the union are exactly 32 bits in size, which means that we can "safely" (?) access the entire set of colors through the .rgba field, or get a single color component through the .components field.
+
+// The convenience of additional fields, with the efficiency of a single memory location!
+
+/*Complete the PacketHeader union. It should have two potential fields:
+
+tcp_header: A struct. The first 2 bytes are the src_port. The next 2 bytes are the dest_port, and the last 4 bytes are the seq_num.
+raw: An array of 8 bytes.
+Use uint8_t, uint16_t, and uint32_t for the types of the fields, based on the number of bytes needed. Remember, 8 bits = 1 byte.*/
+
+#include <stdint.h>
+
+typedef union PacketHeader{
+  struct {
+    uint16_t src_port;
+    uint16_t dest_port;
+    uint32_t seq_num;
+  } tcp_header;
+  uint8_t raw[8]
+} packet_header_t;
