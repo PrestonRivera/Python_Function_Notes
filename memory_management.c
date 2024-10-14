@@ -1941,3 +1941,552 @@ typedef union PacketHeader{
   } tcp_header;
   uint8_t raw[8]
 } packet_header_t;
+
+
+// The Stack
+/*
+Remember how I told you that memory is basically just a giant array of bytes with addresses at various offsets?
+
+That's true, but it also has some additional structure. In particular, memory is divided into two main regions: the stack and the heap. We'll cover the heap later.
+
+The stack is where local variables are stored. When a function is called, a new stack frame is created in memory to store the function's parameters and local variables. When the function returns, its entire stack frame is deallocated.
+
+The stack is aptly named: it is a stack (the "Last In, First Out" data structure) of memory frames. Each time a function is called, a new frame is pushed onto the stack. When the function returns, its frame is popped off the stack.
+*/
+
+// Take a look at this example function:
+
+void create_typist(int uses_nvim) {
+  int wpm = 150;
+  char name[4] = {'t', 'e', 'e', 'j'};
+}
+
+// Say we call create_typist(1). Before the call, our stack memory might look like this, with the next memory address to be used 0xFEFC:
+
+/*
+Once called, the stack pointer is moved to make room for:
+
+The return address (to pick up execution after the function returns)
+Arguments to the function
+Local variables in the function body
+
+and the local variables are stored in the stack frame:
+
+When the function returns, the stack frame is deallocated by resetting the stack pointer to where the frame began.
+*/
+
+#include <stdio.h>
+#include "exercise.h"
+
+int main() {
+  printMessageOne();
+  printMessageTwo();
+  printMessageThree();
+  return 0;
+}
+
+void printMessageOne() {
+  const char *message = "Dark mode?\n";
+  printStackPointerDiff();
+  printf("%s\n", message);
+}
+
+void printMessageTwo() {
+  const char *message = "More like...\n";
+  printStackPointerDiff();
+  printf("%s\n", message);
+}
+
+void printMessageThree() {
+  const char *message = "dark roast.\n";
+  printStackPointerDiff();
+  printf("%s\n", message);
+}
+
+// don't touch below this line
+
+void printStackPointerDiff() {
+  static void *last_sp = NULL;
+  void *current_sp;
+  current_sp = __builtin_frame_address(0);
+  long diff = (char*)last_sp - (char*)current_sp;
+  if (last_sp == NULL){
+    last_sp = current_sp;
+    diff = 0;
+  }
+  printf("---------------------------------\n");
+  printf("Stack pointer offset: %ld bytes\n", diff);
+  printf("---------------------------------\n");
+}
+
+// Why a Stack?
+// Allocating memory on the stack is preferred when possible because the stack is faster and simpler than the heap (which we'll get to, be patient):
+
+/* 
+- Efficient Pointer Management: Stack "allocation" is just a quick increment or decrement of the stack pointer, which is extremely fast. Heap allocations require more complex bookkeeping.
+- Cache-Friendly Memory Access: Stack memory is stored in a contiguous block, enhancing cache performance due to spatial locality.
+- Automatic Memory Management: Stack memory is managed automatically as functions are called and as they return.
+- Inherent Thread Safety: Each thread has its own stack. Heap allocations require synchronization mechanisms when used concurrently, potentially introducing overhead.
+
+One reason Go programs are efficient is that Go uses stack allocation for variables when possible, much like C. 
+The Go compiler performs escape analysis to decide whether a variable can be allocated on the stack. On the other hand, 
+languages like Python allocate most objects on the heap, which can impact performance.*/ 
+
+
+// Stack Overflow
+/* So the stack is great and all, but one of the downsides is that it has a limited size. If you keep pushing frames onto the stack without popping them off, 
+you'll eventually run out of memory and get a stack overflow. (yes, that's what the famous site is named after)
+
+That's one of the reasons recursion without tail-call optimization can be dangerous. Each recursive call pushes a new frame onto the stack, and if you have too many recursive calls, you'll run out of stack space.*/
+
+
+// Fix the pool_size so that it allocates exactly 10 kibibyte
+// A single kibibyte is 1024 bytes.
+
+#include <stdio.h>
+
+int main() {
+  const int pool_size = 1024 * 10;
+  char snek_pool[pool_size];
+  snek_pool[0] = 's';
+  snek_pool[1] = 'n';
+  snek_pool[2] = 'e';
+  snek_pool[3] = 'k';
+  snek_pool[4] = '\0';
+
+  printf("Size of pool: %d\n", pool_size);
+  printf("Initial string: %s\n", snek_pool);
+  return 0;
+}
+
+
+// Remember: the stack is only safe to use within the context of the current function!
+
+/*
+Fix the new_coord function so that it returns a struct, not a pointer to a struct. This will force the compiler to copy the struct to the main function's stack frame, and the memory will be safe to use. 
+You'll have to update syntax in a few places to accomodate the change.
+*/
+
+#include <stdio.h>
+
+typedef struct {
+  int x;
+  int y;
+} coord_t;
+
+coord_t new_coord(int x, int y) {
+  coord_t c;
+  c.x = x;
+  c.y = y;
+  return c;
+}
+
+int main() {
+  coord_t c1 = new_coord(10, 20);
+  coord_t c2 = new_coord(30, 40);
+  coord_t c3 = new_coord(50, 60);
+
+  printf("c1: %d, %d\n", c1.x, c1.y);
+  printf("c2: %d, %d\n", c2.x, c2.y);
+  printf("c3: %d, %d\n", c3.x, c3.y);
+}
+
+// The Heap
+/*
+"The heap", as opposed to "the stack", is a pool of long-lived memory shared across the entire program. 
+Stack memory is automatically allocated and deallocated as functions are called and return, but heap memory is allocated and deallocated as-needed, independent of the burdensome shackles of function calls.
+
+When you need to store data that outlives the function that created it, you'll send it to the heap. The heap is called "dynamic memory" because it's allocated and deallocated as needed. Take a look at new_int_array:
+*/
+
+int *new_int_array(int size) {
+  int *new_arr = (int*)malloc(size * sizeof(int)); // Allocate memory
+  if (new_arr == NULL) {
+    fprintf(stderr, "Memory allocation failed\n");
+    exit(1); // Exit if allocation fails
+  }
+  return new_arr;
+}
+
+
+// Let's look at some code that uses new_int_array:
+
+int* arr_of_6 = new_int_array(6);
+arr_of_6[0] = 69;
+arr_of_6[1] = 42;
+arr_of_6[2] = 420;
+arr_of_6[3] = 1337;
+arr_of_6[4] = 7;
+arr_of_6[5] = 0;
+
+
+// When we're done with the memory, we need to manually deallocate it using the <stdlib.h>'s free function:
+free(arr_of_6);
+
+
+/* Because the size of the array isn't known at compile time, we can't put it on the stack. Instead, we allocate memory on the heap using the <stdlib.h>'s malloc function. 
+It takes a number of bytes to allocate as an argument (size * sizeof(int)) and returns a pointer to the allocated memory (a void * that we cast to an int*).
+
+The new_int_array function's size argument is just an integer, it's pushed onto the stack. Assuming size is 6, when malloc is called we're given enough memory to store 6 integers on the heap, and we're given the address of the start of that newly allocated memory. 
+We store it in a new local variable called new_arr. The address is stored on the stack, but the data it points to is in the heap.
+
+The data is stored in the heap:
+
+
+The free function returns (deallocates) that memory for use elsewhere. It's important to note that the pointer (arr_of_6) still exists, but shouldn't be used. It's a "dangling pointer", pointing to deallocated memory
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "exercise.h"
+
+char *get_full_greeting(char *greeting, char *name, int size) {
+  char *full_greeting = (char *)malloc(size * sizeof(char));
+  snprintf(full_greeting, size, "%s %s", greeting, name);
+  return full_greeting;
+}
+
+// snprintf is a useful C standard library function designed to format and store a string in a buffer, all while taking care not to overflow it. Its signature typically looks like this:
+
+int snprintf(char *str, size_t size, const char *format, ...);
+
+/*
+Here's what each parameter does:
+
+char *str: This is the pointer to the buffer where the formatted output will be stored.
+
+size_t size: This specifies the maximum number of bytes to write to the buffer, including the null terminator at the end. It ensures that snprintf never writes more than size bytes, guarding against buffer overflows.
+
+const char *format: This is the format string that specifies how the output should be formatted. It can include text, placeholders for variables, and format specifiers like %s for strings, %d for integers, etc.
+
+... (ellipsis): These are the values to be formatted according to the format string. They represent the values that will replace the placeholders in the format string.
+
+Here's a short example of how snprintf is used:
+*/
+char buffer[20];
+snprintf(buffer, sizeof(buffer), "Hello, %s!", "world");
+
+// Malloc
+
+/*The malloc function (memory allocation) is a standard library function in C that allocates a specified number of bytes of memory on the heap and returns a pointer to the allocated memory.
+
+This new memory is uninitialized, which means:
+
+It contains whatever data was previously at that location.
+It is the programmer's responsibility to ensure that the allocated memory is properly initialized and eventually freed using free to avoid memory leaks.
+If you want to make sure that the memory is properly initialized, you can use the calloc function, which allocates the specified number of bytes of memory on the heap and returns a pointer to the allocated memory. 
+This memory is initialized to zero (meaning it contains all zeroes).
+*/
+
+// Function Signature
+void* malloc(size_t size);
+
+// size: The number of bytes to allocate.
+// Returns: A pointer to the allocated memory or NULL if the allocation fails.
+
+// Example usage
+// Allocates memory for an array of 4 integers
+int *ptr = malloc(4 * sizeof(int));
+if (ptr == NULL) {
+  // Handle memory allocation failure
+  printf("Memory allocation failed\n");
+  exit(1);
+}
+// use the memory here
+// ...
+free(ptr);
+
+// Assignment
+
+// excercise.h
+int *allocate_scalar_list(int size, int multiplier);
+
+// excecise.c
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "exercise.h"
+
+int *allocate_scalar_list(int size, int multiplier) {
+  // Allocate memory for an array of 'size' integers
+  int *int_array = (int*)malloc(size * sizeof(int));
+  // Check if memory allocation failed and return NULL if so
+  if (int_array == NULL) {
+    return NULL;
+  }
+  // Iterate over each index of the array
+  for (int i = 0; i < size; i++) {
+    // Initialize each element to 'index * multiplier'
+    int_array[i] = i * multiplier;
+  }
+  // Return a pointer to the allocated array
+  return int_array;
+}
+
+// Purpose of calloc:
+// calloc stands for "contiguous allocation". It's used to dynamically allocate memory, just like malloc, but with two key differences:
+
+// a) It takes two arguments: the number of elements and the size of each element.
+// b) It initializes all the allocated memory to zero.
+
+// Syntax:
+
+void* calloc(size_t num_elements, size_t element_size);
+
+// Example:
+
+int* numbers = (int*)calloc(5, sizeof(int));
+
+// This allocates memory for 5 integers and initializes them all to 0.
+
+// The main advantage of calloc over malloc is that it automatically initializes the memory to zero, which can be useful in many scenarios to avoid undefined behavior.
+
+/*
+Free
+The free function deallocates memory that was previously allocated by malloc, calloc, or realloc.
+
+IMPORTANT: free does not change the value stored in the memory, and it doesn't even change the address stored in the pointer. Instead, it simply informs the Operating System that the memory can be used again.
+
+Forgetting to free
+Forgetting to call free leads to a memory leak. This means that the allocated memory remains occupied and cannot be reused, even though the program no longer needs it. Over time, 
+if a program continues to allocate memory without freeing it, the program may run out of memory and crash.
+
+Memory leaks are one of the most common bugs in C programs, and they can be difficult to track down because the memory is still allocated and accessible, even though it is no longer needed.
+*/
+
+// Assignment using the free function to deallocate the memory 
+
+// main.c
+#include <stdio.h>
+#include <stdlib.h>
+#include "exercise.h"
+
+int main(){
+  const int num_lists = 500;
+  for (int i = 0; i < num_lists; i++) {
+    int *lst = allocate_scalar_list(50000, 2);
+    if (lst == NULL) {
+      printf("Failed to allocate list\n");
+      return 1;
+    } else {
+      printf("Allocated list %d\n", i);
+    }
+    free(lst);
+  }
+  return 0;
+}
+
+// excercise.c
+#include <stdlib.h>
+#include "exercise.h"
+
+int *allocate_scalar_list(int size, int multiplier) {
+  int *lst = (int *)malloc(size * sizeof(int));
+  if (lst == NULL) {
+    return NULL;
+  }
+  for (int i = 0; i < size; i++) {
+    lst[i] = i * multiplier;
+  }
+  return lst;
+}
+
+//excercise.h
+int *allocate_scalar_list(int size, int multiplier);
+
+
+/*Big Endian and Little Endian
+While we are on the topic of memory, it's worth knowing about "endianness". Endianness is the order in which bytes are stored in memory. The two most common formats are big endian and little endian.
+
+Big Endian
+In a big-endian system, the most significant byte is stored first, at the lowest memory address. The "most significant byte" is just a fancy way of saying "the biggest part of the number".
+
+Let’s say you have the hexadecimal number 0x12345678. Here’s how it would be stored in big-endian format:
+
+big endian
+The most significant byte (0x12) is stored at the lowest memory address.
+
+Little Endian
+In a little-endian system, the least significant byte (the "smallest" part of the number) is stored first, at the lowest memory address. This is the format used by most modern computers.
+
+Using the same number 0x12345678, here’s how it would be stored in little-endian format:
+
+little endian
+Here, the least significant byte (0x78) is stored first.
+
+For the most part, you won’t have to worry about endianness when writing programs. The way data is read from memory automatically handles this, so we can spend our valuable time building e-commerce shops for the terminal instead. Endianness becomes important in certain scenarios, like networking and working with binary files.
+
+For now, just know that most modern systems use little-endian, and the compiler takes care of how data is stored and accessed.*/
+
+// For example:
+
+// Comparing hexadecimal 0x12345678 to decomal 0.123456:
+
+/*decimal 0.12 has a higher value or is more significant then 0.0034 or 0.000456. thats why 0x12 if more significant then 0x78*/
+
+
+
+// Pointer-Pointers
+
+/*Ok, so... now we know what pointers are. So let's learn it over again! A pointer-to-pointer in C is just a pointer variable that holds the address of another pointer.
+
+This allows you to create complex data structures like arrays of pointers, and to modify pointers indirectly. The syntax is exactly what you would expect:*/
+
+int value;
+int *pointer;
+int **pointer_pointer;
+
+/*Pointers to pointers (or pointers to pointers to pointers to pointers... you get the idea) are like a treasure map or a scavenger hunt. 
+You start at one pointer and keep following the chain of addresses until you get to the final value. It's just a chain of dereferences.*/
+
+#include "stdlib.h"
+
+#include "exercise.h"
+
+// This function allocates memory for an integer and assigns a value to it.
+void allocate_int(int **pointer_pointer, int value) {
+  // Step 1: Allocate memory on the heap for a single integer.
+  int *ptr = (int*)malloc(sizeof(int));
+
+  // Step 2: Update the pointer this pointer pointer points to,
+  // so it points to the new memory location.
+  *pointer_pointer = ptr;
+
+  // Step 3: Assign the given value to the memory location now pointed to by ptr.
+  *ptr = value;
+}
+
+// Array of Pointers
+// Making an array of integers on the heap is pretty simple:
+
+int *int_array = malloc(sizeof(int) * 3);
+int_array[0] = 1;
+int_array[1] = 2;
+int_array[2] = 3;
+
+// But we can also make an array of pointers! It's quite common to do this in C, especially considering that strings are just pointers to chars:
+
+char **string_array = malloc(sizeof(char *) * 3);
+string_array[0] = "foo";
+string_array[1] = "bar";
+string_array[2] = "baz";
+
+#include <stdlib.h>
+
+#include "exercise.h"
+
+token_t** create_token_pointer_array(token_t* tokens, size_t count) {
+  token_t** token_pointers = (token_t**)malloc(count * sizeof(token_t*));
+  if (token_pointers == NULL) {
+    exit(1);
+  }
+  
+  for (size_t i = 0; i < count; i++) {
+    token_pointers[i] = (token_t*)malloc(sizeof(token_t));
+    if (token_pointers[i] == NULL) {
+      exit(1);
+    }
+    token_pointers[i]->literal = tokens[i].literal;
+    token_pointers[i]->line = tokens[i].line;
+    token_pointers[i]->column = tokens[i].column;
+  }
+  return token_pointers;
+}
+
+// Void Pointers
+
+/*We've already discussed void, which essentially means "nothing" in C. It's used in a few different contexts:
+
+void update_soldier(soldier_t *s): means the function returns nothing
+soldier_t new_soldier(void): means the function takes no arguments.
+And, because C likes re-using ideas but with slightly different meanings (the genius of the design can't be understood by us mere mortals) void also has another use!
+
+A void * "void pointer" tells the compiler that this pointer could point to anything. This is why void pointers are also known as a "generic pointer". 
+Since void pointers do not have a specific data type, they cannot be directly dereferenced or used in pointer arithmetic without casting them to another pointer type first.
+
+Casting to Void Pointers
+Casting to and from void pointers in C is unique because void pointers are type-agnostic. When casting a specific type pointer to a void pointer, no type information is retained, 
+allowing the void pointer to point to any data type. However, you must cast a void pointer back to its original type before dereferencing it, as direct dereferencing is not possible.*/
+
+int number = 42;
+void *generic_ptr = &number;
+
+// This doesn't work
+printf("Value of number: %d\n", *generic_ptr);
+
+// This works: Cast to appropriate type before dereferencing
+printf("Value of number: %d\n", *(int*)generic_ptr);
+
+// A common pattern is to store generic data in one variable, and the type of that data in another variable. 
+// This is useful when you need to pass data around without knowing its type at compile time.
+
+typedef enum DATA_TYPE {
+  INT,
+  FLOAT
+} data_type_t;
+
+void printValue(void *ptr, data_type_t type) {
+  if (type == INT) {
+    printf("Value: %d\n", *(int*)ptr);
+  } else if (type == FLOAT) {
+    printf("Value: %f\n", *(float*)ptr);
+  }
+}
+
+int number = 42;
+printValue(&number, INT);
+
+float decimal = 3.14;
+printValue(&decimal, FLOAT);
+
+
+/*Ah, a wise question! The void *ptr serves as a generic placeholder, able to point to any data type. In the snek_zero_out function, it allows for flexibility to handle different struct types 
+(snek_int_t, snek_float_t, snek_bool_t) with a single pointer.
+
+Here's why we use void *ptr:
+
+Generic Pointer: void* doesn't have a type associated with it, allowing it to point to any data type. This is useful for functions that need to handle multiple data types without knowing them at compile time.
+
+Casting: Before using void *ptr to access fields, you must cast it to the specific pointer type you're working with, such as snek_int_t*, to perform operations like accessing its fields.
+
+When you determine the kind of object using kind, you cast ptr accordingly, so you can safely access and modify the .value field. */
+
+
+#include "exercise.h"
+
+void snek_zero_out(void *ptr, snek_object_kind_t kind){
+  if (kind == INTEGER) {
+    ((snek_int_t*)ptr)->value = 0;
+  } else if (kind == FLOAT) {
+    ((snek_float_t*)ptr)->value = 0;
+  } else if (kind == BOOL) {
+    ((snek_bool_t*)ptr)->value = 0;
+  }
+}
+
+// Swapping Integers 
+
+// Sneklang makes it easy to swap two values:
+
+cool_person = "Lane"
+uncool_person = "TJ"
+cool_person, uncool_person = uncool_person, cool_person
+print(cool_person)  # TJ
+print(uncool_person)  # Lane
+# (get rekt lane)
+
+// Assignment
+void swap_ints(int *a, int *b) {
+  int var = *a;  // Step 1: Store the value pointed to by 'a' in a temporary variable
+  *a = *b;       // Step 2: Assign the value pointed to by 'b' to the location pointed to by 'a'
+  *b = var;      // Step 3: Assign the temporary value (original 'a') to the location pointed to by 'b'
+}
+
+
+// Swapping Strings
+void swap_strings(char **a, char **b) {
+  char *temp = *a;
+  *a = *b;
+  *b = temp;
+}
+
