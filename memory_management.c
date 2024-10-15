@@ -2490,3 +2490,215 @@ void swap_strings(char **a, char **b) {
   *b = temp;
 }
 
+// Generic Swap
+
+/* For the previous swap implementations we've known the type of the data we want to swap. Because we knew the type, the compiler knew the sizes of the data we want to swap.
+
+However, to make a generic swap, we will need to provide the C compiler with the size of the data that we are swapping because void * loses that type info. Our new interface for swap will include the size:*/
+
+void swap(void *vp1, void *vp2, size_t size);
+
+/*The other problem we're going to have is that directly assigning pointer values does not work the same way with void *. Instead of using *ptr1 = *ptr2, we will use memcpy, which is included in the string.h library:*/
+
+void *memcpy(void *destination, void* source, size_t size);
+
+/*So to move the data from ptr2 to ptr1, we will use the following:*/
+
+memcpy(ptr1, ptr2, size);
+
+/*Assignment
+-Implement the generic swap() function.
+-Allocate memory for a temporary buffer to store the data using malloc.
+-If the allocation fails (returns NULL) return immediately.
+-Use memcpy to shuffle the data around.
+-Don't forget to free the temporary buffer.*/
+
+#include <stdlib.h>
+#include <string.h>
+
+void swap(void *vp1, void *vp2, size_t size) {
+  void *temp_buffer = malloc(size);
+  if (temp_buffer == NULL){
+    return;
+  }
+  memcpy(temp_buffer, vp1, size);
+  memcpy(vp1, vp2, size);
+  memcpy(vp2, temp_buffer, size);
+  free(temp_buffer);
+}
+
+/*
+Low Level Stack
+If you've taken our data structures course, you've already implemented a stack. We're going to implement a stack again, but this time we're going to do it while manually managing the memory of generic pointers!
+
+We'll get to have our first deeper exploration of "generics" in C (remember, that just means void *) as well as creating a data structure we will later use in our mark-and-sweep garbage collector.
+*/
+
+// Assignment
+
+
+/*
+Stack Push
+Ok, so let's actually store some data instead of just allocating memory for no practical purpose (a.k.a "haskell programming").
+
+Making Room
+As you know, our stack has a count and a capacity... but what happens when the count is equal to the capacity? We need to make room for more data!
+
+We'll take a simple approach: whenever we run out of capacity, we'll double it. That way we don't have to reallocate memory on every push. For example:
+*/
+
+Count	   Capacity	          Data
+0	          4	          [-, -, -, -]
+1	          4	          [1, -, -, -]
+2	          4	          [1, 2, -, -]
+3	          4	          [1, 2, 3, -]
+4	          4	          [1, 2, 3, 4]
+5	          8	          [1, 2, 3, 4, 5, -, -, -]
+
+/*
+Complete the stack_push function. It safe(ish)ly adds a new object to the top of the stack. 
+Remember: the size of the data array is the capacity of the stack, and the number of elements that are actually in the stack is the count (which is less than or equal to the capacity).
+*/
+
+/*
+Complete the stack_pop function.
+
+If the stack is empty, return NULL.
+Decrement the stack's count.
+Return the top element of the stack (the count-th element in the array).
+*/
+
+/*
+Complete the stack_free function.
+
+If the stack is NULL, return immediately.
+If the stack data is NULL, return immediately.
+Free the stack data.
+Free the stack itself.
+You can assume all of the elements inside of the stack are already freed. That's not our problem.
+*/
+
+
+// snekstack.h file
+#include <stddef.h>
+
+typedef struct Stack {
+  size_t count;
+  size_t capacity;
+  void **data;
+} stack_t;
+
+stack_t *stack_new(size_t capacity);
+void stack_push(stack_t *stack, void *obj);
+void *stack_pop(stack_t *stack);
+void stack_free(stack_t *stack);
+
+
+// snekstack.c file
+#include "snekstack.h"
+#include <assert.h>
+#include <stddef.h>
+#include <stdlib.h>
+
+//
+void *stack_pop(stack_t *stack) {
+  if (stack->count == 0) {
+    return NULL;
+  }
+  stack->count--;
+  return stack->data[stack->count];
+}
+
+//
+void stack_free(stack_t *stack) {
+  if (stack == NULL) || (stack->data == NULL) {
+    return:
+  }
+  free(stack->data);
+  free(stack);
+}
+
+//
+void stack_push(stack_t *stack, void *obj) {
+  if (stack->count == stack->capacity) {
+    stack->capacity *= 2;
+    void **temp = realloc(stack->data, stack->capacity * sizeof(void *));
+    if (temp == NULL) {
+      free(stack->data);
+      return;
+    }
+    stack->data = temp;
+  }
+  stack->data[stack->count] = obj;
+  stack->count++;
+}
+
+//
+stack_t *stack_new(size_t capacity) {
+  stack_t *stack = malloc(sizeof(stack_t));
+  if (stack == NULL) {
+    return NULL;
+  }
+
+  stack->count = 0;
+  stack->capacity = capacity;
+  stack->data = malloc(stack->capacity * sizeof(void *));
+  if (stack->data == NULL) {
+    free(stack);
+    return NULL;
+  }
+
+  return stack;
+}
+
+/*
+Dangerous Push
+Up until now, even though we made our stack with void *, you'll notice that we've only stored plain old int pointers. I want to show you that you can actually store anything in the stack, even heterogeneous lists! 
+That being said, this is usually a bad idea.
+
+TJ likes to use words like "heterogeneous" to keep kids-who-dont-read-good at bay. He meant to say, "you can actually store anything in the stack, even lists of different types of data!"
+
+Now, we're going to do something pretty gross to demonstrate the wise words of one of the philosophers of our time:
+
+With great power comes great responsibility.
+
+-- Uncle Ben
+
+I'm going to have you push an int * and a regular old int directly onto the stack (a bad idea). I just want to show you that you can store anything in a void *, even values that aren't pointers at all.
+*/
+
+/*
+Complete the scary_double_push function.
+
+Push the value 1337 directly onto the stack using the stack_push function. You'll need to cast the value to a void *.
+Allocate memory for a new int on the heap
+Set the value that the address points to to 1024
+Push the int pointer onto the stack using the stack_push function
+*/
+
+void scary_double_push(stack_t *s) {
+  // This line pushes the value 1337 onto the stack.
+  // `1337` is cast to a `void *` even though it's an integer.
+  // This is a bit unconventional and done for illustrative purposes.
+  stack_push(s, (void *)1337);
+
+  // Dynamically allocate memory for an integer on the heap.
+  // `malloc` returns a `void *`, which we cast to `int *`.
+  int *temp = malloc(sizeof(int));
+
+  // Store the value 1024 at the allocated memory location.
+  // `*temp` dereferences the pointer to assign 1024 to this allocated space.
+  *temp = 1024;
+
+  // This line pushes the pointer `temp` onto the stack.
+  // We're storing the address of the allocated memory in the stack.
+  stack_push(s, temp);
+}
+
+/*
+The critical takeaway here is that even though the stack is holding pointers, what's actually in memory for each operation can be quite different. 
+The first is not really a pointer to a valid location, while the second points to an allocated area where 1024 is stored.
+
+This stack provides flexibility that allows different types and data representations in the form of a void *.
+*/
+
